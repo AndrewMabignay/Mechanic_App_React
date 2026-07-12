@@ -2,11 +2,11 @@
 
 import { createColumnHelper } from "@tanstack/react-table";
 import type React from "react";
-import { DataTable, indexColumn, selectionColumn } from "../../components/micto/data-table";
+import { DataTable, indexColumn, rowActionsColumn, selectionColumn } from "../../components/micto/data-table";
 import { useDeleteUser, useUsers } from "../../features/user/hooks/useUser";
 import { useState } from "react";
 import { ToolbarAction } from "../../components/micto/table-toolbar";
-import { Download, Plus } from "lucide-react";
+import { Download, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent } from "../../components/ui/dialog";
 import UserForm from "../../features/user/components/UserForm";
 
@@ -65,6 +65,41 @@ const getColumns = (
         cell: (info: CellContext<User, string>) => (
             <span className="font-medium text-foreground">{info.row.original.role}</span>
         ),
+    }),
+    rowActionsColumn<User>({
+        actions: () => [
+            { 
+                label: "View Profile", 
+                icon: Eye, 
+                onClick: (user: User) => {
+                    console.log(user);
+                }
+            },
+            {
+                label: "Edit",
+                icon: Pencil,
+                onClick: (user: User) => {
+                    setEditingUser(user);
+                    setShowUserForm(true);
+                }
+            },
+            {
+                label: "Delete",
+                icon: Trash2,
+                variant: "destructive",
+                onClick: (user: User) => {
+                    const confirmed = window.confirm(
+                        `Delete ${user.first_name} ${user.last_name}`
+                    );
+
+                    if (!confirmed) return;
+
+                    deleteUser({
+                        user: user.uuid,
+                    });
+                } 
+            },  
+        ],
     }),
 ];
 
