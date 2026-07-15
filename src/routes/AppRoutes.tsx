@@ -10,6 +10,8 @@ import Register from "../pages/auth/Register";
 import BikeShopOwnerLayout from "../layouts/BikeShopOwnerLayout";
 import Dashboard from "../pages/bike_shop_owner/Dashboard";
 import BikeShops from "../pages/bike_shop_owner/BikeShops";
+import BikeShopOwnerForm from "../pages/bike_shop_owner/bike_shops/BikeShopOwnerForm";
+import BikeShopView from "../pages/bike_shop_owner/bike_shops/BikeShopView";
 
 const AppRoutes = () => {
     return (
@@ -40,8 +42,12 @@ const AppRoutes = () => {
                         <Route path="/shop/dashboard" element={<Dashboard />} />
 
                         <Route path="/shop/bike-shops" element={<BikeShops />} />
+                        <Route path="/shop/bike-shops/create" element={<BikeShopOwnerForm />} />
 
-                        <Route path="/shop/bike-shops/:uuid" element={<BikeShops />} />
+                        <Route path="/shop/bike-shops/:uuid" element={<BikeShopView />} />
+                        
+                        <Route path="/shop/bike-shops/:uuid/edit" element={<BikeShopOwnerForm />} />
+                        
 
                         <Route path="/shop/service-requests" element={<BikeShops />} />
 

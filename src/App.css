@@ -131,6 +131,6 @@
 }
 
 body {
-    @apply bg-stone-500;
+    @apply bg-stone-50;
     font-family: 'Poppins', sans-serif;
 }
