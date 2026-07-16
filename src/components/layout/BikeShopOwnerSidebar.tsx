@@ -65,7 +65,7 @@ export default function BikeShopOwnerSidebar() {
 
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <NavLink to="/shop/services">
+                            <NavLink to="/shop/bike-shop-services">
                                 <Wrench />
                                 <span>Services</span>
                             </NavLink>

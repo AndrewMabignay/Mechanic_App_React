@@ -12,6 +12,7 @@ import Dashboard from "../pages/bike_shop_owner/Dashboard";
 import BikeShops from "../pages/bike_shop_owner/BikeShops";
 import BikeShopOwnerForm from "../pages/bike_shop_owner/bike_shops/BikeShopOwnerForm";
 import BikeShopView from "../pages/bike_shop_owner/bike_shops/BikeShopView";
+import BikeShopServiceIndex from "../pages/bike_shop_owner/bike_shop_services/BikeShopService";
 
 const AppRoutes = () => {
     return (
@@ -41,12 +42,16 @@ const AppRoutes = () => {
                         
                         <Route path="/shop/dashboard" element={<Dashboard />} />
 
+                        {/* BIKE SHOPS */}
                         <Route path="/shop/bike-shops" element={<BikeShops />} />
                         <Route path="/shop/bike-shops/create" element={<BikeShopOwnerForm />} />
 
                         <Route path="/shop/bike-shops/:uuid" element={<BikeShopView />} />
                         
                         <Route path="/shop/bike-shops/:uuid/edit" element={<BikeShopOwnerForm />} />
+
+                        {/* BIKE SHOP SERVICES */}
+                        <Route path="/shop/bike-shop-services" element={<BikeShopServiceIndex />} />
                         
 
                         <Route path="/shop/service-requests" element={<BikeShops />} />
