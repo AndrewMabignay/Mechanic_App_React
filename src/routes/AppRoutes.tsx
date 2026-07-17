@@ -13,6 +13,8 @@ import BikeShops from "../pages/bike_shop_owner/BikeShops";
 import BikeShopOwnerForm from "../pages/bike_shop_owner/bike_shops/BikeShopOwnerForm";
 import BikeShopView from "../pages/bike_shop_owner/bike_shops/BikeShopView";
 import BikeShopServiceIndex from "../pages/bike_shop_owner/bike_shop_services/BikeShopService";
+import RequestMechanic from "../pages/cylist/RequestMechanic";
+import CyclistLayout from "../layouts/CyclistLayout";
 
 const AppRoutes = () => {
     return (
@@ -27,7 +29,14 @@ const AppRoutes = () => {
 
                 {/* Cyclist */}
                 <Route element={<ProtectedRoute allowedRoles={["cyclist", "cyclist_mechanic"]} />}>
-                    <Route path="/cyclist/*" element={<CyclistHome />} />
+
+                    <Route element={<CyclistLayout />}>
+                        
+                        <Route path="/cyclist/" element={<CyclistHome />} />
+
+                        <Route path="/cyclist/request-mechanic" element={<RequestMechanic />} />
+
+                    </Route>
                 </Route>
 
                 {/* Mechanic */}
