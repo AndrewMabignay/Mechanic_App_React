@@ -6,9 +6,12 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Search } from "lucide-react";
 import FlyToLocation from "../../features/cyclist/components/FlyToLocation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import RequestMechanicForm from "../../features/cyclist/components/RequestMechanicForm";
 
 export default function RequestMechanic() {
     const [query, setQuery] = useState("");
+    const [open, setOpen] = useState(false);
     const [location, setLocation] = useState<[number, number]>([
         14.6005,
         120.9852,
@@ -86,7 +89,7 @@ export default function RequestMechanic() {
             
             {/* Floating Button */}
             <div className="absolute bottom-4 left-1/2 z-[1000] -translate-x-1/2">
-                <Button>
+                <Button onClick={() => setOpen(true)}>
                     Request Mechanic
                 </Button>
             </div>
@@ -145,6 +148,16 @@ export default function RequestMechanic() {
                     cyclist={location}
                 />
             </MapContainer>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-h-[90vh] w-[95vw] max-w-3xl overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Request Mechanic</DialogTitle>
+                    </DialogHeader>
+
+                    <RequestMechanicForm />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

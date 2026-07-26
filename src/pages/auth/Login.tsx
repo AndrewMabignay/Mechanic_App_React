@@ -36,6 +36,9 @@ export default function Login() {
                 case "cyclist":
                     navigate("/cyclist");
                     break;
+                case "admin":
+                    navigate("/admin");
+                    break;
                 default:
                     navigate("/login");
             }

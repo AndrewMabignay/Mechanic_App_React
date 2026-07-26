@@ -134,3 +134,13 @@ body {
     @apply bg-stone-50;
     font-family: 'Poppins', sans-serif;
 }
+
+.leaflet-container {
+    z-index: 0;
+}
+
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 1 !important;
+}

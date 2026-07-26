@@ -15,6 +15,7 @@ import BikeShopView from "../pages/bike_shop_owner/bike_shops/BikeShopView";
 import BikeShopServiceIndex from "../pages/bike_shop_owner/bike_shop_services/BikeShopService";
 import RequestMechanic from "../pages/cylist/RequestMechanic";
 import CyclistLayout from "../layouts/CyclistLayout";
+import OtpVerificationPage from "../pages/auth/OtpVerificationPage";
 
 const AppRoutes = () => {
     return (
@@ -25,6 +26,8 @@ const AppRoutes = () => {
                 <Route element={<PublicRoute />}>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+
+                    <Route path="/verify-otp" element={<OtpVerificationPage />} />
                 </Route>
 
                 {/* Cyclist */}

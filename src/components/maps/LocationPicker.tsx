@@ -1,5 +1,6 @@
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import FlyToLocation from "../../features/cyclist/components/FlyToLocation";
 
 type Props = {
     latitude: number;
@@ -37,6 +38,10 @@ export default function LocationPicker({
         longitude,
     ]);
 
+    useEffect(() => {
+        setPosition([latitude, longitude]);
+    }, [latitude, longitude]);
+
     return (
         <MapContainer
             center={position}
@@ -50,6 +55,8 @@ export default function LocationPicker({
                 attribution="&copy; OpenStreetMap contributors"
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
+             <FlyToLocation position={position} />
 
             <Marker position={position} />
 
