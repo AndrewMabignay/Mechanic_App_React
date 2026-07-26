@@ -24,24 +24,14 @@ export default function Login() {
     async function onSubmit(data: LoginFormSchema) {
         try {
 
-            const response = await loginMutation.mutateAsync(data);
+            await loginMutation.mutateAsync(data);
 
-            console.log(response);
-
-            localStorage.setItem("bike_mechanic_token", response.token); 
-            localStorage.setItem("bike_mechanic_user", JSON.stringify(response.user)); 
-            localStorage.setItem("bike_mechanic_role", response.user.role); 
-
-            switch (response.user.role) {
-                case "cyclist":
-                    navigate("/cyclist");
-                    break;
-                case "admin":
-                    navigate("/admin");
-                    break;
-                default:
-                    navigate("/login");
-            }
+            navigate("/verify-otp", {
+                state: {
+                    email: data.email,
+                    purpose: "login",
+                },
+            });
         } catch (error) {
             
             console.error(error);

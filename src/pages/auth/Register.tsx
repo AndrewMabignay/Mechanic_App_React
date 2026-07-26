@@ -31,22 +31,14 @@ export default function Register() {
     async function onSubmit(data: RegisterFormSchema) {
         try {
 
-            const response = await registerMutation.mutateAsync(data);
+            await registerMutation.mutateAsync(data);
 
-            localStorage.setItem("bike_mechanic_token", response.token); 
-            localStorage.setItem("bike_mechanic_user", JSON.stringify(response.user)); 
-            localStorage.setItem("bike_mechanic_role", response.user.role);
-
-            switch (response.user.role) {
-                case "cyclist":
-                    navigate("/cyclist");
-                    break;
-                case "bike_shop_owner":
-                    navigate("/owner");
-                    break;
-                default:
-                    navigate("/login");
-            }
+            navigate("/verify-otp", {
+                state: {
+                    email: data.email,
+                    purpose: "register",
+                },
+            });
         } catch (error) {
             
             console.error(error);
