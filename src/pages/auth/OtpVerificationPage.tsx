@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useResendOtp, useVerifyLoginOtp, useVerifyRegisterOtp } from "../../features/auth/hooks/useAuth";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { hasCyclistProfile } from "../../features/cyclist/api/cyclist-profile";
 
 export default function OtpVerificationPage() {
 
@@ -95,9 +96,17 @@ export default function OtpVerificationPage() {
 
             // REDIRECT
             switch(response.user.role) {
-                case "cyclist":
-                    navigate("/cyclist");
+                case "cyclist": {
+                    const hasProfile = await hasCyclistProfile();
+
+                    if (hasProfile) {
+                        navigate("/cyclist");
+                    } else {
+                        navigate("/cyclist/create-profile");
+                    }
+
                     break;
+                }
                 case "mechanic":
                     navigate("/mechanic");
                     break;

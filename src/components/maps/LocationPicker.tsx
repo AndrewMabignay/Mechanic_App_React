@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import FlyToLocation from "../../features/cyclist/components/FlyToLocation";
 
 type Props = {
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
     onChange?: (lat: number, lng: number) => void;
     readonly?: boolean;
 };
@@ -34,12 +34,15 @@ export default function LocationPicker({
     readonly,
 }: Props) {
     const [position, setPosition] = useState<[number, number]>([
-        latitude,
-        longitude,
+        latitude ?? 14.5995,
+        longitude ?? 120.9842,
     ]);
 
     useEffect(() => {
-        setPosition([latitude, longitude]);
+        setPosition([
+            latitude ?? 14.5995, 
+            longitude ?? 120.9842, 
+        ]);
     }, [latitude, longitude]);
 
     return (
@@ -58,7 +61,19 @@ export default function LocationPicker({
 
              <FlyToLocation position={position} />
 
-            <Marker position={position} />
+            <Marker 
+                position={position}
+                draggable={!readonly}
+                eventHandlers={{
+                    dragend(e) {
+                        const marker = e.target;
+                        const { lat, lng } = marker.getLatLng();
+
+                        setPosition([lat, lng]);
+                        onChange?.(lat, lng);
+                    },
+                }} 
+            />
 
             <MapClick
                 readonly={readonly}

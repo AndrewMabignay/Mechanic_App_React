@@ -16,6 +16,8 @@ import BikeShopServiceIndex from "../pages/bike_shop_owner/bike_shop_services/Bi
 import RequestMechanic from "../pages/cylist/RequestMechanic";
 import CyclistLayout from "../layouts/CyclistLayout";
 import OtpVerificationPage from "../pages/auth/OtpVerificationPage";
+import CyclistProfile from "../pages/cylist/CyclistProfile";
+import CyclistProfileForm from "../features/cyclist/components/CyclistProfileForm";
 
 const AppRoutes = () => {
     return (
@@ -33,9 +35,12 @@ const AppRoutes = () => {
                 {/* Cyclist */}
                 <Route element={<ProtectedRoute allowedRoles={["cyclist", "cyclist_mechanic"]} />}>
 
+                    <Route path="/cyclist/create-profile" element={<CyclistProfileForm />} />
+
                     <Route element={<CyclistLayout />}>
                         
                         <Route path="/cyclist/" element={<CyclistHome />} />
+                        <Route path="/cyclist/profile" element={<CyclistProfile />} />
 
                         <Route path="/cyclist/request-mechanic" element={<RequestMechanic />} />
 
