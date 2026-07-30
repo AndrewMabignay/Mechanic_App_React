@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: '/api',
+    baseURL: "/api",
     headers: {
-        Accept: "application/json"
-    }
+        Accept: "application/json",
+    },
 });
 
 axiosClient.interceptors.request.use((config) => {
@@ -16,5 +16,21 @@ axiosClient.interceptors.request.use((config) => {
 
     return config;
 });
+
+// Response interceptor
+axiosClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("bike_mechanic_token");
+            localStorage.removeItem("bike_mechanic_user");
+            localStorage.removeItem("bike_mechanic_role");
+
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    }
+);
 
 export default axiosClient;

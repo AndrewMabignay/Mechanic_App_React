@@ -4,6 +4,7 @@ import { useResendOtp, useVerifyLoginOtp, useVerifyRegisterOtp } from "../../fea
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { hasCyclistProfile } from "../../features/cyclist/api/cyclist-profile";
+import { hasMechanicProfile } from "../../features/mechanic/utils/mechanicProfile";
 
 export default function OtpVerificationPage() {
 
@@ -107,9 +108,17 @@ export default function OtpVerificationPage() {
 
                     break;
                 }
-                case "mechanic":
-                    navigate("/mechanic");
+                case "mechanic": {
+                    const hasProfile = await hasMechanicProfile();
+
+                    if (hasProfile) {
+                        navigate("/mechanic");
+                    } else {
+                        navigate("/mechanic/create-profile");
+                    }
+
                     break;
+                }
                 case "cyclist_mechanic":
                     navigate("/cyclist");
                     break;

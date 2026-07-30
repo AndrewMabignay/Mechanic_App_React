@@ -18,6 +18,10 @@ import CyclistLayout from "../layouts/CyclistLayout";
 import OtpVerificationPage from "../pages/auth/OtpVerificationPage";
 import CyclistProfile from "../pages/cylist/CyclistProfile";
 import CyclistProfileForm from "../features/cyclist/components/CyclistProfileForm";
+import MechanicLayout from "../layouts/MechanicLayout";
+import MechanicProfile from "../pages/mechanic/MechanicProfile";
+import MechanicProfileForm from "../features/mechanic/components/MechanicProfileForm";
+import CreateMechanicProfileRoute from "./CreateMechanicProfileRoute";
 
 const AppRoutes = () => {
     return (
@@ -49,7 +53,20 @@ const AppRoutes = () => {
 
                 {/* Mechanic */}
                 <Route element={<ProtectedRoute allowedRoles={["mechanic", "cyclist_mechanic"]} />}>
-                    <Route path="/mechanic/*" element={<CyclistHome />} />
+
+                    <Route
+                        path="/mechanic/create-profile"
+                        element={
+                            <CreateMechanicProfileRoute>
+                                <MechanicProfileForm />
+                            </CreateMechanicProfileRoute>
+                        }
+                    />
+
+                    <Route element={<MechanicLayout />}>
+                        
+                        <Route path="/mechanic/profile" element={<MechanicProfile />} />
+                    </Route>
                 </Route>
 
                 {/* Bike Shop Owner */}
