@@ -8,6 +8,8 @@ import { CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -25,12 +27,17 @@ export default function Register() {
             role: undefined,
         },
     });
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
     const registerMutation = useRegister();
 
     async function onSubmit(data: RegisterFormSchema) {
-        try {
+        if (!captchaToken) {
+            console.error('Please complete the CAPTCHA first.');
+            return;
+        }
 
+        try {
             await registerMutation.mutateAsync(data);
 
             navigate("/verify-otp", {
@@ -40,7 +47,6 @@ export default function Register() {
                 },
             });
         } catch (error) {
-            
             console.error(error);
         }
     }
@@ -260,11 +266,29 @@ export default function Register() {
                     </form>
 
                     <CardContent>
-                        <Field orientation={"horizontal"} className="flex justify-between">
+                        
+                        <Field orientation={"vertical"} className="flex flex-col justify-between">
+                            
+                            <div className="flex justify-center">
+                                <Turnstile
+                                    className="flex justify-between items-center bg-gray-200"
+                                    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                                    onSuccess={(token) => {
+                                        setCaptchaToken(token);
+                                    }}
+                                    onExpire={() => {
+                                        setCaptchaToken(null);
+                                    }}
+                                    onError={() => {
+                                        setCaptchaToken(null);
+                                    }}
+                                />
+                            </div>
+
                             <Button
                                 type="submit"
                                 form="form-rhf"
-                                disabled={registerMutation.isPending}
+                                disabled={registerMutation.isPending || !captchaToken}
                                 className="w-full"
                             >
                                 {registerMutation.isPending ? "Signing up..." : "Register"}

@@ -22,6 +22,10 @@ import MechanicLayout from "../layouts/MechanicLayout";
 import MechanicProfile from "../pages/mechanic/MechanicProfile";
 import MechanicProfileForm from "../features/mechanic/components/MechanicProfileForm";
 import CreateMechanicProfileRoute from "./CreateMechanicProfileRoute";
+import IncomingRequest from "../pages/mechanic/IncomingRequest";
+import MechanicHome from "../pages/mechanic/MechanicHome";
+import CyclistMap from "../pages/cylist/CyclistMap";
+import MechanicIncomingRequest from "../pages/mechanic/MechanicIncomingRequest";
 
 const AppRoutes = () => {
     return (
@@ -44,6 +48,7 @@ const AppRoutes = () => {
                     <Route element={<CyclistLayout />}>
                         
                         <Route path="/cyclist/" element={<CyclistHome />} />
+                        <Route path="/cyclist/request-mechanic" element={<CyclistMap />} />
                         <Route path="/cyclist/profile" element={<CyclistProfile />} />
 
                         <Route path="/cyclist/request-mechanic" element={<RequestMechanic />} />
@@ -64,7 +69,9 @@ const AppRoutes = () => {
                     />
 
                     <Route element={<MechanicLayout />}>
-                        
+                        <Route path="/mechanic" element={<MechanicHome />} />
+                        {/* <Route path="/mechanic/incoming-request" element={<IncomingRequest />} /> */}
+                        <Route path="/mechanic/incoming-request" element={<MechanicIncomingRequest />} />
                         <Route path="/mechanic/profile" element={<MechanicProfile />} />
                     </Route>
                 </Route>

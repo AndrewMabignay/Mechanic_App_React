@@ -34,14 +34,14 @@ export default function LocationPicker({
     readonly,
 }: Props) {
     const [position, setPosition] = useState<[number, number]>([
-        latitude ?? 14.5995,
-        longitude ?? 120.9842,
+        latitude ?? 14.4646,
+        longitude ?? 121.1929,
     ]);
 
     useEffect(() => {
         setPosition([
-            latitude ?? 14.5995, 
-            longitude ?? 120.9842, 
+            latitude ?? 14.4646,
+            longitude ?? 121.1929, 
         ]);
     }, [latitude, longitude]);
 

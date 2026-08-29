@@ -30,6 +30,12 @@ export default function MechanicHeader() {
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
+                    <NavigationMenuItem>
+                        <NavigationMenuLink asChild>
+                            <NavLink to="/mechanic/incoming-request">Incoming Request</NavLink>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+
                 </NavigationMenuList>
             </NavigationMenu>
 
@@ -62,13 +68,13 @@ export default function MechanicHeader() {
 
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                        <Link to="/cyclist/profile">
+                        <Link to="/mechanic/profile">
                             My Profile
                         </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>
-                        <Link to="/cyclist/settings">
+                        <Link to="/mechanic/settings">
                             Settings
                         </Link>
                     </DropdownMenuItem>

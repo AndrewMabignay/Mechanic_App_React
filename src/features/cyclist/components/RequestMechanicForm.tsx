@@ -45,8 +45,12 @@ export default function RequestMechanicForm() {
         });
     }, [form]);
 
+    useEffect(() => {
+        console.log(form.formState.errors);
+    }, [form.formState.errors]);
+
     async function onSubmit(data: RequestMechanicFormData) {
-        console.log(data)
+        console.log("Submitted!", data);
 
         await createCyclistRequestServiceMutation.mutateAsync(data);
     }

@@ -7,9 +7,11 @@ import { Input } from "../../components/ui/input";
 import { Search } from "lucide-react";
 import FlyToLocation from "../../features/cyclist/components/FlyToLocation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import RequestMechanicForm from "../../features/cyclist/components/RequestMechanicForm";
+import RequestMechanicForm from "../../features/service_request/components/RequestMechanicForm";
+import FindingMechanicDialog from "../../features/service_request/components/FindingMechanicDialog";
 
 export default function RequestMechanic() {
+    const [openFinding, setOpenFinding] = useState(false);
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [location, setLocation] = useState<[number, number]>([
@@ -88,14 +90,17 @@ export default function RequestMechanic() {
         <div className="relative h-full">
             
             {/* Floating Button */}
-            <div className="absolute bottom-4 left-1/2 z-[1000] -translate-x-1/2">
-                <Button onClick={() => setOpen(true)}>
+            <div className="absolute bottom-4 left-4 right-4 z-[1000] flex justify-center">
+                <Button
+                    className="w-full max-w-sm"
+                    onClick={() => setOpen(true)}
+                >
                     Request Mechanic
                 </Button>
             </div>
 
-            <div className="absolute top-4 left-1/2 z-[1000] w-96 -translate-x-1/2">
-                <div className="flex gap-2">
+           <div className="absolute top-4 left-4 right-4 z-[1000] mx-auto max-w-md">
+                {/* <div className="flex gap-2">
                     <Input
                         placeholder="Search location..."
                         value={query}
@@ -105,10 +110,10 @@ export default function RequestMechanic() {
                     <Button onClick={searchLocation}>
                         <Search className="h-4 w-4" />
                     </Button>
-                </div>
+                </div> */}
 
                 {results.length > 0 && (
-                    <div className="mt-2 max-h-60 overflow-y-auto rounded-md border bg-background shadow-lg">
+                    <div className="mt-2 max-h-60 w-full overflow-y-auto rounded-md border bg-background shadow-lg">
                         {results.map((item, index) => (
                             <button
                                 key={index}
@@ -150,12 +155,41 @@ export default function RequestMechanic() {
             </MapContainer>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[90vh] w-[95vw] max-w-3xl overflow-y-auto">
+                <DialogContent
+                    className="
+                        max-h-[90vh]
+                        w-[calc(100vw-2rem)]
+                        sm:max-w-lg
+                        md:max-w-2xl
+                        lg:max-w-3xl
+                        overflow-y-auto
+                    "
+                >
                     <DialogHeader>
                         <DialogTitle>Request Mechanic</DialogTitle>
                     </DialogHeader>
 
-                    <RequestMechanicForm />
+                    <RequestMechanicForm
+                        onSuccess={() => {
+                            setOpen(false);
+                            setOpenFinding(true);
+                        }}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={openFinding}
+                onOpenChange={setOpenFinding}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Finding Mechanic
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <FindingMechanicDialog />
                 </DialogContent>
             </Dialog>
         </div>

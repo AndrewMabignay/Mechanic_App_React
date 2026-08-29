@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
@@ -6,13 +6,17 @@ import "leaflet-routing-machine";
 type Props = {
     mechanic: [number, number];
     cyclist: [number, number];
+    arrived: boolean;
 };
 
-export default function Routing({ mechanic, cyclist }: Props) {
+export default function Routing({ mechanic, cyclist, arrived}: Props) {
     const map = useMap();
 
+    const routingRef = useRef<L.Routing.Control | null>(null);
+
+    // Create only once
     useEffect(() => {
-        const routingControl = L.Routing.control({
+        routingRef.current = L.Routing.control({
             waypoints: [
                 L.latLng(mechanic[0], mechanic[1]),
                 L.latLng(cyclist[0], cyclist[1]),
@@ -35,9 +39,24 @@ export default function Routing({ mechanic, cyclist }: Props) {
         }).addTo(map);
 
         return () => {
-            map.removeControl(routingControl);
+            if (routingRef.current) {
+                map.removeControl(routingRef.current);
+            }
         };
-    }, [mechanic, cyclist, map]);
+    }, [map]);
+
+    // Update route only
+    useEffect(() => {
+        if (!routingRef.current) return;
+
+        if (arrived) return;
+
+        routingRef.current.setWaypoints([
+            L.latLng(mechanic[0], mechanic[1]),
+            L.latLng(cyclist[0], cyclist[1]),
+        ]);
+
+    }, [mechanic, cyclist, arrived]);
 
     return null;
 }
