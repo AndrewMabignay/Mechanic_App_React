@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createCyclistProfile, getCyclistProfile, updateCyclistProfile } from "../api/cyclist-profile";
 import type { CreateAndUpdateCyclistProfileFormData } from "../types/cylistProfile";
+import { getCyclistBicycles } from "../api/cyclistProfileApi";
 
 // DISPLAY CYCLIST PROFILE 
 export const useCyclistProfile = () =>
@@ -44,3 +45,18 @@ export const useUpdateCyclistProfile = () => {
         },
     });
 };
+
+// 
+
+export const useCyclistBicyclesOwner = (params: {
+    page: number;
+    per_page: number;
+}) => {
+    return useQuery({
+        queryKey: ["bicycles", params],
+        queryFn: async () => {
+            const { data } = await getCyclistBicycles(params);
+            return data;
+        },
+    });
+}

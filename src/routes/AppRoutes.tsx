@@ -26,6 +26,7 @@ import IncomingRequest from "../pages/mechanic/IncomingRequest";
 import MechanicHome from "../pages/mechanic/MechanicHome";
 import CyclistMap from "../pages/cylist/CyclistMap";
 import MechanicIncomingRequest from "../pages/mechanic/MechanicIncomingRequest";
+import Profile from "../pages/Profile";
 
 const AppRoutes = () => {
     return (
@@ -72,7 +73,8 @@ const AppRoutes = () => {
                         <Route path="/mechanic" element={<MechanicHome />} />
                         {/* <Route path="/mechanic/incoming-request" element={<IncomingRequest />} /> */}
                         <Route path="/mechanic/incoming-request" element={<MechanicIncomingRequest />} />
-                        <Route path="/mechanic/profile" element={<MechanicProfile />} />
+                        {/* <Route path="/mechanic/profile" element={<MechanicProfile />} /> */}
+                        <Route path="/mechanic/profile" element={<Profile />} />
                     </Route>
                 </Route>
 
