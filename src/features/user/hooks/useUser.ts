@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deleteUser, getUsers, updateUser } from "../api/userApi";
+import { createUser, deleteUser, getUsers, updateUser, updateUserProfile } from "../api/userApi";
 import type { CreateUserFormData, UpdateUserFormData } from "../types/user";
+import type { PersonalInformationFormData } from "../schemas/userSchema";
 
 export const useUsers = (params = {}) => {
     return useQuery({
@@ -57,6 +58,26 @@ export const useDeleteUser = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["users"],
+            });
+        },
+    });
+};
+
+export const useUpdateUserProfile = (profileQueryKey: string[]) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({
+            profile,
+            data,
+        }: {
+            profile: string;
+            data: Partial<PersonalInformationFormData>;
+        }) => updateUserProfile(profile, data),
+
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: profileQueryKey,
             });
         },
     });

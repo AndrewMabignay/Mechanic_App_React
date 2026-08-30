@@ -1,5 +1,5 @@
 import api from "../../../api/axios";
-import type { UserFormData } from "../schemas/userSchema";
+import type { PersonalInformationFormData, UserFormData } from "../schemas/userSchema";
 
 // DISPLAY USERS
 export const getUsers = (params = {}) => {
@@ -22,4 +22,11 @@ export const updateUser = (
 // DELETE USERS
 export const deleteUser = ( user: string ) => {
     return api.delete(`/users/${user}`);
+};
+
+export const updateUserProfile = ( 
+    profile: string,
+    data: Partial<PersonalInformationFormData> 
+) => {
+    return api.put(`/profile/${profile}`, data);
 };

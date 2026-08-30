@@ -164,6 +164,11 @@ export default function CyclistProfile() {
                                             information.
                                         </p>
                                     </div>
+
+                                    <EditPersonalInformationDialog
+                                        user={user}
+                                        profileQueryKey={["cyclist-profile"]}
+                                    />
                                 </div>
                             </CardHeader>
 
@@ -280,8 +285,6 @@ export default function CyclistProfile() {
                         </Card>
                     </div>
                 </div>
-
-                <EditPersonalInformationDialog user={user} />
 
                 {/* Bicycle */}
                 {/* <div className="mt-6">
