@@ -24,7 +24,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "../../../components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditPersonalInformationDialogProps {
     user: User;
@@ -48,6 +48,18 @@ export default function EditPersonalInformationDialog({
             phone: user.phone ?? "",
         },
     });
+
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                first_name: user.first_name ?? "",
+                middle_name: user.middle_name ?? "",
+                last_name: user.last_name ?? "",
+                email: user.email ?? "",
+                phone: user.phone ?? "",
+            });
+        }
+    }, [open, user, form]);
 
     async function onSubmit(values: PersonalInformationFormData) {
         try {

@@ -10,12 +10,11 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "../../../components/ui/avatar";
-import CyclistBicycle from "./CyclistBicycle";
-import { Button } from "../../../components/ui/button";
-import { Pencil, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import MapComponent from "../../../components/Map";
 import { useEffect, useState } from "react";
 import EditPersonalInformationDialog from "../../user/components/EditPersonalInformationDialog";
+import EditCyclistProfileDialog from "./EditCyclistProfileDialog";
 
 export default function CyclistProfile() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -135,13 +134,7 @@ export default function CyclistProfile() {
                                     </div>
                                 </div>
 
-                                <Button
-                                    variant="outline"
-                                    className="w-full sm:w-auto"
-                                >
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Edit Profile
-                                </Button>
+                                <EditCyclistProfileDialog profile={data} />
                             </div>
                         </div>
                     </CardContent>
