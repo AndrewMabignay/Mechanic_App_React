@@ -50,7 +50,8 @@ const AppRoutes = () => {
                         
                         <Route path="/cyclist/" element={<CyclistHome />} />
                         <Route path="/cyclist/request-mechanic" element={<CyclistMap />} />
-                        <Route path="/cyclist/profile" element={<CyclistProfile />} />
+                        {/* <Route path="/cyclist/profile" element={<CyclistProfile />} /> */}
+                        <Route path="/cyclist/profile" element={<Profile />} />
 
                         <Route path="/cyclist/request-mechanic" element={<RequestMechanic />} />
 
