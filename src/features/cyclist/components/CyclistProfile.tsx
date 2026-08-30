@@ -15,6 +15,7 @@ import { Button } from "../../../components/ui/button";
 import { Pencil, MapPin } from "lucide-react";
 import MapComponent from "../../../components/Map";
 import { useEffect, useState } from "react";
+import EditPersonalInformationDialog from "../../user/components/EditPersonalInformationDialog";
 
 export default function CyclistProfile() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -152,13 +153,18 @@ export default function CyclistProfile() {
                     <div className="space-y-6 lg:col-span-2">
                         <Card className="h-full border-[#EEEEEE] bg-white shadow-sm dark:border-[#3A3A3A] dark:bg-[#1E1E1E]">
                             <CardHeader>
-                                <CardTitle className="text-lg text-[#111827] dark:text-[#F9FAFB]">
-                                    Personal Information
-                                </CardTitle>
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <CardTitle className="text-lg text-[#111827] dark:text-[#F9FAFB]">
+                                            Personal Information
+                                        </CardTitle>
 
-                                <p className="text-sm text-[#8A94A6] dark:text-[#9CA3AF]">
-                                    Your personal and contact information.
-                                </p>
+                                        <p className="mt-1 text-sm text-[#8A94A6] dark:text-[#9CA3AF]">
+                                            Your personal and contact
+                                            information.
+                                        </p>
+                                    </div>
+                                </div>
                             </CardHeader>
 
                             <CardContent className="space-y-6 sm:space-y-10">
@@ -275,10 +281,12 @@ export default function CyclistProfile() {
                     </div>
                 </div>
 
+                <EditPersonalInformationDialog user={user} />
+
                 {/* Bicycle */}
-                <div className="mt-6">
+                {/* <div className="mt-6">
                     <CyclistBicycle />
-                </div>
+                </div> */}
             </div>
         </div>
     );
