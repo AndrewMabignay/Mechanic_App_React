@@ -6,6 +6,7 @@ import { useCyclistProfile } from "../hooks/useCyclistProfile";
 import CyclistRequestMechanicForm from "../../service_request/components/CyclistRequestMechanicForm";
 import CyclistFindingMechanicDialog from "../../service_request/components/CyclistFindingMechanicDialog";
 import { useCyclistCurrentServiceRequest } from "../../service_request/hooks/useCyclistCurrentServiceRequest";
+import CyclistMechanicEnRouteDialog from "../../service_request/components/CyclistMechanicEnRouteDialog";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -38,6 +39,8 @@ export default function CyclistHomeComponent() {
 
     const hasCyclistLocation =
         Number.isFinite(cyclistLatitude) && Number.isFinite(cyclistLongitude);
+
+    const [enRouteDialogOpen, setEnRouteDialogOpen] = useState(false);
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -151,6 +154,7 @@ export default function CyclistHomeComponent() {
                     ) : isAccepted || isEnRoute ? (
                         <button
                             type="button"
+                            onClick={() => setEnRouteDialogOpen(true)}
                             className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
                         >
                             <div className="flex items-center gap-4">
@@ -181,6 +185,12 @@ export default function CyclistHomeComponent() {
                 open={findingDialogOpen}
                 onOpenChange={setFindingDialogOpen}
                 serviceRequestUuid={currentRequest?.uuid ?? ""}
+            />
+
+            <CyclistMechanicEnRouteDialog
+                open={enRouteDialogOpen}
+                onOpenChange={setEnRouteDialogOpen}
+                mechanic={currentRequest?.mechanic}
             />
         </div>
     );

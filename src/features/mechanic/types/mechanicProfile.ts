@@ -1,3 +1,5 @@
+import type { User } from "../../user/types/user";
+
 // Data from the API
 export interface MechanicProfile { 
     id: number;
@@ -13,6 +15,7 @@ export interface MechanicProfile {
     total_jobs: number;
     created_at: string;
     updated_at: string;
+    user: User;
 }
 
 // Request body for create/update
