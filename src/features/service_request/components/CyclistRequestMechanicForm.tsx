@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -369,27 +369,17 @@ function ImagePreview({
     index: number;
     onRemove: (index: number) => void;
 }) {
-    const [preview, setPreview] = useState("");
-
-    useEffect(() => {
-        const objectUrl = URL.createObjectURL(file);
-
-        setPreview(objectUrl);
-
-        return () => {
-            URL.revokeObjectURL(objectUrl);
-        };
+    const preview = useMemo(() => {
+        return URL.createObjectURL(file);
     }, [file]);
 
     return (
         <div className="relative w-28 shrink-0 overflow-hidden rounded-lg border sm:w-32">
-            {preview && (
-                <img
-                    src={preview}
-                    alt={`Selected image ${index + 1}`}
-                    className="h-28 w-full object-cover sm:h-32"
-                />
-            )}
+            <img
+                src={preview}
+                alt={`Selected image ${index + 1}`}
+                className="h-28 w-full object-cover sm:h-32"
+            />
 
             <Button
                 type="button"
