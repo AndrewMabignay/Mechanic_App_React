@@ -29,6 +29,7 @@ import MapComponent from "../../../components/Map";
 import { CardContent } from "../../../components/ui/card";
 import { useCreateServiceRequest } from "../hooks/useCreateServiceRequest";
 import { AxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CyclistRequestMechanicForm() {
     const [open, setOpen] = useState(false);
@@ -59,6 +60,8 @@ export default function CyclistRequestMechanicForm() {
         name: "bike_problem",
     });
 
+    const queryClient = useQueryClient();
+
     useEffect(() => {
         if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
             form.setValue("location_lat", latitude);
@@ -74,6 +77,10 @@ export default function CyclistRequestMechanicForm() {
                 await createServiceRequestMutation.mutateAsync(values);
 
             console.log("Service request created:", response);
+
+            await queryClient.refetchQueries({
+                queryKey: ["cyclist-current-service-request"],
+            });
 
             setOpen(false);
         } catch (error) {

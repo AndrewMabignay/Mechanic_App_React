@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
+import { ChevronRight, Loader2 } from "lucide-react";
+
 import MapComponent from "../../../components/Map";
 import { useCyclistProfile } from "../hooks/useCyclistProfile";
 import CyclistRequestMechanicForm from "../../service_request/components/CyclistRequestMechanicForm";
+import CyclistFindingMechanicDialog from "../../service_request/components/CyclistFindingMechanicDialog";
+import { useCyclistCurrentServiceRequest } from "../../service_request/hooks/useCyclistCurrentServiceRequest";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
-    const [locationAddress, setLocationAddress] = useState("Loading address..");
+
+    const [locationAddress, setLocationAddress] =
+        useState("Loading address...");
+
+    const [requestSubmitted, setRequestSubmitted] = useState(false);
+    const [findingDialogOpen, setFindingDialogOpen] = useState(false);
 
     const latitude = Number(data?.default_location_lat);
     const longitude = Number(data?.default_location_lng);
+
+    const { data: currentRequestResponse, isLoading: isCurrentRequestLoading } =
+        useCyclistCurrentServiceRequest();
+
+    const currentRequest = currentRequestResponse?.data;
+
+    const hasActiveRequest =
+        currentRequest &&
+        ["pending", "accepted", "en_route", "in_progress"].includes(
+            currentRequest.status,
+        );
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -67,14 +87,6 @@ export default function CyclistHomeComponent() {
         );
     }
 
-    const fullName = [user.first_name, user.middle_name, user.last_name]
-        .filter(Boolean)
-        .join(" ");
-
-    const initials = `${user.first_name?.charAt(0) ?? ""}${
-        user.last_name?.charAt(0) ?? ""
-    }`;
-
     return (
         <div className="relative h-full w-full overflow-hidden">
             {/* Map */}
@@ -82,13 +94,45 @@ export default function CyclistHomeComponent() {
                 <MapComponent latitude={latitude} longitude={longitude} />
             </div>
 
-            {/* Request Mechanic */}
+            {/* Bottom Container */}
             <div className="absolute inset-x-0 bottom-10 z-20 flex justify-center px-4">
                 <div className="w-full max-w-md">
-                    <CyclistRequestMechanicForm />
-                    {/* <CyclistRequestMechanicForm /> */}
+                    {!hasActiveRequest ? (
+                        <CyclistRequestMechanicForm />
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setFindingDialogOpen(true)}
+                            className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50">
+                                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-base font-semibold text-slate-900">
+                                        Finding a mechanic...
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        Searching nearby mechanics
+                                    </p>
+                                </div>
+
+                                <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+                            </div>
+                        </button>
+                    )}
                 </div>
             </div>
+
+            {/* Finding Mechanic Dialog */}
+            <CyclistFindingMechanicDialog
+                open={findingDialogOpen}
+                onOpenChange={setFindingDialogOpen}
+                serviceRequestUuid={currentRequest?.uuid ?? ""}
+            />
         </div>
     );
 }

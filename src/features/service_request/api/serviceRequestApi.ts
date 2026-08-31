@@ -23,3 +23,17 @@ export const createServiceRequest = async (
 
     return response.data;
 };
+
+export const getCurrentCyclistServiceRequest = async (): Promise<ServiceRequestResponse> => {
+    const response = await api.get("/service-requests/cyclists/current-service-request");
+
+    return response.data;
+};
+
+export const cancelServiceRequest = async (
+    uuid: string
+): Promise<ServiceRequestResponse> => {
+    const response = await api.patch(`/service-requests/${uuid}/cancelled`);
+
+    return response.data;
+};
