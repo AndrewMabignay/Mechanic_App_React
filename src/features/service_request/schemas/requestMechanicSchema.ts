@@ -1,9 +1,9 @@
 import * as z from "zod";
 
 export const requestMechanicSchema = z.object({
-    bike_problems: z
-        .array(z.number())
-        .min(1, "Please select at least one bike problem."),
+    bike_problem: z
+        .number()
+        .min(1, "Please select a bike problem."),
 
     location_lat: z.coerce
         .number()
@@ -17,13 +17,12 @@ export const requestMechanicSchema = z.object({
 
     description: z
         .string()
-        .max(1000, "Description must not exceed 1000 characters.")
-        .optional(),
+        .max(1000, "Description must not exceed 1000 characters."),
 
     images: z
         .array(z.instanceof(File))
-        .max(5, "You can upload a maximum of 5 images.")
-        .optional(),
+        .min(1, "Please upload at least 1 image.")
+        .max(5, "You can upload a maximum of 5 images."),
 });
 
 export type RequestMechanicFormData = z.infer<typeof requestMechanicSchema>;
