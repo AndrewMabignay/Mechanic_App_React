@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, MapPin } from "lucide-react";
 
 import MapComponent from "../../../components/Map";
 import { useCyclistProfile } from "../hooks/useCyclistProfile";
@@ -24,11 +24,20 @@ export default function CyclistHomeComponent() {
 
     const currentRequest = currentRequestResponse?.data;
 
-    const hasActiveRequest =
-        currentRequest &&
-        ["pending", "accepted", "en_route", "in_progress"].includes(
-            currentRequest.status,
-        );
+    const isPending = currentRequest?.status === "pending";
+    const isAccepted = currentRequest?.status === "accepted";
+    const isEnRoute = currentRequest?.status === "en_route";
+
+    const cyclistLatitude = Number(currentRequest?.location_lat ?? latitude);
+    const cyclistLongitude = Number(currentRequest?.location_lng ?? longitude);
+    const mechanicLatitude = Number(currentRequest?.mechanic?.latitude);
+    const mechanicLongitude = Number(currentRequest?.mechanic?.longitude);
+
+    const hasMechanicLocation =
+        Number.isFinite(mechanicLatitude) && Number.isFinite(mechanicLongitude);
+
+    const hasCyclistLocation =
+        Number.isFinite(cyclistLatitude) && Number.isFinite(cyclistLongitude);
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -91,15 +100,31 @@ export default function CyclistHomeComponent() {
         <div className="relative h-full w-full overflow-hidden">
             {/* Map */}
             <div className="absolute inset-0">
-                <MapComponent latitude={latitude} longitude={longitude} />
+                <MapComponent
+                    latitude={latitude}
+                    longitude={longitude}
+                    mechanicLatitude={
+                        hasMechanicLocation ? mechanicLatitude : undefined
+                    }
+                    mechanicLongitude={
+                        hasMechanicLocation ? mechanicLongitude : undefined
+                    }
+                    cyclistLatitude={
+                        hasCyclistLocation ? cyclistLatitude : undefined
+                    }
+                    cyclistLongitude={
+                        hasCyclistLocation ? cyclistLongitude : undefined
+                    }
+                    showRoute={isAccepted || isEnRoute}
+                />
             </div>
 
             {/* Bottom Container */}
             <div className="absolute inset-x-0 bottom-10 z-20 flex justify-center px-4">
                 <div className="w-full max-w-md">
-                    {!hasActiveRequest ? (
+                    {!currentRequest ? (
                         <CyclistRequestMechanicForm />
-                    ) : (
+                    ) : isPending ? (
                         <button
                             type="button"
                             onClick={() => setFindingDialogOpen(true)}
@@ -123,7 +148,31 @@ export default function CyclistHomeComponent() {
                                 <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
                             </div>
                         </button>
-                    )}
+                    ) : isAccepted || isEnRoute ? (
+                        <button
+                            type="button"
+                            className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-50">
+                                    <MapPin className="h-6 w-6 text-green-600" />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-base font-semibold text-slate-900">
+                                        Mechanic is on the way
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        Your mechanic is heading to your
+                                        location
+                                    </p>
+                                </div>
+
+                                <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+                            </div>
+                        </button>
+                    ) : null}
                 </div>
             </div>
 

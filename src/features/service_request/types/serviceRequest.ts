@@ -1,3 +1,5 @@
+import type { MechanicProfile } from "../../mechanic/types/mechanicProfile";
+
 export interface ServiceRequestImage {
     id: number;
     service_request_id: number;
@@ -29,8 +31,8 @@ export interface ServiceRequest {
     request_type: string;
     description: string;
 
-    location_lat: string;
-    location_lng: string;
+    location_lat: number;
+    location_lng: number;
 
     status: string;
 
@@ -47,6 +49,8 @@ export interface ServiceRequest {
 
     images: ServiceRequestImage[];
     bike_problem: BikeProblem;
+
+    mechanic: MechanicProfile;
 }
 
 export interface ServiceRequestResponse {
