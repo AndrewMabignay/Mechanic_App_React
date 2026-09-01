@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, Loader2, MapPin } from "lucide-react";
+import { ChevronRight, Loader2, MapPin, Wrench } from "lucide-react";
 
 import MapComponent from "../../../components/Map";
 import { useCyclistProfile } from "../hooks/useCyclistProfile";
@@ -9,6 +9,7 @@ import { useCyclistCurrentServiceRequest } from "../../service_request/hooks/use
 import CyclistMechanicEnRouteDialog from "../../service_request/components/CyclistMechanicEnRouteDialog";
 import CyclistMechanicChatDialog from "../../service_request/components/CyclistMechanicChatDialog";
 import { useServiceChat } from "../../service_request/hooks/useServiceChat";
+import CyclistServiceInProgressDialog from "../../service_request/components/CyclistServiceInProgressDialog";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -50,6 +51,9 @@ export default function CyclistHomeComponent() {
 
     const [enRouteDialogOpen, setEnRouteDialogOpen] = useState(false);
     const [chatDialogOpen, setChatDialogOpen] = useState(false);
+
+    const [inProgressDialogOpen, setInProgressDialogOpen] = useState(false);
+    const isInProgress = currentRequest?.status === "in_progress";
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -183,6 +187,30 @@ export default function CyclistHomeComponent() {
                                 <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
                             </div>
                         </button>
+                    ) : isInProgress ? (
+                        <button
+                            type="button"
+                            onClick={() => setInProgressDialogOpen(true)}
+                            className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50">
+                                    <Wrench className="h-6 w-6 text-blue-600" />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-base font-semibold text-slate-900">
+                                        Service in progress
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        Your mechanic is working on your bicycle
+                                    </p>
+                                </div>
+
+                                <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+                            </div>
+                        </button>
                     ) : null}
                 </div>
             </div>
@@ -213,6 +241,14 @@ export default function CyclistHomeComponent() {
                 messages={messages}
                 onSendMessage={sendMessage}
                 isSending={isSending}
+            />
+
+            <CyclistServiceInProgressDialog
+                open={inProgressDialogOpen}
+                onOpenChange={setInProgressDialogOpen}
+                mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
+                    currentRequest?.mechanic?.user?.last_name ?? ""
+                }`.trim()}
             />
         </div>
     );
