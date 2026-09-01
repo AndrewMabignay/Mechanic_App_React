@@ -10,6 +10,8 @@ import CyclistMechanicEnRouteDialog from "../../service_request/components/Cycli
 import CyclistMechanicChatDialog from "../../service_request/components/CyclistMechanicChatDialog";
 import { useServiceChat } from "../../service_request/hooks/useServiceChat";
 import CyclistServiceInProgressDialog from "../../service_request/components/CyclistServiceInProgressDialog";
+import CyclistRateReviewDialog from "../../service_request/components/CyclistRateReviewDialog";
+import { useSubmitServiceRequestRating } from "../../service_request/hooks/useSubmitServiceRequestRating";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -53,7 +55,16 @@ export default function CyclistHomeComponent() {
     const [chatDialogOpen, setChatDialogOpen] = useState(false);
 
     const [inProgressDialogOpen, setInProgressDialogOpen] = useState(false);
+
     const isInProgress = currentRequest?.status === "in_progress";
+    const isCompleted = currentRequest?.status === "completed";
+
+    const [ratingSubmitted, setRatingSubmitted] = useState(false);
+
+    const rateReviewDialogOpen = isCompleted && !ratingSubmitted;
+
+    const { submitRating, isSubmitting: isSubmittingRating } =
+        useSubmitServiceRequestRating();
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -217,7 +228,7 @@ export default function CyclistHomeComponent() {
 
             {/* Finding Mechanic Dialog */}
             <CyclistFindingMechanicDialog
-                open={findingDialogOpen}
+                open={isPending && findingDialogOpen}
                 onOpenChange={setFindingDialogOpen}
                 serviceRequestUuid={currentRequest?.uuid ?? ""}
             />
@@ -249,6 +260,28 @@ export default function CyclistHomeComponent() {
                 mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
                     currentRequest?.mechanic?.user?.last_name ?? ""
                 }`.trim()}
+            />
+
+            <CyclistRateReviewDialog
+                open={rateReviewDialogOpen}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setRatingSubmitted(true);
+                    }
+                }}
+                mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
+                    currentRequest?.mechanic?.user?.last_name ?? ""
+                }`.trim()}
+                isSubmitting={isSubmittingRating}
+                onSubmit={async (rating, review) => {
+                    if (!currentRequest?.uuid) {
+                        return;
+                    }
+
+                    await submitRating(currentRequest.uuid, rating, review);
+
+                    setRatingSubmitted(true);
+                }}
             />
         </div>
     );
