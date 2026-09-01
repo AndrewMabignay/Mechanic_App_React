@@ -7,9 +7,22 @@ import CyclistRequestMechanicForm from "../../service_request/components/Cyclist
 import CyclistFindingMechanicDialog from "../../service_request/components/CyclistFindingMechanicDialog";
 import { useCyclistCurrentServiceRequest } from "../../service_request/hooks/useCyclistCurrentServiceRequest";
 import CyclistMechanicEnRouteDialog from "../../service_request/components/CyclistMechanicEnRouteDialog";
+import CyclistMechanicChatDialog from "../../service_request/components/CyclistMechanicChatDialog";
+import { useServiceChat } from "../../service_request/hooks/useServiceChat";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
+
+    const user = data?.user;
+
+    const { data: currentRequestResponse } = useCyclistCurrentServiceRequest();
+
+    const currentRequest = currentRequestResponse?.data;
+
+    const { messages, sendMessage, isSending } = useServiceChat(
+        currentRequest?.uuid,
+        user?.id,
+    );
 
     const [locationAddress, setLocationAddress] =
         useState("Loading address...");
@@ -19,11 +32,6 @@ export default function CyclistHomeComponent() {
 
     const latitude = Number(data?.default_location_lat);
     const longitude = Number(data?.default_location_lng);
-
-    const { data: currentRequestResponse, isLoading: isCurrentRequestLoading } =
-        useCyclistCurrentServiceRequest();
-
-    const currentRequest = currentRequestResponse?.data;
 
     const isPending = currentRequest?.status === "pending";
     const isAccepted = currentRequest?.status === "accepted";
@@ -41,6 +49,7 @@ export default function CyclistHomeComponent() {
         Number.isFinite(cyclistLatitude) && Number.isFinite(cyclistLongitude);
 
     const [enRouteDialogOpen, setEnRouteDialogOpen] = useState(false);
+    const [chatDialogOpen, setChatDialogOpen] = useState(false);
 
     useEffect(() => {
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
@@ -88,8 +97,6 @@ export default function CyclistHomeComponent() {
             </div>
         );
     }
-
-    const user = data?.user;
 
     if (!user) {
         return (
@@ -191,6 +198,21 @@ export default function CyclistHomeComponent() {
                 open={enRouteDialogOpen}
                 onOpenChange={setEnRouteDialogOpen}
                 mechanic={currentRequest?.mechanic}
+                onChatClick={() => {
+                    setEnRouteDialogOpen(false);
+                    setChatDialogOpen(true);
+                }}
+            />
+
+            <CyclistMechanicChatDialog
+                open={chatDialogOpen}
+                onOpenChange={setChatDialogOpen}
+                mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
+                    currentRequest?.mechanic?.user?.last_name ?? ""
+                }`.trim()}
+                messages={messages}
+                onSendMessage={sendMessage}
+                isSending={isSending}
             />
         </div>
     );

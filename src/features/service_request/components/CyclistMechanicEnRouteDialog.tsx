@@ -4,19 +4,21 @@ import {
     DialogHeader,
     DialogTitle,
 } from "../../../components/ui/dialog";
-import { MapPin, Phone, Star, Wrench } from "lucide-react";
+import { MapPin, MessageCircle, Phone, Star, Wrench } from "lucide-react";
 import type { MechanicProfile } from "../../mechanic/types/mechanicProfile";
 
 interface CyclistMechanicEnRouteDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     mechanic?: MechanicProfile;
+    onChatClick?: () => void;
 }
 
 export default function CyclistMechanicEnRouteDialog({
     open,
     onOpenChange,
     mechanic,
+    onChatClick,
 }: CyclistMechanicEnRouteDialogProps) {
     const mechanicName =
         `${mechanic?.user.first_name ?? ""} ${mechanic?.user.last_name ?? ""}`.trim() ||
@@ -92,6 +94,14 @@ export default function CyclistMechanicEnRouteDialog({
                         </div>
                     )}
                 </div>
+                <button
+                    type="button"
+                    onClick={onChatClick}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-medium text-white transition hover:bg-blue-700"
+                >
+                    <MessageCircle className="h-5 w-5" />
+                    Chat with Mechanic
+                </button>
             </DialogContent>
         </Dialog>
     );
