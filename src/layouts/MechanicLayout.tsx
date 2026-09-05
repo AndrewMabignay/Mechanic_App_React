@@ -3,10 +3,10 @@ import MechanicHeader from "../components/layout/MechanicHeader";
 
 export default function MechanicLayout() {
     return (
-        <div className="h-screen flex flex-col">
+        <div className="flex h-screen w-full min-w-0 flex-col overflow-x-hidden">
             <MechanicHeader />
 
-            <main className="flex-1">
+            <main className="min-w-0 flex-1 overflow-x-hidden">
                 <Outlet />
             </main>
         </div>

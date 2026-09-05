@@ -6,23 +6,23 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Search } from "lucide-react";
 import FlyToLocation from "../../features/cyclist/components/FlyToLocation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "../../components/ui/dialog";
 import RequestMechanicForm from "../../features/service_request/components/RequestMechanicForm";
-import FindingMechanicDialog from "../../features/service_request/components/FindingMechanicDialog";
 
 export default function RequestMechanic() {
     const [openFinding, setOpenFinding] = useState(false);
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [location, setLocation] = useState<[number, number]>([
-        14.6005,
-        120.9852,
+        14.6005, 120.9852,
     ]);
 
-    const [mechanic] = useState<[number, number]>([
-        14.6018,
-        120.9868,
-    ]);
+    const [mechanic] = useState<[number, number]>([14.6018, 120.9868]);
 
     const [results, setResults] = useState<any[]>([]);
 
@@ -31,8 +31,8 @@ export default function RequestMechanic() {
 
         const response = await fetch(
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-                query
-            )}&limit=5`
+                query,
+            )}&limit=5`,
         );
 
         const data = await response.json();
@@ -41,10 +41,7 @@ export default function RequestMechanic() {
     };
 
     const selectLocation = (item: any) => {
-        setLocation([
-            parseFloat(item.lat),
-            parseFloat(item.lon),
-        ]);
+        setLocation([parseFloat(item.lat), parseFloat(item.lon)]);
 
         setQuery(item.display_name);
         setResults([]);
@@ -64,11 +61,11 @@ export default function RequestMechanic() {
             try {
                 const response = await fetch(
                     `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-                        trimmed
+                        trimmed,
                     )}&limit=5`,
                     {
                         signal: controller.signal,
-                    }
+                    },
                 );
 
                 const data = await response.json();
@@ -88,7 +85,6 @@ export default function RequestMechanic() {
 
     return (
         <div className="relative h-full">
-            
             {/* Floating Button */}
             <div className="absolute bottom-4 left-4 right-4 z-[1000] flex justify-center">
                 <Button
@@ -99,7 +95,7 @@ export default function RequestMechanic() {
                 </Button>
             </div>
 
-           <div className="absolute top-4 left-4 right-4 z-[1000] mx-auto max-w-md">
+            <div className="absolute top-4 left-4 right-4 z-[1000] mx-auto max-w-md">
                 {/* <div className="flex gap-2">
                     <Input
                         placeholder="Search location..."
@@ -135,23 +131,14 @@ export default function RequestMechanic() {
             </div>
 
             {/* Map */}
-            <MapContainer
-                center={location}
-                zoom={17}
-                className="h-full w-full"
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+            <MapContainer center={location} zoom={17} className="h-full w-full">
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                 <FlyToLocation position={location} />
                 <Marker position={location} />
                 <Marker position={mechanic} />
 
-                <Routing
-                    mechanic={mechanic}
-                    cyclist={location}
-                />
+                <Routing mechanic={mechanic} cyclist={location} />
             </MapContainer>
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -178,15 +165,10 @@ export default function RequestMechanic() {
                 </DialogContent>
             </Dialog>
 
-            <Dialog
-                open={openFinding}
-                onOpenChange={setOpenFinding}
-            >
+            <Dialog open={openFinding} onOpenChange={setOpenFinding}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>
-                            Finding Mechanic
-                        </DialogTitle>
+                        <DialogTitle>Finding Mechanic</DialogTitle>
                     </DialogHeader>
 
                     <FindingMechanicDialog />

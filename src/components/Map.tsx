@@ -19,6 +19,7 @@ interface MapComponentProps {
     cyclistLongitude?: number;
 
     showRoute?: boolean;
+    showMechanicMarker?: boolean;
 
     onLocationSelect?: (latitude: number, longitude: number) => void;
 }
@@ -31,6 +32,7 @@ export default function MapComponent({
     cyclistLatitude,
     cyclistLongitude,
     showRoute = false,
+    showMechanicMarker = false,
     onLocationSelect,
 }: MapComponentProps) {
     const mapContainer = useRef<HTMLDivElement | null>(null);
@@ -169,7 +171,7 @@ export default function MapComponent({
         }
 
         if (
-            !showRoute ||
+            !showMechanicMarker ||
             typeof mechanicLatitude !== "number" ||
             typeof mechanicLongitude !== "number" ||
             !Number.isFinite(mechanicLatitude) ||
@@ -181,10 +183,6 @@ export default function MapComponent({
         }
 
         const mapInstance = map.current;
-
-        /*
-         * Create mechanic marker if it doesn't exist.
-         */
 
         if (!mechanicMarker.current) {
             mechanicMarker.current = new Marker({
@@ -198,7 +196,7 @@ export default function MapComponent({
                 mechanicLatitude,
             ]);
         }
-    }, [mechanicLatitude, mechanicLongitude, showRoute]);
+    }, [mechanicLatitude, mechanicLongitude, showMechanicMarker]);
 
     /**
      * ============================================================
@@ -206,7 +204,22 @@ export default function MapComponent({
      * ============================================================
      */
     useEffect(() => {
-        if (!map.current || !showRoute) {
+        if (!map.current) {
+            return;
+        }
+
+        const mapInstance = map.current;
+
+        // Remove route when route should no longer be displayed
+        if (!showRoute) {
+            if (mapInstance.getLayer(routeLayerId)) {
+                mapInstance.removeLayer(routeLayerId);
+            }
+
+            if (mapInstance.getSource(routeSourceId)) {
+                mapInstance.removeSource(routeSourceId);
+            }
+
             return;
         }
 
@@ -224,13 +237,10 @@ export default function MapComponent({
             return;
         }
 
-        // At this point TypeScript knows these are numbers
         const mechanicLat = mechanicLatitude;
         const mechanicLng = mechanicLongitude;
         const cyclistLat = cyclistLatitude;
         const cyclistLng = cyclistLongitude;
-
-        const mapInstance = map.current;
 
         let cancelled = false;
 
@@ -267,7 +277,7 @@ export default function MapComponent({
                         return;
                     }
 
-                    // Remove existing route
+                    // Remove existing route first
                     if (mapInstance.getLayer(routeLayerId)) {
                         mapInstance.removeLayer(routeLayerId);
                     }

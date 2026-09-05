@@ -5,6 +5,7 @@ export interface User {
     middle_name?: string;
     email: string;
     phone: string;
+    profile_picture?: string | null;
     role: "admin" | "cyclist" | "mechanic" | "bike_shop_owner" | "cyclist_mechanic";
 }
 

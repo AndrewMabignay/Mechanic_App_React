@@ -44,6 +44,8 @@ export interface ServiceRequest {
     parts_total: number;
     final_price: number;
 
+    review_prompt_dismissed: boolean;
+
     created_at: string;
     updated_at: string;
 

@@ -3,10 +3,10 @@ import CyclistHeader from "../components/layout/CyclistHeader";
 
 export default function CyclistLayout() {
     return (
-        <div className="h-screen flex flex-col">
+        <div className="flex h-screen w-full min-w-0 flex-col overflow-x-hidden">
             <CyclistHeader />
 
-            <main className="flex-1">
+            <main className="min-w-0 flex-1 overflow-x-hidden">
                 <Outlet />
             </main>
         </div>

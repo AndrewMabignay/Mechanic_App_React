@@ -40,7 +40,10 @@ export default function CyclistRateReviewDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-2xl">
+            <DialogContent
+                className="w-[calc(100%-2rem)] max-w-md rounded-2xl"
+                showCloseButton={false}
+            >
                 <DialogHeader>
                     <div className="flex flex-col items-center text-center">
                         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
@@ -125,14 +128,25 @@ export default function CyclistRateReviewDialog({
                     </div>
 
                     {/* Submit */}
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={rating === 0 || isSubmitting}
-                        className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {isSubmitting ? "Submitting..." : "Submit Rating"}
-                    </button>
+                    <div className="space-y-2">
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={rating === 0 || isSubmitting}
+                            className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {isSubmitting ? "Submitting..." : "Submit Rating"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => onOpenChange(false)}
+                            disabled={isSubmitting}
+                            className="w-full py-2 text-sm font-medium text-slate-500 transition hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Skip for now
+                        </button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

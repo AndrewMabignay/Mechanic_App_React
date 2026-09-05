@@ -20,6 +20,7 @@ import {
     Tag,
 } from "lucide-react";
 import CyclistProfile from "../features/cyclist/components/CyclistProfile";
+import MechanicProfile from "../features/mechanic/components/MechanicProfile";
 
 export default function Profile() {
     const role = localStorage.getItem("bike_mechanic_role");
@@ -29,7 +30,7 @@ export default function Profile() {
     }
 
     if (role === "mechanic") {
-        // return <MechanicProfile />;
+        return <MechanicProfile />;
     }
 
     return null;

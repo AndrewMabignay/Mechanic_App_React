@@ -36,6 +36,9 @@ export const personalInformationSchema = z.object({
         .string()
         .min(1, "Phone number is required")
         .max(20, "Phone number is too long"),
+    profile_picture: z
+        .instanceof(File)
+        .optional(),
 });
 
 export type PersonalInformationFormData = z.infer<typeof personalInformationSchema>;

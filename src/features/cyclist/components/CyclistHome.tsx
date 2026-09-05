@@ -12,6 +12,7 @@ import { useServiceChat } from "../../service_request/hooks/useServiceChat";
 import CyclistServiceInProgressDialog from "../../service_request/components/CyclistServiceInProgressDialog";
 import CyclistRateReviewDialog from "../../service_request/components/CyclistRateReviewDialog";
 import { useSubmitServiceRequestRating } from "../../service_request/hooks/useSubmitServiceRequestRating";
+import { useDismissReviewPrompt } from "../../service_request/hooks/useDismissReviewPrompt";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -59,9 +60,9 @@ export default function CyclistHomeComponent() {
     const isInProgress = currentRequest?.status === "in_progress";
     const isCompleted = currentRequest?.status === "completed";
 
-    const [ratingSubmitted, setRatingSubmitted] = useState(false);
-
-    const rateReviewDialogOpen = isCompleted && !ratingSubmitted;
+    const { dismissReviewPrompt } = useDismissReviewPrompt();
+    const rateReviewDialogOpen =
+        isCompleted && !currentRequest?.review_prompt_dismissed;
 
     const { submitRating, isSubmitting: isSubmittingRating } =
         useSubmitServiceRequestRating();
@@ -140,6 +141,7 @@ export default function CyclistHomeComponent() {
                     cyclistLongitude={
                         hasCyclistLocation ? cyclistLongitude : undefined
                     }
+                    showMechanicMarker={isAccepted || isEnRoute || isInProgress}
                     showRoute={isAccepted || isEnRoute}
                 />
             </div>
@@ -147,7 +149,7 @@ export default function CyclistHomeComponent() {
             {/* Bottom Container */}
             <div className="absolute inset-x-0 bottom-10 z-20 flex justify-center px-4">
                 <div className="w-full max-w-md">
-                    {!currentRequest ? (
+                    {!currentRequest || isCompleted ? (
                         <CyclistRequestMechanicForm />
                     ) : isPending ? (
                         <button
@@ -234,7 +236,7 @@ export default function CyclistHomeComponent() {
             />
 
             <CyclistMechanicEnRouteDialog
-                open={enRouteDialogOpen}
+                open={(isAccepted || isEnRoute) && enRouteDialogOpen}
                 onOpenChange={setEnRouteDialogOpen}
                 mechanic={currentRequest?.mechanic}
                 onChatClick={() => {
@@ -255,7 +257,7 @@ export default function CyclistHomeComponent() {
             />
 
             <CyclistServiceInProgressDialog
-                open={inProgressDialogOpen}
+                open={isInProgress && inProgressDialogOpen}
                 onOpenChange={setInProgressDialogOpen}
                 mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
                     currentRequest?.mechanic?.user?.last_name ?? ""
@@ -264,9 +266,9 @@ export default function CyclistHomeComponent() {
 
             <CyclistRateReviewDialog
                 open={rateReviewDialogOpen}
-                onOpenChange={(open) => {
-                    if (!open) {
-                        setRatingSubmitted(true);
+                onOpenChange={async (open) => {
+                    if (!open && currentRequest?.uuid) {
+                        await dismissReviewPrompt(currentRequest.uuid);
                     }
                 }}
                 mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
@@ -279,8 +281,6 @@ export default function CyclistHomeComponent() {
                     }
 
                     await submitRating(currentRequest.uuid, rating, review);
-
-                    setRatingSubmitted(true);
                 }}
             />
         </div>

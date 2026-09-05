@@ -97,10 +97,12 @@ export default function CyclistRequestMechanicForm() {
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button>
-                        <Wrench className="mr-2 h-4 w-4" />
-                        Request Mechanic
-                    </Button>
+                    <div className="flex justify-center items-center">
+                        <Button className="mx-auto w-fit">
+                            <Wrench className="mr-2 h-4 w-4" />
+                            Request Mechanic
+                        </Button>
+                    </div>
                 </DialogTrigger>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[550px]">
                     <DialogHeader>

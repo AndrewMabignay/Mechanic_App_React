@@ -1,93 +1,127 @@
 "use client";
 
-import { Bell, Bike, User } from "lucide-react";
+import { Bell, Bike, Menu, User } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "../ui/navigation-menu";
+
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+} from "../ui/navigation-menu";
+
 import { Button } from "../ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export default function MechanicHeader() {
     return (
-        <header className="border-b bg-background">
-        <div className="container mx-auto flex h-16 items-center justify-between">
+        <header className="w-full min-w-0 overflow-hidden border-b bg-background">
+            <div className="mx-auto flex h-16 w-full min-w-0 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                {/* Logo */}
+                <Link
+                    to="/mechanic"
+                    className="flex shrink-0 items-center gap-2 text-lg font-bold"
+                >
+                    <Bike className="h-5 w-5 shrink-0 text-orange-500" />
 
-            {/* Logo */}
-            <Link
-                to="/mechanic"
-                className="flex items-center gap-2 font-bold text-lg"
-            >
-                <Bike className="h-5 w-5 text-orange-500" />
-                BikeAssist
-            </Link>
-
-            {/* Navigation */}
-            <NavigationMenu>
-                <NavigationMenuList>
-
-                    <NavigationMenuItem>
-                        <NavigationMenuLink asChild>
-                            <NavLink to="/mechanic">Home</NavLink>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <NavigationMenuLink asChild>
-                            <NavLink to="/mechanic/incoming-request">Incoming Request</NavLink>
-                        </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                </NavigationMenuList>
-            </NavigationMenu>
-
-            {/* Right Side */}
-            <div className="flex items-center gap-3">
-
-            <Button asChild>
-                <Link to="/cyclist/request-mechanic">
-                    Request Mechanic
+                    <span className="hidden sm:inline">BikeAssist</span>
                 </Link>
-            </Button>
 
-            <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-            </Button>
+                {/* Desktop Navigation */}
+                <NavigationMenu className="hidden min-w-0 md:flex">
+                    <NavigationMenuList className="gap-1">
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild>
+                                <NavLink to="/mechanic">Home</NavLink>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
 
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                            <Bell className="h-5 w-5" />
-                        </Button>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink asChild>
+                                <NavLink to="/mechanic/incoming-request">
+                                    Incoming Request
+                                </NavLink>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
 
-                        <Button variant="ghost">
-                            <User className="mr-2 h-4 w-4" />
-                            John Andrew
-                        </Button>
-                    </div>
-                </DropdownMenuTrigger>
+                {/* Right Side */}
+                <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+                    {/* Notifications */}
+                    <Button variant="ghost" size="icon" className="shrink-0">
+                        <Bell className="h-5 w-5" />
+                    </Button>
 
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                        <Link to="/mechanic/profile">
-                            My Profile
-                        </Link>
-                    </DropdownMenuItem>
+                    {/* User Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                className="hidden shrink-0 sm:inline-flex"
+                            >
+                                <User className="mr-2 h-4 w-4" />
+                                <span className="hidden md:inline">
+                                    John Andrew
+                                </span>
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                    <DropdownMenuItem asChild>
-                        <Link to="/mechanic/settings">
-                            Settings
-                        </Link>
-                    </DropdownMenuItem>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic/profile">My Profile</Link>
+                            </DropdownMenuItem>
 
-                    <DropdownMenuItem>
-                        Logout
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic/settings">Settings</Link>
+                            </DropdownMenuItem>
 
+                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Mobile Menu */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="shrink-0 md:hidden"
+                            >
+                                <Menu className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic">Home</Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic/incoming-request">
+                                    Incoming Request
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic/profile">My Profile</Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem asChild>
+                                <Link to="/mechanic/settings">Settings</Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
-
-        </div>
         </header>
     );
 }
