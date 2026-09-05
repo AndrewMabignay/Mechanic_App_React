@@ -1,72 +1,99 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useResendOtp, useVerifyLoginOtp, useVerifyRegisterOtp } from "../../features/auth/hooks/useAuth";
+import {
+    useResendOtp,
+    useVerifyLoginOtp,
+    useVerifyRegisterOtp,
+} from "../../features/auth/hooks/useAuth";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { hasCyclistProfile } from "../../features/cyclist/api/cyclist-profile";
 import { hasMechanicProfile } from "../../features/mechanic/utils/mechanicProfile";
 
 export default function OtpVerificationPage() {
-
     const navigate = useNavigate();
     const location = useLocation();
 
     const { email, purpose } = location.state || {};
 
-    const [otp, setOtp] = useState<string[]>([
-        "", "", "", "", "", "",
-    ]);
+    const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
     const verifyLoginMutation = useVerifyLoginOtp();
     const verifyRegisterMutation = useVerifyRegisterOtp();
     const resendMutation = useResendOtp();
 
-    // OTP input change 
-    const handleOtpChange = (
-        value: string,
-        index: number
-    ) => {
+    // OTP input change
+    const handleOtpChange = (value: string, index: number) => {
+        // Remove non-numeric characters
+        const numbers = value.replace(/\D/g, "");
 
-        // numbers only
-        if (!/^[0-9]*$/.test(value)) return;
+        // If user pasted multiple digits
+        if (numbers.length > 1) {
+            const newOtp = [...otp];
+
+            numbers
+                .slice(0, 6 - index)
+                .split("")
+                .forEach((digit, i) => {
+                    newOtp[index + i] = digit;
+                });
+
+            setOtp(newOtp);
+
+            // Focus last filled input
+            const lastIndex = Math.min(index + numbers.length - 1, 5);
+
+            document.getElementById(`otp-${lastIndex}`)?.focus();
+
+            return;
+        }
+
+        // Normal single digit input
+        const newOtp = [...otp];
+        newOtp[index] = numbers;
+        setOtp(newOtp);
+
+        // Move to next input
+        if (numbers && index < 5) {
+            document.getElementById(`otp-${index + 1}`)?.focus();
+        }
+    };
+
+    const handlePaste = (
+        e: React.ClipboardEvent<HTMLInputElement>,
+        index: number,
+    ) => {
+        e.preventDefault();
+
+        const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
+
+        if (!pasted) return;
 
         const newOtp = [...otp];
 
-        newOtp[index] = value;
+        pasted
+            .slice(0, 6 - index)
+            .split("")
+            .forEach((digit, i) => {
+                newOtp[index + i] = digit;
+            });
 
         setOtp(newOtp);
 
-        // move next box
-        if (value && index < 5) {
+        const lastIndex = Math.min(index + pasted.length - 1, 5);
 
-            const nextInput =
-                document.getElementById(
-                    `otp-${index + 1}`
-                );
-
-            nextInput?.focus();
-        }
+        document.getElementById(`otp-${lastIndex}`)?.focus();
     };
 
     // Backspace behavior
     const handleKeyDown = (
         e: React.KeyboardEvent<HTMLInputElement>,
-        index: number
+        index: number,
     ) => {
-
-        if (
-            e.key === "Backspace" &&
-            !otp[index] &&
-            index > 0
-        ) {
-
-            const previousInput =
-                document.getElementById(
-                    `otp-${index - 1}`
-                );
+        if (e.key === "Backspace" && !otp[index] && index > 0) {
+            const previousInput = document.getElementById(`otp-${index - 1}`);
 
             previousInput?.focus();
-
         }
     };
 
@@ -77,13 +104,11 @@ export default function OtpVerificationPage() {
             let response;
 
             if (purpose === "login") {
-                
                 response = await verifyLoginMutation.mutateAsync({
                     email,
                     otp: otpCode,
                 });
             } else {
-
                 response = await verifyRegisterMutation.mutateAsync({
                     email,
                     otp: otpCode,
@@ -92,11 +117,14 @@ export default function OtpVerificationPage() {
 
             // SAVE AUTH DATA
             localStorage.setItem("bike_mechanic_token", response.token);
-            localStorage.setItem("bike_mechanic_user", JSON.stringify(response.user));
+            localStorage.setItem(
+                "bike_mechanic_user",
+                JSON.stringify(response.user),
+            );
             localStorage.setItem("bike_mechanic_role", response.user.role);
 
             // REDIRECT
-            switch(response.user.role) {
+            switch (response.user.role) {
                 case "cyclist": {
                     const hasProfile = await hasCyclistProfile();
 
@@ -131,7 +159,7 @@ export default function OtpVerificationPage() {
                 default:
                     navigate("/login");
             }
-        } catch(error) {
+        } catch (error) {
             console.error(error);
         }
     }
@@ -142,7 +170,7 @@ export default function OtpVerificationPage() {
                 email,
                 purpose,
             });
-        } catch(error) {
+        } catch (error) {
             console.error(error);
         }
     }
@@ -201,9 +229,7 @@ export default function OtpVerificationPage() {
                             mb-6
                         "
                     >
-
                         {otp.map((digit, index) => (
-
                             <Input
                                 key={index}
                                 id={`otp-${index}`}
@@ -218,22 +244,12 @@ export default function OtpVerificationPage() {
                                     font-bold
                                 "
                                 onChange={(e) =>
-                                    handleOtpChange(
-                                        e.target.value,
-                                        index
-                                    )
+                                    handleOtpChange(e.target.value, index)
                                 }
-                                onKeyDown={(e) =>
-                                    handleKeyDown(
-                                        e,
-                                        index
-                                    )
-                                }
+                                onPaste={(e) => handlePaste(e, index)}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
                             />
-
                         ))}
-
-
                     </div>
 
                     <Button
@@ -244,17 +260,11 @@ export default function OtpVerificationPage() {
                             verifyRegisterMutation.isPending
                         }
                     >
-
-                        {
-                            verifyLoginMutation.isPending ||
-                            verifyRegisterMutation.isPending
-                                ? "Verifying..."
-                                : "Verify OTP"
-                        }
-
+                        {verifyLoginMutation.isPending ||
+                        verifyRegisterMutation.isPending
+                            ? "Verifying..."
+                            : "Verify OTP"}
                     </Button>
-
-
 
                     <Button
                         variant="outline"
@@ -262,13 +272,7 @@ export default function OtpVerificationPage() {
                         onClick={handleResend}
                         disabled={resendMutation.isPending}
                     >
-
-                        {
-                            resendMutation.isPending
-                                ? "Sending..."
-                                : "Resend OTP"
-                        }
-
+                        {resendMutation.isPending ? "Sending..." : "Resend OTP"}
                     </Button>
                 </div>
             </div>
