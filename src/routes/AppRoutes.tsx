@@ -24,6 +24,7 @@ import MechanicHome from "../pages/mechanic/MechanicHome";
 import CyclistMap from "../pages/cylist/CyclistMap";
 import MechanicIncomingRequest from "../pages/mechanic/MechanicIncomingRequest";
 import Profile from "../pages/Profile";
+import HomeRedirect from "./HomeRedirect";
 
 const AppRoutes = () => {
     return (
@@ -152,6 +153,8 @@ const AppRoutes = () => {
                 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
                     <Route path="/admin/*" element={<AdminDashboard />} />
                 </Route>
+
+                <Route path="/" element={<HomeRedirect />} />
 
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
