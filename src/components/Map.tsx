@@ -70,6 +70,7 @@ export default function MapComponent({
             style: "https://tiles.openfreemap.org/styles/liberty",
             center: [longitude, latitude],
             zoom: 15,
+            attributionControl: false,
         });
 
         mapInstance.addControl(new NavigationControl(), "top-right");
