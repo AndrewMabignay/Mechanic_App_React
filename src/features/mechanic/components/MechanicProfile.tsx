@@ -96,6 +96,8 @@ export default function MechanicProfile() {
         user.last_name?.charAt(0) ?? ""
     }`;
 
+    console.log(user.profile_picture);
+
     return (
         <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#121212]">
             <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
@@ -120,9 +122,11 @@ export default function MechanicProfile() {
                                 <div className="flex min-w-0 items-end gap-3 sm:gap-4">
                                     <Avatar className="h-20 w-20 shrink-0 border-4 border-white shadow-md dark:border-[#1E1E1E] sm:h-24 sm:w-24">
                                         <AvatarImage
-                                            src={getImageUrl(
-                                                user.profile_picture,
-                                            )}
+                                            src={
+                                                getImageUrl(
+                                                    user.profile_picture,
+                                                ) ?? ""
+                                            }
                                             alt={fullName}
                                         />
 

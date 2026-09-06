@@ -1,3 +1,4 @@
+import type { CyclistProfile } from "../../cyclist/types/cyclist";
 import type { MechanicProfile } from "../../mechanic/types/mechanicProfile";
 
 export interface ServiceRequestImage {
@@ -51,7 +52,7 @@ export interface ServiceRequest {
 
     images: ServiceRequestImage[];
     bike_problem: BikeProblem;
-
+    cyclist: CyclistProfile;
     mechanic: MechanicProfile;
 }
 

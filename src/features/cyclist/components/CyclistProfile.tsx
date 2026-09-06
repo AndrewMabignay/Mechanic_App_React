@@ -15,6 +15,7 @@ import MapComponent from "../../../components/Map";
 import { useEffect, useState } from "react";
 import EditPersonalInformationDialog from "../../user/components/EditPersonalInformationDialog";
 import EditCyclistProfileDialog from "./EditCyclistProfileDialog";
+import { getImageUrl } from "../../../lib/imageUrl";
 
 export default function CyclistProfile() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -114,7 +115,11 @@ export default function CyclistProfile() {
                                 <div className="flex min-w-0 items-end gap-3 sm:gap-4">
                                     <Avatar className="h-20 w-20 shrink-0 border-4 border-white shadow-md dark:border-[#1E1E1E] sm:h-24 sm:w-24">
                                         <AvatarImage
-                                            src={user.profile_picture ?? ""}
+                                            src={
+                                                getImageUrl(
+                                                    user.profile_picture,
+                                                ) ?? ""
+                                            }
                                             alt={fullName}
                                         />
 
