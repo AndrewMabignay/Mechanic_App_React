@@ -6,10 +6,7 @@ type Props = {
     cyclist: [number, number];
 };
 
-export default function RoutePolyline({
-    mechanic,
-    cyclist,
-}: Props) {
+export default function RoutePolyline({ mechanic, cyclist }: Props) {
     const [route, setRoute] = useState<[number, number][]>([]);
 
     useEffect(() => {
@@ -26,10 +23,9 @@ export default function RoutePolyline({
 
                 if (data.routes.length === 0) return;
 
-                const coordinates =
-                    data.routes[0].geometry.coordinates.map(
-                        ([lng, lat]: [number, number]) => [lat, lng]
-                    );
+                const coordinates = data.routes[0].geometry.coordinates.map(
+                    ([lng, lat]: [number, number]) => [lat, lng],
+                );
 
                 setRoute(coordinates);
             } catch (error) {

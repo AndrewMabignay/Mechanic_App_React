@@ -7,12 +7,6 @@ import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import BikeShopOwnerLayout from "../layouts/BikeShopOwnerLayout";
-import Dashboard from "../pages/bike_shop_owner/Dashboard";
-import BikeShops from "../pages/bike_shop_owner/BikeShops";
-import BikeShopOwnerForm from "../pages/bike_shop_owner/bike_shops/BikeShopOwnerForm";
-import BikeShopView from "../pages/bike_shop_owner/bike_shops/BikeShopView";
-import BikeShopServiceIndex from "../pages/bike_shop_owner/bike_shop_services/BikeShopService";
 import RequestMechanic from "../pages/cylist/RequestMechanic";
 import CyclistLayout from "../layouts/CyclistLayout";
 import OtpVerificationPage from "../pages/auth/OtpVerificationPage";
@@ -22,7 +16,6 @@ import MechanicProfileForm from "../features/mechanic/components/MechanicProfile
 import CreateMechanicProfileRoute from "./CreateMechanicProfileRoute";
 import MechanicHome from "../pages/mechanic/MechanicHome";
 import CyclistMap from "../pages/cylist/CyclistMap";
-import MechanicIncomingRequest from "../pages/mechanic/MechanicIncomingRequest";
 import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
 
@@ -89,64 +82,8 @@ const AppRoutes = () => {
 
                     <Route element={<MechanicLayout />}>
                         <Route path="/mechanic" element={<MechanicHome />} />
-                        {/* <Route path="/mechanic/incoming-request" element={<IncomingRequest />} /> */}
-                        <Route
-                            path="/mechanic/incoming-request"
-                            element={<MechanicIncomingRequest />}
-                        />
-                        {/* <Route path="/mechanic/profile" element={<MechanicProfile />} /> */}
                         <Route path="/mechanic/profile" element={<Profile />} />
                     </Route>
-                </Route>
-
-                {/* Bike Shop Owner */}
-                <Route
-                    element={
-                        <ProtectedRoute allowedRoles={["bike_shop_owner"]} />
-                    }
-                >
-                    <Route element={<BikeShopOwnerLayout />}>
-                        <Route path="/shop/dashboard" element={<Dashboard />} />
-
-                        {/* BIKE SHOPS */}
-                        <Route
-                            path="/shop/bike-shops"
-                            element={<BikeShops />}
-                        />
-                        <Route
-                            path="/shop/bike-shops/create"
-                            element={<BikeShopOwnerForm />}
-                        />
-
-                        <Route
-                            path="/shop/bike-shops/:uuid"
-                            element={<BikeShopView />}
-                        />
-
-                        <Route
-                            path="/shop/bike-shops/:uuid/edit"
-                            element={<BikeShopOwnerForm />}
-                        />
-
-                        {/* BIKE SHOP SERVICES */}
-                        <Route
-                            path="/shop/bike-shop-services"
-                            element={<BikeShopServiceIndex />}
-                        />
-
-                        <Route
-                            path="/shop/service-requests"
-                            element={<BikeShops />}
-                        />
-
-                        <Route
-                            path="/shop/notifications"
-                            element={<BikeShops />}
-                        />
-
-                        <Route path="/shop/profile" element={<BikeShops />} />
-                    </Route>
-                    {/* <Route path="/shop/*" element={<CyclistHome />} /> */}
                 </Route>
 
                 {/* Administrator */}

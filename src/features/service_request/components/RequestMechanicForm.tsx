@@ -1,24 +1,31 @@
-"use client"
+"use client";
 
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useCreateServiceRequest } from "../hooks/useServiceRequest"
-import { serviceRequestSchema, type ServiceRequestFormData } from "../schemas/serviceRequestSchema";
+import { useCreateServiceRequest } from "../hooks/useServiceRequest";
+import {
+    serviceRequestSchema,
+    type ServiceRequestFormData,
+} from "../schemas/serviceRequestSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CardContent } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
-import { useBikeProblems } from "../../bike_problem/hooks/useBikeProblem";
 import { Field, FieldError, FieldLabel } from "../../../components/ui/field";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../../../components/ui/select";
 import LocationPicker from "../../../components/maps/LocationPicker";
+import { useBikeProblemOptions } from "../hooks/useBikeProblem";
 
 interface Props {
     onSuccess?: () => void;
 }
 
-export default function RequestMechanicForm({
-    onSuccess
-}: Props) {
-    const { data: bikeProblems } = useBikeProblems();
+export default function RequestMechanicForm({ onSuccess }: Props) {
+    const { data: bikeProblems } = useBikeProblemOptions();
     const form = useForm<ServiceRequestFormData>({
         resolver: zodResolver(serviceRequestSchema),
         defaultValues: {
@@ -26,7 +33,7 @@ export default function RequestMechanicForm({
             description: "",
             location_lat: 14.4646,
             location_lng: 121.1929,
-        }
+        },
     });
 
     const latitude = useWatch({
@@ -62,7 +69,7 @@ export default function RequestMechanicForm({
             {
                 enableHighAccuracy: true,
                 timeout: 10000,
-            }
+            },
         );
     };
 
@@ -86,7 +93,6 @@ export default function RequestMechanicForm({
                 id="form-rhf-service-request"
                 onSubmit={form.handleSubmit(onSubmit)}
             >
-
                 {/* Bike Problem Id */}
                 <Controller
                     control={form.control}
@@ -97,7 +103,9 @@ export default function RequestMechanicForm({
 
                             <Select
                                 value={field.value ? String(field.value) : ""}
-                                onValueChange={(value) => field.onChange(Number(value))}
+                                onValueChange={(value) =>
+                                    field.onChange(Number(value))
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a bike problem" />
@@ -116,7 +124,9 @@ export default function RequestMechanicForm({
                             </Select>
 
                             <FieldError
-                                errors={fieldState.error ? [fieldState.error] : []}
+                                errors={
+                                    fieldState.error ? [fieldState.error] : []
+                                }
                             />
                         </Field>
                     )}
@@ -168,7 +178,7 @@ export default function RequestMechanicForm({
                     />
 
                     {(form.formState.errors.location_lat ||
-                    form.formState.errors.location_lng) && (
+                        form.formState.errors.location_lng) && (
                         <FieldError
                             errors={[
                                 form.formState.errors.location_lat,

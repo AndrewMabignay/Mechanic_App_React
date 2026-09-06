@@ -1,11 +1,11 @@
 import { Bike, MapPin, Wrench } from "lucide-react";
 import MapComponent from "../../../components/Map";
 import { useCurrentLocation } from "../../../hooks/useCurrentLocation";
-import { useAcceptServiceRequest } from "../../service_request/hooks/useAcceptServiceRequest";
 import { useIncomingRequests } from "../../service_request/hooks/useIncomingRequests";
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import MechanicCyclistInfoDialog from "../../service_request/components/MechanicCyclistInfoDialog";
+import { useAcceptServiceRequest } from "../../service_request/hooks/useMechanicCurrentServiceRequest";
 
 export default function MechanicHomeComponent() {
     const { data, isLoading } = useIncomingRequests();
@@ -36,7 +36,6 @@ export default function MechanicHomeComponent() {
 
     const requests = data?.data ?? [];
     const incomingRequest = requests[0];
-    console.log(incomingRequest?.service_request?.cyclist?.user?.first_name);
 
     const handleAccept = async () => {
         if (!incomingRequest?.uuid) {

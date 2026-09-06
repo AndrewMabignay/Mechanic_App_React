@@ -1,11 +1,10 @@
-import { Bike, MapPin, Phone, User, Wrench } from "lucide-react";
+import { Bike, MapPin, Phone, Wrench } from "lucide-react";
 
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
-    DialogTitle,
 } from "../../../components/ui/dialog";
 
 import { Button } from "../../../components/ui/button";
@@ -33,12 +32,6 @@ export default function MechanicCyclistInfoDialog({
     }
 
     const cyclist = request.service_request?.cyclist?.user;
-
-    console.log(
-        request.service_request.images.map((image, index) =>
-            getImageUrl(image.image_path),
-        ),
-    );
 
     const cyclistName =
         `${cyclist?.first_name ?? ""} ${cyclist?.last_name ?? ""}`.trim() ||

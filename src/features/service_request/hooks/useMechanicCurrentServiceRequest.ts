@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMechanicCurrentServiceRequest } from "../api/mechanicCurrentServiceRequestApi";
+import { acceptServiceRequest } from "../api/statusServiceRequestApi";
 
 export function useMechanicCurrentServiceRequest(enabled = true) {
     return useQuery({
@@ -9,5 +10,22 @@ export function useMechanicCurrentServiceRequest(enabled = true) {
 
         // Optional: para sa live tracking
         refetchInterval: 3000,
+    });
+}
+
+export function useAcceptServiceRequest() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: acceptServiceRequest,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["incoming-requests"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["current-service-request"],
+            });
+        },
     });
 }
