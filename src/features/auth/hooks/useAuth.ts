@@ -1,5 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { login, register, resendOtp, verifyLoginOtp, verifyRegisterOtp } from "../api/authApi";
+import {
+    login,
+    logout,
+    register,
+    resendOtp,
+    verifyLoginOtp,
+    verifyRegisterOtp,
+} from "../api/authApi";
 
 export const useLogin = () => {
     return useMutation({
@@ -31,5 +38,12 @@ export const useVerifyRegisterOtp = () => {
 export const useResendOtp = () => {
     return useMutation({
         mutationFn: resendOtp,
+    });
+};
+
+// Logout
+export const useLogout = () => {
+    return useMutation({
+        mutationFn: logout,
     });
 };

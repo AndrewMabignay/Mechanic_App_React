@@ -1,10 +1,17 @@
 import api from "../../../api/axios";
-import type { LoginFormData, LoginResponse, MessageResponse, RegisterFormData, RegisterResponse, ResendOtpData, VerifyOtpData, VerifyOtpResponse } from "../types/types";
+import type {
+    LoginFormData,
+    LoginResponse,
+    MessageResponse,
+    RegisterFormData,
+    RegisterResponse,
+    ResendOtpData,
+    VerifyOtpData,
+    VerifyOtpResponse,
+} from "../types/types";
 
 // Login
-export const login = async (
-    data: LoginFormData
-): Promise<LoginResponse> => {
+export const login = async (data: LoginFormData): Promise<LoginResponse> => {
     const response = await api.post("/login", data);
 
     return response.data;
@@ -12,7 +19,7 @@ export const login = async (
 
 // Register
 export const register = async (
-    data: RegisterFormData
+    data: RegisterFormData,
 ): Promise<RegisterResponse> => {
     const response = await api.post("/register", data);
 
@@ -21,7 +28,7 @@ export const register = async (
 
 // Verify Register OTP
 export const verifyRegisterOtp = async (
-    data: VerifyOtpData
+    data: VerifyOtpData,
 ): Promise<VerifyOtpResponse> => {
     const response = await api.post("/register/verify-otp", data);
 
@@ -30,7 +37,7 @@ export const verifyRegisterOtp = async (
 
 // Verify Login OTP
 export const verifyLoginOtp = async (
-    data: VerifyOtpData
+    data: VerifyOtpData,
 ): Promise<VerifyOtpResponse> => {
     const response = await api.post("/login/verify-otp", data);
 
@@ -39,9 +46,15 @@ export const verifyLoginOtp = async (
 
 // Resend OTP
 export const resendOtp = async (
-    data: ResendOtpData
+    data: ResendOtpData,
 ): Promise<MessageResponse> => {
     const response = await api.post("/resend-otp", data);
+
+    return response.data;
+};
+
+export const logout = async (): Promise<MessageResponse> => {
+    const response = await api.post("/logout");
 
     return response.data;
 };

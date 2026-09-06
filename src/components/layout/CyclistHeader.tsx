@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, Bike, Menu, User } from "lucide-react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -15,8 +15,24 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useLogout } from "../../features/auth/hooks/useAuth";
+import { clearAuthData } from "../../features/auth/utils/auth";
 
 export default function CyclistHeader() {
+    const navigate = useNavigate();
+    const logoutMutation = useLogout();
+
+    const handleLogout = async () => {
+        try {
+            await logoutMutation.mutateAsync();
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            clearAuthData();
+            navigate("/login", { replace: true });
+        }
+    };
+
     return (
         <header className="w-full min-w-0 overflow-hidden border-b bg-background">
             <div className="mx-auto flex h-16 w-full min-w-0 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -71,7 +87,14 @@ export default function CyclistHeader() {
                                 <Link to="/cyclist/settings">Settings</Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={handleLogout}
+                                disabled={logoutMutation.isPending}
+                            >
+                                {logoutMutation.isPending
+                                    ? "Logging out..."
+                                    : "Logout"}
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
@@ -106,7 +129,14 @@ export default function CyclistHeader() {
                                 <Link to="/mechanic/settings">Settings</Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={handleLogout}
+                                disabled={logoutMutation.isPending}
+                            >
+                                {logoutMutation.isPending
+                                    ? "Logging out..."
+                                    : "Logout"}
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
