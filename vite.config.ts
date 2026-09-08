@@ -18,6 +18,22 @@ export default defineConfig({
     //         },
     //     },
     // },
+    // server: {
+    //     host: "0.0.0.0",
+    //     port: 5173,
+
+    //     allowedHosts: [".trycloudflare.com"],
+
+    //     proxy: {
+    //         "/api": {
+    //             target: "http://127.0.0.1:8000",
+    //             changeOrigin: true,
+    //             headers: {
+    //                 Accept: "application/json",
+    //             },
+    //         },
+    //     },
+    // },
     server: {
         host: "0.0.0.0",
         port: 5173,
@@ -26,7 +42,7 @@ export default defineConfig({
 
         proxy: {
             "/api": {
-                target: "http://127.0.0.1:8000",
+                target: "https://bike-mechanic-api.onrender.com",
                 changeOrigin: true,
                 headers: {
                     Accept: "application/json",
