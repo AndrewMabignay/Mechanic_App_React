@@ -1,11 +1,10 @@
-import { Bike, MapPin, Navigation, Wrench } from "lucide-react";
+import { Navigation } from "lucide-react";
 import MapComponent, {
     type NavigationInstruction,
 } from "../../../components/Map";
 import { useCurrentLocation } from "../../../hooks/useCurrentLocation";
 import { useIncomingRequests } from "../../service_request/hooks/useIncomingRequests";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "../../../components/ui/button";
 import MechanicCyclistInfoDialog from "../../service_request/components/MechanicCyclistInfoDialog";
 import {
     useAcceptServiceRequest,
@@ -20,6 +19,8 @@ import CyclistMechanicChatDialog from "../../service_request/components/CyclistM
 import { getDirectionLabel } from "../../service_request/helpers/navigation";
 import { useUpdateMechanicLocation } from "../hooks/useUpdateMechanicLocation";
 import { calculateDistanceInMeters } from "../helpers/location";
+import MechanicProfileContainer from "./MechanicProfileContainer";
+import MechanicIncomingRequestContainer from "@/features/service_request/components/MechanicIncomingRequestContainer";
 
 export default function MechanicHomeComponent() {
     const {
@@ -37,6 +38,7 @@ export default function MechanicHomeComponent() {
     const { data: currentRequestResponse } = useMechanicCurrentServiceRequest();
 
     const currentRequest = currentRequestResponse?.data;
+    console.log(currentRequest);
 
     const isAccepted = currentRequest?.status === "accepted";
     const isEnRoute = currentRequest?.status === "en_route";
@@ -177,8 +179,8 @@ export default function MechanicHomeComponent() {
                     mechanicLongitude={location.longitude}
                     cyclistLatitude={currentRequest?.location_lat}
                     cyclistLongitude={currentRequest?.location_lng}
-                    showRoute={isEnRoute}
-                    showMechanicMarker={isEnRoute}
+                    showRoute={isAccepted || isEnRoute}
+                    showMechanicMarker={isAccepted || isEnRoute}
                     followMechanic={isEnRoute}
                     onDirectionChange={setCurrentDirection}
                 />
@@ -237,93 +239,17 @@ export default function MechanicHomeComponent() {
                             isEnRoutePending={false}
                         />
                     ) : incomingRequest ? (
-                        <div className="rounded-2xl border bg-white p-5 shadow-xl">
-                            {/* Header */}
-                            <div className="mb-4 flex items-center gap-3">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-50">
-                                    <Bike className="h-6 w-6 text-orange-500" />
-                                </div>
-
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-base font-semibold text-slate-900">
-                                        New Service Request
-                                    </p>
-
-                                    <p className="mt-1 text-sm text-slate-500">
-                                        A cyclist nearby needs assistance
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Cyclist Information */}
-                            <div className="flex items-center gap-3 rounded-xl border p-3">
-                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50">
-                                    <MapPin className="h-5 w-5 text-orange-500" />
-                                </div>
-
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-slate-900">
-                                        {
-                                            incomingRequest?.service_request
-                                                ?.cyclist?.user?.first_name
-                                        }{" "}
-                                        {
-                                            incomingRequest?.service_request
-                                                ?.cyclist?.user?.last_name
-                                        }
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-orange-500">
-                                        Nearby cyclist
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Bike Problem */}
-                            {incomingRequest?.service_request?.bike_problem && (
-                                <div className="mt-3 flex items-center gap-3 rounded-xl border p-3">
-                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50">
-                                        <Wrench className="h-4 w-4 text-orange-500" />
-                                    </div>
-
-                                    <div>
-                                        <p className="text-xs text-slate-500">
-                                            Bike Problem
-                                        </p>
-
-                                        <p className="text-sm font-medium text-slate-900">
-                                            {
-                                                incomingRequest?.service_request
-                                                    ?.bike_problem?.name
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Actions */}
-                            <div className="mt-4 flex gap-3">
-                                <Button
-                                    type="button"
-                                    onClick={() => setCyclistInfoOpen(true)}
-                                    className="flex-1 rounded-lg border border-orange-500 bg-white px-4 py-5 text-sm font-medium text-orange-500 transition hover:bg-orange-50"
-                                >
-                                    View Details
-                                </Button>
-
-                                <Button
-                                    type="button"
-                                    onClick={handleAccept}
-                                    disabled={acceptMutation.isPending}
-                                    className="flex-1 rounded-lg bg-orange-400 px-4 py-5 text-sm font-semibold text-white transition hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                    {acceptMutation.isPending
-                                        ? "Accepting..."
-                                        : "Accept Request"}
-                                </Button>
-                            </div>
-                        </div>
-                    ) : null}
+                        <MechanicIncomingRequestContainer
+                            request={incomingRequest}
+                            onViewDetails={() => setCyclistInfoOpen(true)}
+                            onAccept={handleAccept}
+                            isAccepting={acceptMutation.isPending}
+                        />
+                    ) : (
+                        <MechanicProfileContainer
+                            profile={mechanicProfile?.data}
+                        />
+                    )}
                 </div>
             </div>
 

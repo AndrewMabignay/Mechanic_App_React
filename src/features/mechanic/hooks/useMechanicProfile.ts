@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createMechanicProfile, getMechanicProfile, updateMechanicProfile } from "../api/mechanicProfileApi";
+import {
+    createMechanicProfile,
+    getMechanicProfile,
+    updateMechanicAvailability,
+    updateMechanicProfile,
+} from "../api/mechanicProfileApi";
 import type { CreateAndUpdateMechanicProfileFormData } from "../types/mechanicProfile";
 
 // DISPLAY MECHANIC PROFILE
@@ -15,7 +20,8 @@ export const useCreateMechanicProfile = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CreateAndUpdateMechanicProfileFormData) => createMechanicProfile(data),
+        mutationFn: (data: CreateAndUpdateMechanicProfileFormData) =>
+            createMechanicProfile(data),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -35,7 +41,7 @@ export const useUpdateMechanicProfile = () => {
             data,
         }: {
             uuid: string;
-            data: Partial<CreateAndUpdateMechanicProfileFormData>
+            data: Partial<CreateAndUpdateMechanicProfileFormData>;
         }) => updateMechanicProfile(uuid, data),
 
         onSuccess: () => {
@@ -45,3 +51,17 @@ export const useUpdateMechanicProfile = () => {
         },
     });
 };
+
+// Handles updating the mechanic's availability status.
+export function useUpdateMechanicAvailability() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (uuid: string) => updateMechanicAvailability(uuid),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["mechanic-profile"],
+            });
+        },
+    });
+}

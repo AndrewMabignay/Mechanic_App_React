@@ -1,16 +1,16 @@
 import type { User } from "../../user/types/user";
 
 // Data from the API
-export interface MechanicProfile { 
+export interface MechanicProfile {
     id: number;
     uuid: string;
     user_id: number;
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
     skill_description: string;
     specializations: string[];
-    years_experience: string;
-    is_available: string;
+    years_experience: number;
+    is_available: boolean;
     rating: number;
     total_jobs: number;
     created_at: string;

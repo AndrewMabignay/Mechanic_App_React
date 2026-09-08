@@ -121,6 +121,12 @@ export default function MapComponent({
     const mapContainer = useRef<HTMLDivElement | null>(null);
     const map = useRef<Map | null>(null);
 
+    const onLocationSelectRef = useRef(onLocationSelect);
+
+    useEffect(() => {
+        onLocationSelectRef.current = onLocationSelect;
+    }, [onLocationSelect]);
+
     const cyclistMarker = useRef<Marker | null>(null);
     const mechanicMarker = useRef<Marker | null>(null);
     const mechanicCone = useRef<HTMLDivElement | null>(null);
@@ -161,11 +167,9 @@ export default function MapComponent({
 
         mapInstance.addControl(new NavigationControl(), "top-right");
 
-        /*
-         * ========================================================
-         * CYCLIST MARKER
-         * ========================================================
-         */
+        // ========================================================
+        // CYCLIST MARKER
+        // ========================================================
 
         const cyclistLat =
             typeof cyclistLatitude === "number" &&
@@ -187,11 +191,9 @@ export default function MapComponent({
 
         cyclistMarker.current = cyclistMarkerInstance;
 
-        /*
-         * ========================================================
-         * LOCATION PICKER
-         * ========================================================
-         */
+        // ========================================================
+        // LOCATION PICKER
+        // ========================================================
 
         if (onLocationSelect) {
             mapInstance.on("click", (event) => {
@@ -208,7 +210,10 @@ export default function MapComponent({
                     selectedLatitude,
                 ]);
 
-                onLocationSelect(selectedLatitude, selectedLongitude);
+                onLocationSelectRef.current?.(
+                    selectedLatitude,
+                    selectedLongitude,
+                );
             });
         }
 
@@ -223,7 +228,27 @@ export default function MapComponent({
             mechanicCone.current = null;
             previousMechanicLocation.current = null;
         };
-    }, [onLocationSelect]);
+    }, []);
+
+    useEffect(() => {
+        if (!map.current || !cyclistMarker.current) {
+            return;
+        }
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+            return;
+        }
+
+        const mapInstance = map.current;
+
+        cyclistMarker.current.setLngLat([longitude, latitude]);
+
+        mapInstance.easeTo({
+            center: [longitude, latitude],
+            duration: 800,
+            essential: true,
+        });
+    }, [latitude, longitude]);
 
     /*
      * ============================================================

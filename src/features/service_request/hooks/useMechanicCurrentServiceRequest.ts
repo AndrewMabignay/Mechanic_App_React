@@ -25,9 +25,8 @@ export function useAcceptServiceRequest() {
             queryClient.invalidateQueries({
                 queryKey: ["incoming-requests"],
             });
-
             queryClient.invalidateQueries({
-                queryKey: ["current-service-request"],
+                queryKey: ["mechanic-current-service-request"],
             });
         },
     });
@@ -42,9 +41,8 @@ export function useEnRouteServiceRequest() {
             queryClient.invalidateQueries({
                 queryKey: ["incoming-requests"],
             });
-
             queryClient.invalidateQueries({
-                queryKey: ["current-service-request"],
+                queryKey: ["mechanic-current-service-request"],
             });
         },
     });
