@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronRight, Loader2, MapPin, Wrench } from "lucide-react";
 
 import MapComponent from "../../../components/Map";
@@ -26,12 +26,12 @@ export default function CyclistHomeComponent() {
     const { messages, sendMessage, isSending } = useServiceChat(
         currentRequest?.uuid,
         user?.id,
+        "cyclist",
     );
 
-    const [locationAddress, setLocationAddress] =
-        useState("Loading address...");
+    // const [locationAddress, setLocationAddress] =
+    //     useState("Loading address...");
 
-    const [requestSubmitted, setRequestSubmitted] = useState(false);
     const [findingDialogOpen, setFindingDialogOpen] = useState(false);
 
     const latitude = Number(data?.default_location_lat);
@@ -67,34 +67,34 @@ export default function CyclistHomeComponent() {
     const { submitRating, isSubmitting: isSubmittingRating } =
         useSubmitServiceRequestRating();
 
-    useEffect(() => {
-        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-            return;
-        }
+    // useEffect(() => {
+    //     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    //         return;
+    //     }
 
-        const fetchAddress = async () => {
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-                );
+    //     const fetchAddress = async () => {
+    //         try {
+    //             const response = await fetch(
+    //                 `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+    //             );
 
-                if (!response.ok) {
-                    throw new Error("Failed to get address");
-                }
+    //             if (!response.ok) {
+    //                 throw new Error("Failed to get address");
+    //             }
 
-                const result = await response.json();
+    //             const result = await response.json();
 
-                setLocationAddress(
-                    result.display_name || "Address not available",
-                );
-            } catch (error) {
-                console.error("Reverse geocoding error:", error);
-                setLocationAddress("Address not available");
-            }
-        };
+    //             setLocationAddress(
+    //                 result.display_name || "Address not available",
+    //             );
+    //         } catch (error) {
+    //             console.error("Reverse geocoding error:", error);
+    //             setLocationAddress("Address not available");
+    //         }
+    //     };
 
-        fetchAddress();
-    }, [latitude, longitude]);
+    //     fetchAddress();
+    // }, [latitude, longitude]);
 
     if (isLoading) {
         return (
@@ -245,10 +245,22 @@ export default function CyclistHomeComponent() {
                 }}
             />
 
-            <CyclistMechanicChatDialog
+            {/* <CyclistMechanicChatDialog
                 open={chatDialogOpen}
                 onOpenChange={setChatDialogOpen}
                 mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
+                    currentRequest?.mechanic?.user?.last_name ?? ""
+                }`.trim()}
+                messages={messages}
+                onSendMessage={sendMessage}
+                isSending={isSending}
+            /> */}
+
+            <CyclistMechanicChatDialog
+                open={chatDialogOpen}
+                onOpenChange={setChatDialogOpen}
+                currentUserRole="cyclist"
+                otherUserName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
                     currentRequest?.mechanic?.user?.last_name ?? ""
                 }`.trim()}
                 messages={messages}

@@ -7,7 +7,6 @@ import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import RequestMechanic from "../pages/cylist/RequestMechanic";
 import CyclistLayout from "../layouts/CyclistLayout";
 import OtpVerificationPage from "../pages/auth/OtpVerificationPage";
 import CyclistProfileForm from "../features/cyclist/components/CyclistProfileForm";
@@ -55,11 +54,6 @@ const AppRoutes = () => {
                         />
                         {/* <Route path="/cyclist/profile" element={<CyclistProfile />} /> */}
                         <Route path="/cyclist/profile" element={<Profile />} />
-
-                        <Route
-                            path="/cyclist/request-mechanic"
-                            element={<RequestMechanic />}
-                        />
                     </Route>
                 </Route>
 

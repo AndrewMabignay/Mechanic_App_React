@@ -8,8 +8,11 @@ import {
 } from "../../../components/ui/dialog";
 
 import { Button } from "../../../components/ui/button";
-import type { IncomingRequest } from "../types/incomingRequest";
+
+import type { ServiceRequest } from "../types/serviceRequest";
+
 import { getImageUrl } from "../../../lib/imageUrl";
+
 import {
     Avatar,
     AvatarFallback,
@@ -19,7 +22,7 @@ import {
 interface MechanicCyclistInfoDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    request?: IncomingRequest;
+    request?: ServiceRequest;
 }
 
 export default function MechanicCyclistInfoDialog({
@@ -31,24 +34,25 @@ export default function MechanicCyclistInfoDialog({
         return null;
     }
 
-    const cyclist = request.service_request?.cyclist?.user;
+    const cyclist = request.cyclist?.user;
 
     const cyclistName =
         `${cyclist?.first_name ?? ""} ${cyclist?.last_name ?? ""}`.trim() ||
         "Unknown Cyclist";
 
-    const cyclistInitials = `${cyclist?.first_name?.charAt(0) ?? ""}${
-        cyclist?.last_name?.charAt(0) ?? ""
-    }`;
+    const cyclistInitials =
+        `${cyclist?.first_name?.charAt(0) ?? ""}${cyclist?.last_name?.charAt(0) ?? ""}` ||
+        "C";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[400px] p-4">
+            <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:max-w-[400px]">
                 <DialogHeader className="p-2">
                     <h2 className="text-base font-semibold text-slate-900">
                         Cyclist Information
                     </h2>
-                    <DialogDescription className="text text-slate-500">
+
+                    <DialogDescription className="text-slate-500">
                         Review the cyclist's information and service request
                         details.
                     </DialogDescription>
@@ -58,16 +62,16 @@ export default function MechanicCyclistInfoDialog({
                     {/* Cyclist Profile */}
                     <div className="box-border flex w-full min-w-0 max-w-full items-center gap-4 rounded-xl border p-3">
                         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange-50">
-                            <Avatar className="h-18 w-18 shrink-0 border dark:border-[#1E1E1E] sm:h-18 sm:w-18">
+                            <Avatar className="h-14 w-14 shrink-0 border">
                                 <AvatarImage
                                     src={
-                                        getImageUrl(cyclist.profile_picture) ??
+                                        getImageUrl(cyclist?.profile_picture) ??
                                         ""
                                     }
                                     alt={cyclistName}
                                 />
 
-                                <AvatarFallback className="bg-[#F8FAFC] text-lg font-semibold text-[#374151] dark:bg-[#252525] dark:text-[#F9FAFB] sm:text-2xl">
+                                <AvatarFallback className="bg-[#F8FAFC] text-lg font-semibold text-[#374151]">
                                     {cyclistInitials}
                                 </AvatarFallback>
                             </Avatar>
@@ -106,7 +110,7 @@ export default function MechanicCyclistInfoDialog({
                     )}
 
                     {/* Bike Problem */}
-                    {request.service_request?.bike_problem && (
+                    {request.bike_problem && (
                         <div className="box-border flex w-full min-w-0 max-w-full items-center gap-3 rounded-lg border p-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50">
                                 <Wrench className="h-5 w-5 text-orange-500" />
@@ -118,7 +122,7 @@ export default function MechanicCyclistInfoDialog({
                                 </p>
 
                                 <p className="truncate text-xs text-slate-500">
-                                    {request.service_request.bike_problem.name}
+                                    {request.bike_problem.name}
                                 </p>
                             </div>
                         </div>
@@ -141,39 +145,34 @@ export default function MechanicCyclistInfoDialog({
                         </div>
                     </div>
 
-                    {/* Images */}
-                    {request.service_request?.images &&
-                        request.service_request.images.length > 0 && (
-                            <div className="box-border w-full min-w-0 max-w-full rounded-lg border p-3">
-                                <div className="mb-2 flex items-center gap-2">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50">
-                                        <Bike className="h-4 w-4 text-orange-500" />
-                                    </div>
-
-                                    <p className="text-sm font-medium text-slate-900">
-                                        Bike Photos
-                                    </p>
+                    {/* Bike Photos */}
+                    {request.images && request.images.length > 0 && (
+                        <div className="box-border w-full min-w-0 max-w-full rounded-lg border p-3">
+                            <div className="mb-2 flex items-center gap-2">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50">
+                                    <Bike className="h-4 w-4 text-orange-500" />
                                 </div>
 
-                                <div className="flex w-full min-w-0 gap-2 overflow-x-auto pb-1">
-                                    {request.service_request.images.map(
-                                        (image, index) => (
-                                            <img
-                                                key={image.id ?? index}
-                                                src={getImageUrl(
-                                                    image.image_path,
-                                                )}
-                                                alt={`Bike photo ${index + 1}`}
-                                                className="h-24 w-24 shrink-0 rounded-lg border object-cover"
-                                            />
-                                        ),
-                                    )}
-                                </div>
+                                <p className="text-sm font-medium text-slate-900">
+                                    Bike Photos
+                                </p>
                             </div>
-                        )}
+
+                            <div className="flex w-full min-w-0 gap-2 overflow-x-auto pb-1">
+                                {request.images.map((image, index) => (
+                                    <img
+                                        key={image.id ?? index}
+                                        src={getImageUrl(image.image_path)}
+                                        alt={`Bike photo ${index + 1}`}
+                                        className="h-24 w-24 shrink-0 rounded-lg border object-cover"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Description */}
-                    {request.service_request?.description && (
+                    {request.description && (
                         <div className="box-border w-full min-w-0 max-w-full rounded-lg border p-3">
                             <div className="mb-2 flex items-center gap-2">
                                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50">
@@ -186,7 +185,7 @@ export default function MechanicCyclistInfoDialog({
                             </div>
 
                             <p className="break-words text-sm text-slate-500">
-                                {request.service_request.description}
+                                {request.description}
                             </p>
                         </div>
                     )}

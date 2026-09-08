@@ -19,19 +19,21 @@ interface ChatMessage {
 interface CyclistMechanicChatDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    mechanicName?: string;
+    otherUserName?: string;
     messages?: ChatMessage[];
     onSendMessage?: (message: string) => Promise<void> | void;
     isSending?: boolean;
+    currentUserRole: "cyclist" | "mechanic";
 }
 
 export default function CyclistMechanicChatDialog({
     open,
     onOpenChange,
-    mechanicName = "Mechanic",
+    otherUserName = "User",
     messages = [],
     onSendMessage,
     isSending = false,
+    currentUserRole,
 }: CyclistMechanicChatDialogProps) {
     const [message, setMessage] = useState("");
 
@@ -85,7 +87,7 @@ export default function CyclistMechanicChatDialog({
 
                         <div className="min-w-0">
                             <DialogTitle className="truncate text-base">
-                                {mechanicName}
+                                {otherUserName}
                             </DialogTitle>
 
                             <p className="text-xs text-green-600">En Route</p>
@@ -114,21 +116,21 @@ export default function CyclistMechanicChatDialog({
                     ) : (
                         <>
                             {messages.map((chatMessage) => {
-                                const isCyclist =
-                                    chatMessage.sender === "cyclist";
+                                const isMine =
+                                    chatMessage.sender === currentUserRole;
 
                                 return (
                                     <div
                                         key={chatMessage.id}
                                         className={`flex ${
-                                            isCyclist
+                                            isMine
                                                 ? "justify-end"
                                                 : "justify-start"
                                         }`}
                                     >
                                         <div
                                             className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
-                                                isCyclist
+                                                isMine
                                                     ? "rounded-br-md bg-blue-600 text-white"
                                                     : "rounded-bl-md bg-white text-slate-800 shadow-sm"
                                             }`}
@@ -140,7 +142,7 @@ export default function CyclistMechanicChatDialog({
                                             {chatMessage.created_at && (
                                                 <p
                                                     className={`mt-1 text-[10px] ${
-                                                        isCyclist
+                                                        isMine
                                                             ? "text-blue-100"
                                                             : "text-slate-400"
                                                     }`}

@@ -1,26 +1,41 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { cyclistProfileSchema, type CyclistProfileFormData } from "../schemas/cyclistProfileSchema";
-import { useCreateCyclistProfile, useCyclistProfile, useUpdateCyclistProfile } from "../hooks/useCyclistProfile";
+import {
+    cyclistProfileSchema,
+    type CyclistProfileFormData,
+} from "../schemas/cyclistProfileSchema";
+import {
+    useCreateCyclistProfile,
+    useCyclistProfile,
+    useUpdateCyclistProfile,
+} from "../hooks/useCyclistProfile";
 import { useEffect } from "react";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../../../components/ui/field";
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from "../../../components/ui/field";
 import { Input } from "../../../components/ui/input";
-import LocationPicker from "../../../components/maps/LocationPicker";
 import { Button } from "../../../components/ui/button";
 import { CardContent } from "../../../components/ui/card";
 import { useNavigate } from "react-router-dom";
+import MapComponent from "@/components/Map";
 
 interface Props {
     onSuccess?: () => void;
 }
 
-export default function CyclistProfileForm({
-    onSuccess
-}: Props) {
+export default function CyclistProfileForm({ onSuccess }: Props) {
     const navigate = useNavigate();
-    const form = useForm<CyclistProfileFormData>({
+    const form = useForm<
+        z.input<typeof cyclistProfileSchema>,
+        unknown,
+        z.output<typeof cyclistProfileSchema>
+    >({
         resolver: zodResolver(cyclistProfileSchema),
         defaultValues: {
             emergency_contact: "",
@@ -32,12 +47,12 @@ export default function CyclistProfileForm({
     const latitude = useWatch({
         control: form.control,
         name: "default_location_lat",
-    });
+    }) as number;
 
     const longitude = useWatch({
         control: form.control,
         name: "default_location_lng",
-    });
+    }) as number;
 
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
@@ -62,7 +77,7 @@ export default function CyclistProfileForm({
             {
                 enableHighAccuracy: true,
                 timeout: 10000,
-            }
+            },
         );
     };
 
@@ -77,13 +92,12 @@ export default function CyclistProfileForm({
         }
     }, [cyclistProfile]);
 
-    
     const createCyclistProfileMutation = useCreateCyclistProfile();
     const updateCyclistProfileMutation = useUpdateCyclistProfile();
 
     async function onSubmit(values: CyclistProfileFormData) {
         try {
-           if (cyclistProfile) {
+            if (cyclistProfile) {
                 // UPDATE EXISTING PROFILE
                 await updateCyclistProfileMutation.mutateAsync({
                     uuid: cyclistProfile.uuid,
@@ -108,10 +122,11 @@ export default function CyclistProfileForm({
 
     return (
         <>
-            <form id="form-rhf-cyclist-profile" onSubmit={form.handleSubmit(onSubmit)}>
-
+            <form
+                id="form-rhf-cyclist-profile"
+                onSubmit={form.handleSubmit(onSubmit)}
+            >
                 <FieldGroup>
-
                     {/* EMERGENCY CONTACT NUMBER */}
                     <Controller
                         name="emergency_contact"
@@ -128,40 +143,50 @@ export default function CyclistProfileForm({
                                     placeholder="Enter your emergency contact #"
                                     autoComplete="off"
                                 />
-                                {fieldState.invalid && ( <FieldError errors={[fieldState.error]} /> )}
+                                {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                )}
                             </Field>
                         )}
                     />
 
-                    <Field>
+                    <div className="space-y-2">
                         <FieldLabel>Default Location</FieldLabel>
 
-                        <LocationPicker
-                            latitude={latitude ?? 14.5995}
-                            longitude={longitude ?? 120.9842}
-                            onChange={(lat, lng) => {
-                                form.setValue("default_location_lat", lat, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                });
+                        <div className="h-[300px] overflow-hidden rounded-lg border">
+                            <MapComponent
+                                latitude={latitude ?? 14.5995}
+                                longitude={longitude ?? 120.9842}
+                                onLocationSelect={(latitude, longitude) => {
+                                    form.setValue(
+                                        "default_location_lat",
+                                        latitude,
+                                        {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                        },
+                                    );
 
-                                form.setValue("default_location_lng", lng, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                });
-                            }}
-                        />
-
-                        {(form.formState.errors.default_location_lat ||
-                        form.formState.errors.default_location_lng) && (
-                            <FieldError
-                                errors={[
-                                    form.formState.errors.default_location_lat,
-                                    form.formState.errors.default_location_lng,
-                                ].filter(Boolean)}
+                                    form.setValue(
+                                        "default_location_lng",
+                                        longitude,
+                                        {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                        },
+                                    );
+                                }}
                             />
-                        )}
-                    </Field>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground">
+                            Click the map to select your location.
+                        </p>
+
+                        <p className="text-xs text-muted-foreground">
+                            {latitude?.toFixed(6)}, {longitude?.toFixed(6)}
+                        </p>
+                    </div>
                 </FieldGroup>
             </form>
             <CardContent>
@@ -182,12 +207,10 @@ export default function CyclistProfileForm({
                             updateCyclistProfileMutation.isPending
                         }
                     >
-                        {
-                            createCyclistProfileMutation.isPending ||
-                            updateCyclistProfileMutation.isPending
-                                ? "Saving..."
-                                : "Save Changes"
-                        }
+                        {createCyclistProfileMutation.isPending ||
+                        updateCyclistProfileMutation.isPending
+                            ? "Saving..."
+                            : "Save Changes"}
                     </Button>
                 </Field>
             </CardContent>
