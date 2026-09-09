@@ -78,8 +78,6 @@ export default function MechanicProfile() {
 
     const user = data.data?.user;
 
-    console.log(user.profile_picture);
-
     if (!user) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
@@ -95,8 +93,6 @@ export default function MechanicProfile() {
     const initials = `${user.first_name?.charAt(0) ?? ""}${
         user.last_name?.charAt(0) ?? ""
     }`;
-
-    console.log(user.profile_picture);
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#121212]">

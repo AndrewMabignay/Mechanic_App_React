@@ -1,14 +1,9 @@
 "use client";
 
 import { Bell, Bike, Menu, User } from "lucide-react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-} from "../ui/navigation-menu";
+import { NavigationMenu, NavigationMenuList } from "../ui/navigation-menu";
 
 import { Button } from "../ui/button";
 
@@ -51,21 +46,7 @@ export default function MechanicHeader() {
 
                 {/* Desktop Navigation */}
                 <NavigationMenu className="hidden min-w-0 md:flex">
-                    <NavigationMenuList className="gap-1">
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild>
-                                <NavLink to="/mechanic">Home</NavLink>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild>
-                                <NavLink to="/mechanic/incoming-request">
-                                    Incoming Request
-                                </NavLink>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
+                    <NavigationMenuList className="gap-1"></NavigationMenuList>
                 </NavigationMenu>
 
                 {/* Right Side */}
