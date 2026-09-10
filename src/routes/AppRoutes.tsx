@@ -19,7 +19,6 @@ import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
 import RequireMechanicProfile from "./RequireMechanicProfile";
 import CreateCyclistProfileRoute from "./CreateCyclistProfileRoute";
-import RequireCyclistProfile from "./RequireCyclistProfile";
 
 const AppRoutes = () => {
     return (

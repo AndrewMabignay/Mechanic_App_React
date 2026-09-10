@@ -25,6 +25,8 @@ export default function CyclistMechanicEnRouteDialog({
             mechanic?.user.last_name ?? ""
         }`.trim() || "Mechanic";
 
+    const specializations = mechanic?.specializations ?? [];
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
@@ -207,14 +209,14 @@ export default function CyclistMechanicEnRouteDialog({
                                 </div>
 
                                 {/* Specializations */}
-                                {mechanic?.specializations?.length > 0 && (
+                                {specializations.length > 0 && (
                                     <div className="min-w-0 border-t border-gray-100 px-4 py-3">
                                         <p className="text-xs font-medium text-gray-500">
                                             Specializations
                                         </p>
 
                                         <div className="mt-2 flex min-w-0 flex-wrap gap-2">
-                                            {mechanic?.specializations.map(
+                                            {specializations.map(
                                                 (specialization) => (
                                                     <span
                                                         key={specialization}

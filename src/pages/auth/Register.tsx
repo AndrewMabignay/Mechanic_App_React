@@ -1,7 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
 import {
     registerSchema,
-    type RegisterFormSchema,
+    type RegisterFormData,
 } from "../../features/auth/schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRegister } from "../../features/auth/hooks/useAuth";
@@ -33,7 +33,7 @@ export default function Register() {
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-    const form = useForm<RegisterFormSchema>({
+    const form = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
             first_name: "",
@@ -77,7 +77,7 @@ export default function Register() {
     /**
      * Submit registration.
      */
-    async function onSubmit(data: RegisterFormSchema) {
+    async function onSubmit(data: RegisterFormData) {
         if (!captchaToken) {
             return;
         }
