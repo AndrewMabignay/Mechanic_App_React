@@ -8,7 +8,13 @@ export const userSchema = z.object({
     password: z.string().min(8),
     password_confirmation: z.string(),
     phone: z.string(),
-    role: z.enum(["admin", "cyclist", "mechanic", "bike_shop_owner", "cyclist_mechanic"]),
+    role: z.enum([
+        "admin",
+        "cyclist",
+        "mechanic",
+        "bike_shop_owner",
+        "cyclist_mechanic",
+    ]),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;
@@ -36,9 +42,9 @@ export const personalInformationSchema = z.object({
         .string()
         .min(1, "Phone number is required")
         .max(20, "Phone number is too long"),
-    profile_picture: z
-        .instanceof(File)
-        .optional(),
+    profile_picture: z.instanceof(File).optional(),
 });
 
-export type PersonalInformationFormData = z.infer<typeof personalInformationSchema>;
+export type PersonalInformationFormData = z.infer<
+    typeof personalInformationSchema
+>;

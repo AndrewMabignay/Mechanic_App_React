@@ -1,9 +1,9 @@
 import api from "../../../api/axios";
+import type { RegisterFormData } from "../schemas/registerSchema";
 import type {
     LoginFormData,
     LoginResponse,
     MessageResponse,
-    RegisterFormData,
     RegisterResponse,
     ResendOtpData,
     VerifyOtpData,
@@ -21,7 +21,21 @@ export const login = async (data: LoginFormData): Promise<LoginResponse> => {
 export const register = async (
     data: RegisterFormData,
 ): Promise<RegisterResponse> => {
-    const response = await api.post("/register", data);
+    const formData = new FormData();
+
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("middle_name", data.middle_name ?? "");
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("password_confirmation", data.password_confirmation);
+    formData.append("phone", data.phone);
+    formData.append("role", data.role);
+
+    if (data.profile_picture) {
+        formData.append("profile_picture", data.profile_picture);
+    }
+    const response = await api.post("/register", formData);
 
     return response.data;
 };

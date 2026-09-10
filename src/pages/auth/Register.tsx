@@ -23,13 +23,15 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { Bike, Check } from "lucide-react";
+import { Bike, Camera, Check, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Register() {
     const navigate = useNavigate();
 
     const [step, setStep] = useState(1);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const form = useForm<RegisterFormSchema>({
         resolver: zodResolver(registerSchema),
@@ -42,6 +44,7 @@ export default function Register() {
             password_confirmation: "",
             phone: "",
             role: undefined,
+            profile_picture: undefined,
         },
     });
 
@@ -221,6 +224,131 @@ export default function Register() {
                                         Enter your basic information.
                                     </p>
                                 </div>
+
+                                {/* Profile Picture */}
+                                <Controller
+                                    name="profile_picture"
+                                    control={form.control}
+                                    render={({ fieldState }) => (
+                                        <Field
+                                            data-invalid={fieldState.invalid}
+                                        >
+                                            <div className="flex justify-center">
+                                                <label
+                                                    htmlFor="profile-picture"
+                                                    className="group relative cursor-pointer"
+                                                >
+                                                    <Avatar
+                                                        className="
+                                                            h-24 w-24
+                                                            border-4 border-white
+                                                            shadow-md
+                                                        "
+                                                    >
+                                                        <AvatarImage
+                                                            src={
+                                                                previewImage ??
+                                                                undefined
+                                                            }
+                                                            alt="Profile picture"
+                                                        />
+                                                        <AvatarFallback
+                                                            className="
+                                                                bg-[#F8FAFC]
+                                                                text-xl font-semibold
+                                                                text-[#374151]
+                                                            "
+                                                        >
+                                                            {form.watch(
+                                                                "first_name",
+                                                            ) ||
+                                                            form.watch(
+                                                                "last_name",
+                                                            ) ? (
+                                                                <>
+                                                                    {form
+                                                                        .watch(
+                                                                            "first_name",
+                                                                        )
+                                                                        ?.charAt(
+                                                                            0,
+                                                                        )}
+                                                                    {form
+                                                                        .watch(
+                                                                            "last_name",
+                                                                        )
+                                                                        ?.charAt(
+                                                                            0,
+                                                                        )}
+                                                                </>
+                                                            ) : (
+                                                                <User className="h-10 w-10 text-gray-400" />
+                                                            )}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+
+                                                    {/* Camera Overlay */}
+                                                    <div
+                                                        className="
+                                                            absolute inset-0
+                                                            flex items-center justify-center
+                                                            rounded-full
+                                                            bg-black/50
+                                                            opacity-0
+                                                            transition-opacity
+                                                            group-hover:opacity-100
+                                                        "
+                                                    >
+                                                        <Camera className="h-6 w-6 text-white" />
+                                                    </div>
+
+                                                    <input
+                                                        id="profile-picture"
+                                                        type="file"
+                                                        accept="image/jpeg,image/png,image/webp"
+                                                        className="hidden"
+                                                        onChange={(event) => {
+                                                            const file =
+                                                                event.target
+                                                                    .files?.[0];
+
+                                                            if (!file) return;
+
+                                                            form.setValue(
+                                                                "profile_picture",
+                                                                file,
+                                                                {
+                                                                    shouldValidate: true,
+                                                                },
+                                                            );
+
+                                                            setPreviewImage(
+                                                                URL.createObjectURL(
+                                                                    file,
+                                                                ),
+                                                            );
+                                                        }}
+                                                    />
+                                                </label>
+                                            </div>
+
+                                            {fieldState.invalid && (
+                                                <FieldError
+                                                    errors={[
+                                                        form.getFieldState(
+                                                            "profile_picture",
+                                                        ).error,
+                                                    ]}
+                                                />
+                                            )}
+
+                                            <p className="text-center text-xs text-gray-500">
+                                                Click the avatar to upload a
+                                                profile picture
+                                            </p>
+                                        </Field>
+                                    )}
+                                />
 
                                 {/* First Name + Last Name */}
                                 <div className="grid gap-5 sm:grid-cols-2">
