@@ -1,13 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createCyclistProfile, getCyclistProfile, updateCyclistProfile } from "../api/cyclist-profile";
+import {
+    createCyclistProfile,
+    getCyclistProfile,
+    updateCyclistProfile,
+} from "../api/cyclist-profile";
 import type { CreateAndUpdateCyclistProfileFormData } from "../types/cylistProfile";
 import { getCyclistBicycles } from "../api/cyclistProfileApi";
 
-// DISPLAY CYCLIST PROFILE 
-export const useCyclistProfile = () =>
+// DISPLAY CYCLIST PROFILE
+export const useCyclistProfile = (enabled = true) =>
     useQuery({
         queryKey: ["cyclist-profile"],
         queryFn: getCyclistProfile,
+        enabled,
+        retry: false,
+        refetchOnWindowFocus: false,
     });
 
 // CREATE CYCLIST PROFILE
@@ -15,7 +22,8 @@ export const useCreateCyclistProfile = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CreateAndUpdateCyclistProfileFormData) => createCyclistProfile(data),
+        mutationFn: (data: CreateAndUpdateCyclistProfileFormData) =>
+            createCyclistProfile(data),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -35,7 +43,7 @@ export const useUpdateCyclistProfile = () => {
             data,
         }: {
             uuid: string;
-            data: Partial<CreateAndUpdateCyclistProfileFormData>
+            data: Partial<CreateAndUpdateCyclistProfileFormData>;
         }) => updateCyclistProfile(uuid, data),
 
         onSuccess: () => {
@@ -46,7 +54,7 @@ export const useUpdateCyclistProfile = () => {
     });
 };
 
-// 
+//
 
 export const useCyclistBicyclesOwner = (params: {
     page: number;
@@ -59,4 +67,4 @@ export const useCyclistBicyclesOwner = (params: {
             return data;
         },
     });
-}
+};

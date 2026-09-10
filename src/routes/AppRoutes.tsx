@@ -18,6 +18,8 @@ import CyclistMap from "../pages/cylist/CyclistMap";
 import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
 import RequireMechanicProfile from "./RequireMechanicProfile";
+import CreateCyclistProfileRoute from "./CreateCyclistProfileRoute";
+import RequireCyclistProfile from "./RequireCyclistProfile";
 
 const AppRoutes = () => {
     return (
@@ -44,19 +46,25 @@ const AppRoutes = () => {
                 >
                     <Route
                         path="/cyclist/create-profile"
-                        element={<CyclistProfileForm />}
+                        element={
+                            <CreateCyclistProfileRoute>
+                                <CyclistProfileForm />
+                            </CreateCyclistProfileRoute>
+                        }
                     />
 
+                    {/* <Route element={<RequireCyclistProfile />}> */}
                     <Route element={<CyclistLayout />}>
                         <Route path="/cyclist/" element={<CyclistHome />} />
+
                         <Route
                             path="/cyclist/request-mechanic"
                             element={<CyclistMap />}
                         />
-                        {/* <Route path="/cyclist/profile" element={<CyclistProfile />} /> */}
                         <Route path="/cyclist/profile" element={<Profile />} />
                     </Route>
                 </Route>
+                {/* </Route> */}
 
                 {/* Mechanic */}
                 <Route
