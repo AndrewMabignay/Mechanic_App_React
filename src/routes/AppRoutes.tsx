@@ -17,6 +17,7 @@ import MechanicHome from "../pages/mechanic/MechanicHome";
 import CyclistMap from "../pages/cylist/CyclistMap";
 import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
+import RequireMechanicProfile from "./RequireMechanicProfile";
 
 const AppRoutes = () => {
     return (
@@ -74,9 +75,17 @@ const AppRoutes = () => {
                         }
                     />
 
-                    <Route element={<MechanicLayout />}>
-                        <Route path="/mechanic" element={<MechanicHome />} />
-                        <Route path="/mechanic/profile" element={<Profile />} />
+                    <Route element={<RequireMechanicProfile />}>
+                        <Route element={<MechanicLayout />}>
+                            <Route
+                                path="/mechanic"
+                                element={<MechanicHome />}
+                            />
+                            <Route
+                                path="/mechanic/profile"
+                                element={<Profile />}
+                            />
+                        </Route>
                     </Route>
                 </Route>
 

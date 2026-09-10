@@ -13,6 +13,8 @@ export const useMechanicProfile = (enabled = true) =>
         queryKey: ["mechanic-profile"],
         queryFn: getMechanicProfile,
         enabled,
+        retry: false,
+        refetchOnWindowFocus: false,
     });
 
 // CREATE MECHANIC PROFILE
