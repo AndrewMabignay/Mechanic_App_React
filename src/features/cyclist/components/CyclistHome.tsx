@@ -155,49 +155,115 @@ export default function CyclistHomeComponent() {
                         <button
                             type="button"
                             onClick={() => setFindingDialogOpen(true)}
-                            className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
+                            className="
+                                w-full
+                                rounded-xl
+                                border
+                                border-gray-200
+                                bg-white
+                                p-4
+                                text-left
+                                shadow-sm
+                                transition-all
+                                hover:border-[#fc4c02]/40
+                                hover:shadow-md
+                            "
                         >
                             <div className="flex items-center gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50">
-                                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                                {/* Status Icon */}
+                                <div
+                                    className="
+                                        flex
+                                        h-11
+                                        w-11
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-md
+                                        bg-[#fc4c02]/10
+                                    "
+                                >
+                                    <Loader2
+                                        className="
+                                            h-5
+                                            w-5
+                                            animate-spin
+                                            text-[#fc4c02]
+                                        "
+                                    />
                                 </div>
 
+                                {/* Content */}
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-base font-semibold text-slate-900">
+                                    <p className="text-sm font-semibold text-gray-900">
                                         Finding a mechanic...
                                     </p>
 
-                                    <p className="mt-1 text-sm text-slate-500">
+                                    <p className="mt-1 text-xs text-gray-500">
                                         Searching nearby mechanics
                                     </p>
                                 </div>
 
-                                <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+                                {/* Arrow */}
+                                <ChevronRight
+                                    className="
+                                        h-5
+                                        w-5
+                                        shrink-0
+                                        text-[#fc4c02]
+                                    "
+                                />
                             </div>
                         </button>
                     ) : isAccepted || isEnRoute ? (
                         <button
                             type="button"
                             onClick={() => setEnRouteDialogOpen(true)}
-                            className="w-full rounded-2xl border bg-white p-4 text-left shadow-xl transition hover:shadow-2xl"
+                            className="
+                                w-full
+                                rounded-xl
+                                border
+                                border-gray-200
+                                bg-white
+                                p-4
+                                text-left
+                                shadow-sm
+                                transition-all
+                                hover:border-[#fc4c02]/40
+                                hover:shadow-md
+                            "
                         >
                             <div className="flex items-center gap-4">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-50">
-                                    <MapPin className="h-6 w-6 text-green-600" />
+                                {/* Status Icon */}
+                                <div
+                                    className="
+                                        flex
+                                        h-11
+                                        w-11
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-md
+                                        bg-[#fc4c02]/10
+                                    "
+                                >
+                                    <MapPin className="h-5 w-5 text-[#fc4c02]" />
                                 </div>
 
+                                {/* Content */}
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-base font-semibold text-slate-900">
+                                    <p className="text-sm font-semibold text-gray-900">
                                         Mechanic is on the way
                                     </p>
 
-                                    <p className="mt-1 text-sm text-slate-500">
+                                    <p className="mt-1 text-xs text-gray-500">
                                         Your mechanic is heading to your
                                         location
                                     </p>
                                 </div>
 
-                                <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+                                {/* Arrow */}
+                                <ChevronRight className="h-5 w-5 shrink-0 text-[#fc4c02]" />
                             </div>
                         </button>
                     ) : isInProgress ? (
