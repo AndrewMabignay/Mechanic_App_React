@@ -44,7 +44,14 @@ export const register = async (
 export const verifyRegisterOtp = async (
     data: VerifyOtpData,
 ): Promise<VerifyOtpResponse> => {
+    console.log("📤 Sending OTP verification request:", {
+        email: data.email,
+        otp: data.otp,
+    });
+
     const response = await api.post("/register/verify-otp", data);
+
+    console.log("✅ OTP verification response:", response.data);
 
     return response.data;
 };
