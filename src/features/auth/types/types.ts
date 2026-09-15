@@ -11,12 +11,12 @@ export interface User {
 export interface LoginFormData {
     email: string;
     password: string;
-};
+}
 
 export interface LoginResponse {
-    user: User
+    user: User;
     token: string;
-};
+}
 
 export interface RegisterFormData {
     first_name: string;
@@ -27,7 +27,7 @@ export interface RegisterFormData {
     password_confirmation: string;
     phone: string;
     role: "cyclist" | "mechanic" | "cyclist_mechanic" | "bike_shop_owner";
-};
+}
 
 export interface RegisterResponse {
     user: {
@@ -40,7 +40,7 @@ export interface RegisterResponse {
         role: string;
     };
     token: string;
-};
+}
 
 export interface VerifyOtpData {
     email: string;
@@ -61,4 +61,3 @@ export interface ResendOtpData {
 export interface MessageResponse {
     message: string;
 }
-

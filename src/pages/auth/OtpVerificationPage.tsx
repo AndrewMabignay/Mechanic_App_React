@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+    useCancelRegister,
     useResendOtp,
     useVerifyLoginOtp,
     useVerifyRegisterOtp,
@@ -14,14 +15,37 @@ import { Bike } from "lucide-react";
 export default function OtpVerificationPage() {
     const navigate = useNavigate();
     const location = useLocation();
+    const storedOtpVerification = sessionStorage.getItem("otp_verification");
 
-    const { email, purpose } = location.state || {};
+    const storedData = storedOtpVerification
+        ? JSON.parse(storedOtpVerification)
+        : null;
+
+    const hasNavigationState =
+        !!location.state?.email &&
+        !!location.state?.purpose &&
+        ["register", "login"].includes(location.state.purpose);
+
+    const hasStoredOtp =
+        !!storedData?.email &&
+        !!storedData?.purpose &&
+        ["register", "login"].includes(storedData.purpose);
+
+    const email = location.state?.email ?? storedData?.email;
+    const purpose = location.state?.purpose ?? storedData?.purpose;
+
+    useEffect(() => {
+        if (!hasNavigationState && !hasStoredOtp) {
+            navigate("/login", { replace: true });
+        }
+    }, [hasNavigationState, hasStoredOtp, navigate]);
 
     const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
     const verifyLoginMutation = useVerifyLoginOtp();
     const verifyRegisterMutation = useVerifyRegisterOtp();
     const resendMutation = useResendOtp();
+    const cancelRegisterMutation = useCancelRegister();
 
     // OTP input change
     const handleOtpChange = (value: string, index: number) => {
@@ -98,6 +122,50 @@ export default function OtpVerificationPage() {
         }
     };
 
+    // =========================================
+    // CANCEL REGISTER
+    // =========================================
+    async function handleCancelRegister() {
+        if (purpose !== "register" || !email) {
+            return;
+        }
+
+        try {
+            await cancelRegisterMutation.mutateAsync({
+                email,
+            });
+
+            sessionStorage.removeItem("otp_verification");
+
+            navigate("/register", {
+                replace: true,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // =========================================
+    // DETECT CHROME BACK
+    // =========================================
+    useEffect(() => {
+        if (purpose !== "register" || !email) {
+            return;
+        }
+
+        window.history.pushState({ otpPage: true }, "", window.location.href);
+
+        const handlePopState = () => {
+            handleCancelRegister();
+        };
+
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [email, purpose]);
+
     async function handleVerify() {
         const otpCode = otp.join("");
 
@@ -129,6 +197,8 @@ export default function OtpVerificationPage() {
             );
 
             localStorage.setItem("bike_mechanic_role", response.user.role);
+
+            sessionStorage.removeItem("otp_verification");
 
             // Redirect based on role
             switch (response.user.role) {

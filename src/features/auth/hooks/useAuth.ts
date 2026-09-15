@@ -3,6 +3,7 @@ import {
     login,
     logout,
     register,
+    registerCancel,
     resendOtp,
     verifyLoginOtp,
     verifyRegisterOtp,
@@ -38,6 +39,12 @@ export const useVerifyRegisterOtp = () => {
 export const useResendOtp = () => {
     return useMutation({
         mutationFn: resendOtp,
+    });
+};
+
+export const useCancelRegister = () => {
+    return useMutation({
+        mutationFn: registerCancel,
     });
 };
 

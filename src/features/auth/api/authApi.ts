@@ -56,6 +56,12 @@ export const verifyRegisterOtp = async (
     return response.data;
 };
 
+export const registerCancel = async (data: { email: string }) => {
+    const response = await api.post("/register/cancel", data);
+
+    return response.data;
+};
+
 // Verify Login OTP
 export const verifyLoginOtp = async (
     data: VerifyOtpData,

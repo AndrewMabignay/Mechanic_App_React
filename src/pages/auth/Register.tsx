@@ -85,7 +85,16 @@ export default function Register() {
         try {
             await registerMutation.mutateAsync(data);
 
+            sessionStorage.setItem(
+                "otp_verification",
+                JSON.stringify({
+                    email: data.email,
+                    purpose: "register",
+                }),
+            );
+
             navigate("/verify-otp", {
+                replace: true,
                 state: {
                     email: data.email,
                     purpose: "register",
