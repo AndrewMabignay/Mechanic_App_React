@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Loader2, MapPin, Wrench } from "lucide-react";
 
 import MapComponent from "../../../components/Map";
@@ -13,6 +13,7 @@ import CyclistServiceInProgressDialog from "../../service_request/components/Cyc
 import CyclistRateReviewDialog from "../../service_request/components/CyclistRateReviewDialog";
 import { useSubmitServiceRequestRating } from "../../service_request/hooks/useSubmitServiceRequestRating";
 import { useDismissReviewPrompt } from "../../service_request/hooks/useDismissReviewPrompt";
+import { useFindMechanic } from "@/features/service_request/hooks/useFindMechanic";
 
 export default function CyclistHomeComponent() {
     const { data, isLoading, error } = useCyclistProfile();
@@ -22,6 +23,8 @@ export default function CyclistHomeComponent() {
     const { data: currentRequestResponse } = useCyclistCurrentServiceRequest();
 
     const currentRequest = currentRequestResponse?.data;
+
+    const { mutate: findMechanic } = useFindMechanic();
 
     const { messages, sendMessage, isSending } = useServiceChat(
         currentRequest?.uuid,
@@ -40,6 +43,14 @@ export default function CyclistHomeComponent() {
     const isPending = currentRequest?.status === "pending";
     const isAccepted = currentRequest?.status === "accepted";
     const isEnRoute = currentRequest?.status === "en_route";
+
+    useEffect(() => {
+        if (!isPending || !currentRequest?.uuid) {
+            return;
+        }
+
+        findMechanic(currentRequest.uuid);
+    }, [isPending, currentRequest?.uuid, findMechanic]);
 
     const cyclistLatitude = Number(currentRequest?.location_lat ?? latitude);
     const cyclistLongitude = Number(currentRequest?.location_lng ?? longitude);
@@ -66,35 +77,6 @@ export default function CyclistHomeComponent() {
 
     const { submitRating, isSubmitting: isSubmittingRating } =
         useSubmitServiceRequestRating();
-
-    // useEffect(() => {
-    //     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    //         return;
-    //     }
-
-    //     const fetchAddress = async () => {
-    //         try {
-    //             const response = await fetch(
-    //                 `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-    //             );
-
-    //             if (!response.ok) {
-    //                 throw new Error("Failed to get address");
-    //             }
-
-    //             const result = await response.json();
-
-    //             setLocationAddress(
-    //                 result.display_name || "Address not available",
-    //             );
-    //         } catch (error) {
-    //             console.error("Reverse geocoding error:", error);
-    //             setLocationAddress("Address not available");
-    //         }
-    //     };
-
-    //     fetchAddress();
-    // }, [latitude, longitude]);
 
     if (isLoading) {
         return (
@@ -253,12 +235,15 @@ export default function CyclistHomeComponent() {
                                 {/* Content */}
                                 <div className="min-w-0 flex-1">
                                     <p className="text-sm font-semibold text-gray-900">
-                                        Mechanic is on the way
+                                        {isAccepted
+                                            ? "Mechanic Accepted"
+                                            : "Mechanic is on the way"}
                                     </p>
 
                                     <p className="mt-1 text-xs text-gray-500">
-                                        Your mechanic is heading to your
-                                        location
+                                        {isAccepted
+                                            ? "Your mechanic has accepted your service request"
+                                            : "Your mechanic is heading to your location"}
                                     </p>
                                 </div>
 
@@ -305,22 +290,12 @@ export default function CyclistHomeComponent() {
                 open={(isAccepted || isEnRoute) && enRouteDialogOpen}
                 onOpenChange={setEnRouteDialogOpen}
                 mechanic={currentRequest?.mechanic}
+                status={currentRequest?.status}
                 onChatClick={() => {
                     setEnRouteDialogOpen(false);
                     setChatDialogOpen(true);
                 }}
             />
-
-            {/* <CyclistMechanicChatDialog
-                open={chatDialogOpen}
-                onOpenChange={setChatDialogOpen}
-                mechanicName={`${currentRequest?.mechanic?.user?.first_name ?? ""} ${
-                    currentRequest?.mechanic?.user?.last_name ?? ""
-                }`.trim()}
-                messages={messages}
-                onSendMessage={sendMessage}
-                isSending={isSending}
-            /> */}
 
             <CyclistMechanicChatDialog
                 open={chatDialogOpen}

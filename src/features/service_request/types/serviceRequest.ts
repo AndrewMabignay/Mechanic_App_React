@@ -20,6 +20,14 @@ export interface BikeProblem {
     standard_price: number;
 }
 
+export type ServiceRequestAcceptance = {
+    uuid: string;
+    mechanic_id: number;
+    status: "pending" | "accepted" | "rejected" | "cancelled";
+    responded_at: string | null;
+    remarks: string | null;
+};
+
 export interface ServiceRequest {
     id: number;
     uuid: string;
@@ -54,6 +62,7 @@ export interface ServiceRequest {
     bike_problem: BikeProblem;
     cyclist: CyclistProfile;
     mechanic: MechanicProfile;
+    acceptances: ServiceRequestAcceptance;
 }
 
 export interface ServiceRequestResponse {

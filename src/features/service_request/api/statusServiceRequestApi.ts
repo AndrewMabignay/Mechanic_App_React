@@ -10,6 +10,14 @@ export const acceptServiceRequest = async (
     return response.data;
 };
 
+export const declineServiceRequest = async (
+    uuid: string,
+): Promise<ServiceRequestResponse> => {
+    const response = await api.patch(`/service-requests/${uuid}/rejected`);
+
+    return response.data;
+};
+
 export const enRouteServiceRequest = async (
     uuid: string,
 ): Promise<ServiceRequestResponse> => {

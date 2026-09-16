@@ -13,6 +13,11 @@ export const createServiceRequest = async (
     formData.append("location_lat", String(data.location_lat));
     formData.append("location_lng", String(data.location_lng));
 
+    // Add Bike Problem images
+    data.images.forEach((image) => {
+        formData.append("images[]", image);
+    });
+
     console.log("FormData:");
 
     for (const [key, value] of formData.entries()) {
@@ -22,6 +27,16 @@ export const createServiceRequest = async (
     const response = await api.post("/service-requests", formData);
 
     return response.data;
+};
+
+export const findMechanic = async (
+    serviceRequestUuid: string,
+): Promise<ServiceRequestResponse> => {
+    const response = await api.post(
+        `/service-requests/${serviceRequestUuid}/find-mechanic`,
+    );
+
+    return response.data.data;
 };
 
 export const getCurrentCyclistServiceRequest =

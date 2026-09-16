@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import MechanicCyclistInfoDialog from "../../service_request/components/MechanicCyclistInfoDialog";
 import {
     useAcceptServiceRequest,
+    useDeclineServiceRequest,
     useEnRouteServiceRequest,
 } from "../../service_request/hooks/useMechanicCurrentServiceRequest";
 import MechanicEnRouteContainer from "../../service_request/components/MechanicEnRouteContainer";
@@ -21,6 +22,7 @@ import { useUpdateMechanicLocation } from "../hooks/useUpdateMechanicLocation";
 import { calculateDistanceInMeters } from "../helpers/location";
 import MechanicProfileContainer from "./MechanicProfileContainer";
 import MechanicIncomingRequestContainer from "@/features/service_request/components/MechanicIncomingRequestContainer";
+import type { ServiceRequest } from "@/features/service_request/types/serviceRequest";
 
 export default function MechanicHomeComponent() {
     const {
@@ -33,12 +35,15 @@ export default function MechanicHomeComponent() {
 
     const { data /*isLoading*/ } = useIncomingRequests();
     const acceptMutation = useAcceptServiceRequest();
+    const declineMutation = useDeclineServiceRequest();
     const enRouteMutation = useEnRouteServiceRequest();
     const { location, loading, error } = useCurrentLocation();
     const { data: currentRequestResponse } = useMechanicCurrentServiceRequest();
 
     const currentRequest = currentRequestResponse?.data;
     console.log(currentRequest);
+
+    const [selectedRequest, setSelectedRequest] = useState<ServiceRequest>();
 
     const isAccepted = currentRequest?.status === "accepted";
     const isEnRoute = currentRequest?.status === "en_route";
@@ -62,6 +67,9 @@ export default function MechanicHomeComponent() {
     );
 
     const [cyclistInfoOpen, setCyclistInfoOpen] = useState(false);
+    const [declinedRequestUuid, setDeclinedRequestUuid] = useState<
+        string | null
+    >(null);
 
     useEffect(() => {
         if (!location || !isEnRoute) {
@@ -126,7 +134,12 @@ export default function MechanicHomeComponent() {
     }
 
     const requests = data?.data ?? [];
-    const incomingRequest = requests[0];
+    // const incomingRequest = requests[0];
+    // console.log(incomingRequest?.service_request);
+
+    const incomingRequest = requests.find(
+        (request) => request.service_request?.uuid !== declinedRequestUuid,
+    );
 
     const handleAccept = async () => {
         if (!incomingRequest?.uuid) {
@@ -139,6 +152,26 @@ export default function MechanicHomeComponent() {
             );
         } catch (error) {
             console.error("Failed to accept service request:", error);
+        }
+    };
+
+    const handleDecline = async () => {
+        const uuid = incomingRequest?.uuid;
+
+        console.log(uuid);
+
+        if (!uuid) {
+            return;
+        }
+
+        try {
+            await declineMutation.mutateAsync(uuid);
+
+            setDeclinedRequestUuid(uuid);
+            setSelectedRequest(undefined);
+            setCyclistInfoOpen(false);
+        } catch (error) {
+            console.error("Failed to decline service request:", error);
         }
     };
 
@@ -226,7 +259,10 @@ export default function MechanicHomeComponent() {
                         <>
                             <MechanicEnRouteContainer
                                 request={currentRequest}
-                                onViewDetails={() => setCyclistInfoOpen(true)}
+                                onViewDetails={() => {
+                                    setSelectedRequest(currentRequest);
+                                    setCyclistInfoOpen(true);
+                                }}
                             />
                         </>
                     ) : isAccepted && currentRequest ? (
@@ -234,16 +270,27 @@ export default function MechanicHomeComponent() {
                             request={currentRequest}
                             onCall={handleCall}
                             onChat={handleChat}
-                            onViewDetails={() => setCyclistInfoOpen(true)}
+                            onViewDetails={() => {
+                                setSelectedRequest(currentRequest);
+                                setCyclistInfoOpen(true);
+                                console.log(currentRequest.images);
+                            }}
                             onEnRoute={handleEnRoute}
                             isEnRoutePending={false}
                         />
                     ) : incomingRequest ? (
                         <MechanicIncomingRequestContainer
                             request={incomingRequest}
-                            onViewDetails={() => setCyclistInfoOpen(true)}
+                            onViewDetails={() => {
+                                setSelectedRequest(
+                                    incomingRequest.service_request,
+                                );
+                                setCyclistInfoOpen(true);
+                            }}
                             onAccept={handleAccept}
+                            onDecline={handleDecline}
                             isAccepting={acceptMutation.isPending}
+                            isDeclining={declineMutation.isPending}
                         />
                     ) : (
                         <MechanicProfileContainer
@@ -256,7 +303,9 @@ export default function MechanicHomeComponent() {
             <MechanicCyclistInfoDialog
                 open={cyclistInfoOpen}
                 onOpenChange={setCyclistInfoOpen}
-                request={currentRequest}
+                request={selectedRequest}
+                mechanicLatitude={location.latitude}
+                mechanicLongitude={location.longitude}
             />
 
             <CyclistMechanicChatDialog

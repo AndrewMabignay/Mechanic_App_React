@@ -11,6 +11,7 @@ interface CyclistMechanicEnRouteDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     mechanic?: MechanicProfile;
+    status?: string;
     onChatClick?: () => void;
 }
 
@@ -18,6 +19,7 @@ export default function CyclistMechanicEnRouteDialog({
     open,
     onOpenChange,
     mechanic,
+    status,
     onChatClick,
 }: CyclistMechanicEnRouteDialogProps) {
     const mechanicName =
@@ -26,6 +28,18 @@ export default function CyclistMechanicEnRouteDialog({
         }`.trim() || "Mechanic";
 
     const specializations = mechanic?.specializations ?? [];
+
+    const isAccepted = status === "accepted";
+
+    const statusTitle = isAccepted
+        ? "Mechanic Accepted"
+        : "Mechanic is on the way";
+
+    const statusLabel = isAccepted ? "Accepted" : "En Route";
+
+    const statusDescription = isAccepted
+        ? "Your mechanic has accepted your service request."
+        : "Your mechanic is heading to your location.";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,7 +71,7 @@ export default function CyclistMechanicEnRouteDialog({
                                 text-gray-900
                             "
                         >
-                            Mechanic is on the way
+                            {statusTitle}
                         </DialogTitle>
                     </DialogHeader>
                 </div>
@@ -71,7 +85,6 @@ export default function CyclistMechanicEnRouteDialog({
                         overflow-x-hidden
                         px-6
                         pb-7
-                        pt-4
                         sm:px-8
                         sm:pb-8
 
@@ -116,11 +129,11 @@ export default function CyclistMechanicEnRouteDialog({
 
                             <div className="min-w-0 flex-1">
                                 <p className="text-sm font-semibold text-[#fc4c02]">
-                                    En Route
+                                    {statusLabel}
                                 </p>
 
                                 <p className="mt-0.5 break-words text-sm text-gray-500">
-                                    Your mechanic is heading to your location.
+                                    {statusDescription}
                                 </p>
                             </div>
                         </div>

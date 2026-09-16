@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react";
 
-import { Map, Marker, NavigationControl, setWorkerUrl } from "maplibre-gl";
+import {
+    LngLatBounds,
+    Map,
+    Marker,
+    NavigationControl,
+    setWorkerUrl,
+} from "maplibre-gl";
 
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
@@ -316,6 +322,52 @@ export default function MapComponent({
             ]);
         }
     }, [mechanicLatitude, mechanicLongitude, showMechanicMarker]);
+
+    /**
+     * ============================================================
+     * FIT MAP TO MECHANIC AND CYCLIST
+     * ============================================================
+     */
+    useEffect(() => {
+        if (!map.current) {
+            return;
+        }
+
+        if (
+            typeof mechanicLatitude !== "number" ||
+            typeof mechanicLongitude !== "number" ||
+            typeof cyclistLatitude !== "number" ||
+            typeof cyclistLongitude !== "number" ||
+            !Number.isFinite(mechanicLatitude) ||
+            !Number.isFinite(mechanicLongitude) ||
+            !Number.isFinite(cyclistLatitude) ||
+            !Number.isFinite(cyclistLongitude)
+        ) {
+            return;
+        }
+
+        // Don't use fitBounds during active navigation.
+        if (followMechanic) {
+            return;
+        }
+
+        const bounds = new LngLatBounds();
+
+        bounds.extend([mechanicLongitude, mechanicLatitude]);
+        bounds.extend([cyclistLongitude, cyclistLatitude]);
+
+        map.current.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 15,
+            duration: 500,
+        });
+    }, [
+        mechanicLatitude,
+        mechanicLongitude,
+        cyclistLatitude,
+        cyclistLongitude,
+        followMechanic,
+    ]);
 
     /**
      * ============================================================

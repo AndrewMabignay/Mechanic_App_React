@@ -1,27 +1,31 @@
-import { Bike, MapPin, Wrench } from "lucide-react";
+import { Bike, MapPin, Wrench, X } from "lucide-react";
+
 import { Button } from "../../../components/ui/button";
+
 import type { IncomingRequest } from "../types/incomingRequest";
 
 interface Props {
     request: IncomingRequest;
     onViewDetails: () => void;
     onAccept: () => void;
+    onDecline: () => void;
     isAccepting?: boolean;
+    isDeclining?: boolean;
 }
 
 export default function MechanicIncomingRequestContainer({
     request,
     onViewDetails,
     onAccept,
+    onDecline,
     isAccepting = false,
+    isDeclining = false,
 }: Props) {
     const serviceRequest = request?.service_request;
-
     const cyclist = serviceRequest?.cyclist?.user;
 
-    const cyclistName = `${cyclist?.first_name ?? ""} ${
-        cyclist?.last_name ?? ""
-    }`.trim();
+    const cyclistName =
+        `${cyclist?.first_name ?? ""} ${cyclist?.last_name ?? ""}`.trim();
 
     return (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
@@ -115,6 +119,7 @@ export default function MechanicIncomingRequestContainer({
                         type="button"
                         variant="outline"
                         onClick={onViewDetails}
+                        disabled={isAccepting || isDeclining}
                         className="
                             h-11
                             flex-1
@@ -135,7 +140,7 @@ export default function MechanicIncomingRequestContainer({
                     <Button
                         type="button"
                         onClick={onAccept}
-                        disabled={isAccepting}
+                        disabled={isAccepting || isDeclining}
                         className="
                             h-11
                             flex-1
@@ -153,6 +158,29 @@ export default function MechanicIncomingRequestContainer({
                         {isAccepting ? "Accepting..." : "Accept Request"}
                     </Button>
                 </div>
+
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={onDecline}
+                    disabled={isAccepting || isDeclining}
+                    className="
+                        mt-2
+                        h-10
+                        w-full
+                        rounded-lg
+                        text-sm
+                        font-medium
+                        text-gray-500
+                        hover:bg-gray-100
+                        hover:text-gray-700
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
+                >
+                    <X className="mr-2 h-4 w-4" />
+                    {isDeclining ? "Declining..." : "Decline Request"}
+                </Button>
             </div>
         </div>
     );
