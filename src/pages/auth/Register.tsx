@@ -99,10 +99,6 @@ export default function Register() {
 
             navigate("/verify-otp", {
                 replace: true,
-                state: {
-                    email: data.email,
-                    purpose: "register",
-                },
             });
         } catch (error) {
             console.log(error);

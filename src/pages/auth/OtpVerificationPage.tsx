@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
     useCancelRegister,
     useResendOtp,
@@ -14,31 +14,25 @@ import { Bike } from "lucide-react";
 
 export default function OtpVerificationPage() {
     const navigate = useNavigate();
-    const location = useLocation();
     const storedOtpVerification = sessionStorage.getItem("otp_verification");
 
     const storedData = storedOtpVerification
         ? JSON.parse(storedOtpVerification)
         : null;
 
-    const hasNavigationState =
-        !!location.state?.email &&
-        !!location.state?.purpose &&
-        ["register", "login"].includes(location.state.purpose);
-
     const hasStoredOtp =
         !!storedData?.email &&
         !!storedData?.purpose &&
         ["register", "login"].includes(storedData.purpose);
 
-    const email = location.state?.email ?? storedData?.email;
-    const purpose = location.state?.purpose ?? storedData?.purpose;
+    const email = storedData?.email;
+    const purpose = storedData?.purpose;
 
     useEffect(() => {
-        if (!hasNavigationState && !hasStoredOtp) {
+        if (!hasStoredOtp) {
             navigate("/login", { replace: true });
         }
-    }, [hasNavigationState, hasStoredOtp, navigate]);
+    }, [hasStoredOtp, navigate]);
 
     const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
