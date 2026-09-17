@@ -89,7 +89,6 @@ function createMechanicMarker() {
         "conic-gradient(from -25deg, rgba(37,99,235,0.30) 0deg, rgba(37,99,235,0.08) 55deg, transparent 55deg, transparent 305deg, rgba(37,99,235,0.08) 305deg, rgba(37,99,235,0.30) 360deg)";
 
     cone.style.pointerEvents = "none";
-    cone.style.transition = "transform 300ms ease-out";
 
     // Main circular marker
     const marker = document.createElement("div");
@@ -393,19 +392,6 @@ export default function MapComponent({
 
         const mapInstance = map.current;
 
-        // const previous = previousMechanicLocation.current;
-
-        // let bearing = mapInstance.getBearing();
-
-        // if (previous) {
-        //     bearing = calculateBearing(
-        //         previous.latitude,
-        //         previous.longitude,
-        //         mechanicLatitude,
-        //         mechanicLongitude,
-        //     );
-        // }
-
         if (
             typeof mechanicHeading === "number" &&
             Number.isFinite(mechanicHeading)
@@ -414,23 +400,6 @@ export default function MapComponent({
         }
 
         const bearing = lastHeading.current ?? mapInstance.getBearing();
-
-        // previousMechanicLocation.current = {
-        //     latitude: mechanicLatitude,
-        //     longitude: mechanicLongitude,
-        // };
-
-        /*
-         * ============================================================
-         * UPDATE MECHANIC HEADING CONE
-         * ============================================================
-         */
-
-        if (mechanicCone.current) {
-            const relativeBearing = bearing - mapInstance.getBearing();
-
-            mechanicCone.current.style.transform = `rotate(${relativeBearing}deg)`;
-        }
 
         /*
          * ============================================================
@@ -461,7 +430,7 @@ export default function MapComponent({
             duration: 700,
             essential: true,
         });
-    }, [mechanicLatitude, mechanicLongitude, followMechanic]);
+    }, [mechanicLatitude, mechanicLongitude, mechanicHeading, followMechanic]);
 
     /**
      * ============================================================
