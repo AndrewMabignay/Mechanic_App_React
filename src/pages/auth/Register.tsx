@@ -87,6 +87,8 @@ export default function Register() {
 
             const response = await registerMutation.mutateAsync(data);
 
+            alert("Registration response received!");
+
             console.log("2. Registration successful:", response);
 
             sessionStorage.setItem(
