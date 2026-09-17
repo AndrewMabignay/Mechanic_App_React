@@ -8,8 +8,6 @@ import {
 } from "../../features/auth/hooks/useAuth";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { hasCyclistProfile } from "../../features/cyclist/api/cyclist-profile";
-import { hasMechanicProfile } from "../../features/mechanic/utils/mechanicProfile";
 import { Bike } from "lucide-react";
 
 export default function OtpVerificationPage() {
@@ -195,45 +193,27 @@ export default function OtpVerificationPage() {
             sessionStorage.removeItem("otp_verification");
 
             // Redirect based on role
-            switch (response.user.role) {
-                case "cyclist": {
-                    const hasProfile = await hasCyclistProfile();
+            if (purpose === "register") {
+                sessionStorage.removeItem("otp_verification");
 
-                    if (hasProfile) {
-                        navigate("/cyclist");
-                    } else {
-                        navigate("/cyclist/create-profile");
-                    }
+                switch (response.user.role) {
+                    case "cyclist":
+                        navigate("/cyclist/create-profile", { replace: true });
+                        break;
 
-                    break;
+                    case "mechanic":
+                        navigate("/mechanic/create-profile", { replace: true });
+                        break;
+
+                    case "cyclist_mechanic":
+                        navigate("/cyclist/create-profile", { replace: true });
+                        break;
+
+                    default:
+                        navigate("/login", { replace: true });
                 }
 
-                case "mechanic": {
-                    const hasProfile = await hasMechanicProfile();
-
-                    if (hasProfile) {
-                        navigate("/mechanic");
-                    } else {
-                        navigate("/mechanic/create-profile");
-                    }
-
-                    break;
-                }
-
-                case "cyclist_mechanic":
-                    navigate("/cyclist");
-                    break;
-
-                case "bike_shop_owner":
-                    navigate("/shop/dashboard");
-                    break;
-
-                case "admin":
-                    navigate("/admin");
-                    break;
-
-                default:
-                    navigate("/login");
+                return;
             }
         } catch (error) {
             console.error(error);
