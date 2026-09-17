@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 type Location = {
     latitude: number;
     longitude: number;
+    heading: number | null;
 };
 
 export function useCurrentLocation() {
@@ -19,6 +20,7 @@ export function useCurrentLocation() {
                 setLocation({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
+                    heading: position.coords.heading,
                 });
 
                 setError(null);

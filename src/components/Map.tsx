@@ -30,6 +30,7 @@ interface MapComponentProps {
 
     cyclistLatitude?: number;
     cyclistLongitude?: number;
+    mechanicHeading?: number | null;
 
     showRoute?: boolean;
     showMechanicMarker?: boolean;
@@ -41,27 +42,27 @@ interface MapComponentProps {
     onDirectionChange?: (direction: NavigationInstruction | null) => void;
 }
 
-function calculateBearing(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-): number {
-    const toRadians = (value: number) => (value * Math.PI) / 180;
-    const toDegrees = (value: number) => (value * 180) / Math.PI;
+// function calculateBearing(
+//     lat1: number,
+//     lon1: number,
+//     lat2: number,
+//     lon2: number,
+// ): number {
+//     const toRadians = (value: number) => (value * Math.PI) / 180;
+//     const toDegrees = (value: number) => (value * 180) / Math.PI;
 
-    const φ1 = toRadians(lat1);
-    const φ2 = toRadians(lat2);
-    const Δλ = toRadians(lon2 - lon1);
+//     const φ1 = toRadians(lat1);
+//     const φ2 = toRadians(lat2);
+//     const Δλ = toRadians(lon2 - lon1);
 
-    const y = Math.sin(Δλ) * Math.cos(φ2);
+//     const y = Math.sin(Δλ) * Math.cos(φ2);
 
-    const x =
-        Math.cos(φ1) * Math.sin(φ2) -
-        Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+//     const x =
+//         Math.cos(φ1) * Math.sin(φ2) -
+//         Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
 
-    return (toDegrees(Math.atan2(y, x)) + 360) % 360;
-}
+//     return (toDegrees(Math.atan2(y, x)) + 360) % 360;
+// }
 
 function createMechanicMarker() {
     const container = document.createElement("div");
@@ -116,6 +117,7 @@ export default function MapComponent({
     longitude,
     mechanicLatitude,
     mechanicLongitude,
+    mechanicHeading,
     cyclistLatitude,
     cyclistLongitude,
     showRoute = false,
@@ -136,11 +138,12 @@ export default function MapComponent({
     const cyclistMarker = useRef<Marker | null>(null);
     const mechanicMarker = useRef<Marker | null>(null);
     const mechanicCone = useRef<HTMLDivElement | null>(null);
+    const lastHeading = useRef<number | null>(null);
 
-    const previousMechanicLocation = useRef<{
-        latitude: number;
-        longitude: number;
-    } | null>(null);
+    // const previousMechanicLocation = useRef<{
+    //     latitude: number;
+    //     longitude: number;
+    // } | null>(null);
 
     const routeSourceId = "mechanic-route";
     const routeLayerId = "mechanic-route-layer";
@@ -232,7 +235,7 @@ export default function MapComponent({
             cyclistMarker.current = null;
             mechanicMarker.current = null;
             mechanicCone.current = null;
-            previousMechanicLocation.current = null;
+            // previousMechanicLocation.current = null;
         };
     }, []);
 
@@ -390,23 +393,32 @@ export default function MapComponent({
 
         const mapInstance = map.current;
 
-        const previous = previousMechanicLocation.current;
+        // const previous = previousMechanicLocation.current;
 
-        let bearing = mapInstance.getBearing();
+        // let bearing = mapInstance.getBearing();
 
-        if (previous) {
-            bearing = calculateBearing(
-                previous.latitude,
-                previous.longitude,
-                mechanicLatitude,
-                mechanicLongitude,
-            );
+        // if (previous) {
+        //     bearing = calculateBearing(
+        //         previous.latitude,
+        //         previous.longitude,
+        //         mechanicLatitude,
+        //         mechanicLongitude,
+        //     );
+        // }
+
+        if (
+            typeof mechanicHeading === "number" &&
+            Number.isFinite(mechanicHeading)
+        ) {
+            lastHeading.current = mechanicHeading;
         }
 
-        previousMechanicLocation.current = {
-            latitude: mechanicLatitude,
-            longitude: mechanicLongitude,
-        };
+        const bearing = lastHeading.current ?? mapInstance.getBearing();
+
+        // previousMechanicLocation.current = {
+        //     latitude: mechanicLatitude,
+        //     longitude: mechanicLongitude,
+        // };
 
         /*
          * ============================================================
@@ -415,7 +427,6 @@ export default function MapComponent({
          */
 
         if (mechanicCone.current) {
-            // Keep cone pointing relative to the screen.
             const relativeBearing = bearing - mapInstance.getBearing();
 
             mechanicCone.current.style.transform = `rotate(${relativeBearing}deg)`;

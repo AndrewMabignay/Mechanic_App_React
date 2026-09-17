@@ -273,6 +273,7 @@ export default function MechanicHomeComponent() {
                     longitude={location.longitude}
                     mechanicLatitude={location.latitude}
                     mechanicLongitude={location.longitude}
+                    mechanicHeading={location.heading}
                     cyclistLatitude={currentRequest?.location_lat}
                     cyclistLongitude={currentRequest?.location_lng}
                     showRoute={isAccepted || isEnRoute}
