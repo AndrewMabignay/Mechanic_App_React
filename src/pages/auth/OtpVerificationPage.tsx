@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     useCancelRegister,
     useResendOtp,
@@ -8,29 +8,37 @@ import {
 } from "../../features/auth/hooks/useAuth";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { hasCyclistProfile } from "../../features/cyclist/api/cyclist-profile";
+import { hasMechanicProfile } from "../../features/mechanic/utils/mechanicProfile";
 import { Bike } from "lucide-react";
 
 export default function OtpVerificationPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const storedOtpVerification = sessionStorage.getItem("otp_verification");
 
     const storedData = storedOtpVerification
         ? JSON.parse(storedOtpVerification)
         : null;
 
+    const hasNavigationState =
+        !!location.state?.email &&
+        !!location.state?.purpose &&
+        ["register", "login"].includes(location.state.purpose);
+
     const hasStoredOtp =
         !!storedData?.email &&
         !!storedData?.purpose &&
         ["register", "login"].includes(storedData.purpose);
 
-    const email = storedData?.email;
-    const purpose = storedData?.purpose;
+    const email = location.state?.email ?? storedData?.email;
+    const purpose = location.state?.purpose ?? storedData?.purpose;
 
     useEffect(() => {
-        if (!hasStoredOtp) {
+        if (!hasNavigationState && !hasStoredOtp) {
             navigate("/login", { replace: true });
         }
-    }, [hasStoredOtp, navigate]);
+    }, [hasNavigationState, hasStoredOtp, navigate]);
 
     const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
@@ -193,27 +201,45 @@ export default function OtpVerificationPage() {
             sessionStorage.removeItem("otp_verification");
 
             // Redirect based on role
-            if (purpose === "register") {
-                sessionStorage.removeItem("otp_verification");
+            switch (response.user.role) {
+                case "cyclist": {
+                    const hasProfile = await hasCyclistProfile();
 
-                switch (response.user.role) {
-                    case "cyclist":
-                        navigate("/cyclist/create-profile", { replace: true });
-                        break;
+                    if (hasProfile) {
+                        navigate("/cyclist");
+                    } else {
+                        navigate("/cyclist/create-profile");
+                    }
 
-                    case "mechanic":
-                        navigate("/mechanic/create-profile", { replace: true });
-                        break;
-
-                    case "cyclist_mechanic":
-                        navigate("/cyclist/create-profile", { replace: true });
-                        break;
-
-                    default:
-                        navigate("/login", { replace: true });
+                    break;
                 }
 
-                return;
+                case "mechanic": {
+                    const hasProfile = await hasMechanicProfile();
+
+                    if (hasProfile) {
+                        navigate("/mechanic");
+                    } else {
+                        navigate("/mechanic/create-profile");
+                    }
+
+                    break;
+                }
+
+                case "cyclist_mechanic":
+                    navigate("/cyclist");
+                    break;
+
+                case "bike_shop_owner":
+                    navigate("/shop/dashboard");
+                    break;
+
+                case "admin":
+                    navigate("/admin");
+                    break;
+
+                default:
+                    navigate("/login");
             }
         } catch (error) {
             console.error(error);

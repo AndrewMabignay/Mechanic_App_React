@@ -79,6 +79,17 @@ export default function MechanicCyclistInfoDialog({
                     p-0
                     shadow-sm
                     sm:max-w-md
+
+                    data-[state=open]:animate-in
+                    data-[state=closed]:animate-out
+                    data-[state=open]:fade-in-0
+                    data-[state=closed]:fade-out-0
+                    data-[state=open]:zoom-in-95
+                    data-[state=closed]:zoom-out-95
+                    data-[state=open]:slide-in-from-bottom-2
+                    data-[state=closed]:slide-out-to-bottom-2
+                    duration-300
+                    ease-out
                 "
             >
                 {/* Header */}

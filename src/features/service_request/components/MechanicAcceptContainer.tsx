@@ -1,4 +1,12 @@
-import { Bike, MapPin, MessageCircle, Phone, Wrench } from "lucide-react";
+import {
+    Bike,
+    ChevronDown,
+    MapPin,
+    MessageCircle,
+    Phone,
+    Wrench,
+} from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "../../../components/ui/button";
 
@@ -23,244 +31,142 @@ export default function MechanicAcceptContainer({
     onEnRoute,
     isEnRoutePending = false,
 }: MechanicAcceptContainerProps) {
-    const cyclist = request?.cyclist;
+    const serviceRequest = request;
+    const cyclist = serviceRequest?.cyclist;
     const user = cyclist?.user;
 
     const cyclistName =
         `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() ||
         "Cyclist";
 
+    const [isExpanded, setIsExpanded] = useState(true);
+
     return (
-        <div className="absolute inset-x-0 bottom-10 z-20 flex justify-center px-4">
-            <div className="w-full max-w-md">
-                <div
-                    className="
-                        rounded-xl
-                        border
-                        border-gray-200
-                        bg-white
-                        p-5
-                        shadow-sm
-                    "
+        <div className="w-full max-w-md">
+            <div className="rounded-xl border border-gray-200 bg-white shadow-lg">
+                {/* Dropdown Header */}
+                <button
+                    type="button"
+                    onClick={() => setIsExpanded((prev) => !prev)}
+                    className="flex w-full items-center gap-3 p-4 text-left"
                 >
-                    {/* Header */}
-                    <div className="mb-4 flex items-center gap-3">
-                        {/* Avatar */}
-                        <div
-                            className="
-                                flex
-                                h-12
-                                w-12
-                                shrink-0
-                                items-center
-                                justify-center
-                                overflow-hidden
-                                rounded-full
-                                bg-[#fc4c02]/10
-                            "
-                        >
-                            {user?.profile_picture ? (
-                                <img
-                                    src={user.profile_picture}
-                                    alt={cyclistName}
-                                    className="h-full w-full object-cover"
-                                />
-                            ) : (
-                                <Bike className="h-6 w-6 text-[#fc4c02]" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-orange-50">
+                        {user?.profile_picture ? (
+                            <img
+                                src={user.profile_picture}
+                                alt={cyclistName}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <Bike className="h-5 w-5 text-[#fc4c02]" />
+                        )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-gray-900">
+                            {cyclistName}
+                        </p>
+
+                        <p className="mt-0.5 text-xs text-[#fc4c02]">
+                            Accepted Service Request
+                        </p>
+                    </div>
+
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50">
+                        <ChevronDown
+                            className={`h-4 w-4 text-gray-500 transition-transform duration-300 ease-in-out ${
+                                isExpanded ? "rotate-180" : "rotate-0"
+                            }`}
+                        />
+                    </div>
+                </button>
+
+                {/* Expandable Content */}
+                <div
+                    className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+                        isExpanded
+                            ? "grid-rows-[1fr] opacity-100"
+                            : "grid-rows-[0fr] opacity-0"
+                    }`}
+                >
+                    <div className="min-h-0">
+                        <div className="border-t border-gray-100 px-4 pb-4 pt-3">
+                            {/* Bike Problem */}
+                            {serviceRequest?.bike_problem && (
+                                <div className="flex min-w-0 items-center gap-3 rounded-lg border border-gray-200 p-3">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-orange-50">
+                                        <Wrench className="h-4 w-4 text-[#fc4c02]" />
+                                    </div>
+
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xs text-gray-500">
+                                            Bike Problem
+                                        </p>
+
+                                        <p className="mt-0.5 truncate text-sm font-medium text-gray-900">
+                                            {serviceRequest.bike_problem.name}
+                                        </p>
+                                    </div>
+                                </div>
                             )}
-                        </div>
 
-                        {/* Cyclist Name */}
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate text-base font-semibold text-gray-900">
-                                {cyclistName}
-                            </p>
+                            {/* Location */}
+                            <div className="mt-2 flex min-w-0 items-start gap-3 rounded-lg border border-gray-200 p-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-orange-50">
+                                    <MapPin className="h-4 w-4 text-[#fc4c02]" />
+                                </div>
 
-                            <p className="mt-1 text-xs font-medium text-[#fc4c02]">
-                                Cyclist
-                            </p>
-                        </div>
-                    </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs text-gray-500">
+                                        Location
+                                    </p>
 
-                    {/* Bike Problem */}
-                    {request?.bike_problem && (
-                        <div
-                            className="
-                                flex
-                                min-w-0
-                                items-center
-                                gap-3
-                                rounded-lg
-                                border
-                                border-gray-200
-                                bg-white
-                                p-3
-                            "
-                        >
-                            <div
-                                className="
-                                    flex
-                                    h-9
-                                    w-9
-                                    shrink-0
-                                    items-center
-                                    justify-center
-                                    rounded-md
-                                    bg-[#fc4c02]/10
-                                "
-                            >
-                                <Wrench className="h-4 w-4 text-[#fc4c02]" />
+                                    <p className="mt-0.5 break-words text-sm font-medium text-gray-900">
+                                        {address}
+                                    </p>
+                                </div>
                             </div>
 
-                            <div className="min-w-0 flex-1">
-                                <p className="text-xs font-medium text-gray-500">
-                                    Bike Problem
-                                </p>
+                            {/* Actions */}
+                            <div className="mt-3 grid grid-cols-2 gap-2">
+                                <Button
+                                    type="button"
+                                    onClick={onCall}
+                                    className="h-9 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 shadow-none hover:bg-gray-50"
+                                >
+                                    <Phone className="mr-2 h-4 w-4" />
+                                    Call
+                                </Button>
 
-                                <p className="mt-1 truncate text-sm font-medium text-gray-900">
-                                    {request.bike_problem.name}
-                                </p>
+                                <Button
+                                    type="button"
+                                    onClick={onChat}
+                                    className="h-9 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 shadow-none hover:bg-gray-50"
+                                >
+                                    <MessageCircle className="mr-2 h-4 w-4" />
+                                    Chat
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    onClick={onViewDetails}
+                                    className="h-9 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 shadow-none hover:bg-gray-50"
+                                >
+                                    View Details
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    onClick={onEnRoute}
+                                    disabled={isEnRoutePending}
+                                    className="h-9 rounded-lg bg-[#fc4c02] text-sm font-medium text-white shadow-none hover:bg-[#e04400] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {isEnRoutePending
+                                        ? "Starting..."
+                                        : "En Route"}
+                                </Button>
                             </div>
                         </div>
-                    )}
-
-                    {/* Address */}
-                    <div
-                        className="
-                            mt-3
-                            flex
-                            min-w-0
-                            items-start
-                            gap-3
-                            rounded-lg
-                            border
-                            border-gray-200
-                            bg-white
-                            p-3
-                        "
-                    >
-                        <div
-                            className="
-                                flex
-                                h-9
-                                w-9
-                                shrink-0
-                                items-center
-                                justify-center
-                                rounded-md
-                                bg-[#fc4c02]/10
-                            "
-                        >
-                            <MapPin className="h-4 w-4 text-[#fc4c02]" />
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-500">
-                                Location
-                            </p>
-
-                            <p className="mt-1 break-words text-sm font-medium text-gray-900">
-                                {address}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="mt-4 space-y-2">
-                        <Button
-                            type="button"
-                            onClick={onCall}
-                            className="
-                                h-11
-                                w-full
-                                rounded-md
-                                border
-                                border-[#fc4c02]
-                                bg-white
-                                px-4
-                                text-sm
-                                font-medium
-                                text-[#fc4c02]
-                                shadow-none
-                                transition-colors
-                                hover:bg-[#fc4c02]/5
-                                hover:text-[#fc4c02]
-                            "
-                        >
-                            <Phone className="mr-2 h-4 w-4" />
-                            Call
-                        </Button>
-
-                        <Button
-                            type="button"
-                            onClick={onChat}
-                            className="
-                                h-11
-                                w-full
-                                rounded-md
-                                border
-                                border-[#fc4c02]
-                                bg-white
-                                px-4
-                                text-sm
-                                font-medium
-                                text-[#fc4c02]
-                                shadow-none
-                                transition-colors
-                                hover:bg-[#fc4c02]/5
-                                hover:text-[#fc4c02]
-                            "
-                        >
-                            <MessageCircle className="mr-2 h-4 w-4" />
-                            Chat
-                        </Button>
-
-                        <Button
-                            type="button"
-                            onClick={onViewDetails}
-                            className="
-                                h-11
-                                w-full
-                                rounded-md
-                                border
-                                border-gray-300
-                                bg-white
-                                px-4
-                                text-sm
-                                font-medium
-                                text-gray-700
-                                shadow-none
-                                transition-colors
-                                hover:border-[#fc4c02]
-                                hover:bg-[#fc4c02]/5
-                                hover:text-[#fc4c02]
-                            "
-                        >
-                            View Details
-                        </Button>
-
-                        <Button
-                            type="button"
-                            onClick={onEnRoute}
-                            disabled={isEnRoutePending}
-                            className="
-                                h-11
-                                w-full
-                                rounded-md
-                                bg-[#fc4c02]
-                                px-4
-                                text-sm
-                                font-medium
-                                text-white
-                                shadow-sm
-                                transition-colors
-                                hover:bg-[#e64500]
-                                disabled:cursor-not-allowed
-                                disabled:opacity-60
-                            "
-                        >
-                            {isEnRoutePending ? "Starting..." : "En Route"}
-                        </Button>
                     </div>
                 </div>
             </div>

@@ -28,7 +28,22 @@ export default function MechanicIncomingRequestContainer({
         `${cyclist?.first_name ?? ""} ${cyclist?.last_name ?? ""}`.trim();
 
     return (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+        <div
+            className="
+                animate-in
+                fade-in-0
+                zoom-in-95
+                slide-in-from-bottom-2
+                duration-300
+                ease-out
+                overflow-hidden
+                rounded-2xl
+                border
+                border-gray-200
+                bg-white
+                shadow-xl
+            "
+        >
             {/* Header */}
             <div className="border-b border-gray-100 px-5 py-4">
                 <div className="flex items-center gap-3">

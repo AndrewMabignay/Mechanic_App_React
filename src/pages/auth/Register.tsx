@@ -83,13 +83,7 @@ export default function Register() {
         }
 
         try {
-            console.log("1. Submitting registration...");
-
-            const response = await registerMutation.mutateAsync(data);
-
-            alert("Registration response received!");
-
-            console.log("2. Registration successful:", response);
+            await registerMutation.mutateAsync(data);
 
             sessionStorage.setItem(
                 "otp_verification",

@@ -1,4 +1,4 @@
-import { Navigation } from "lucide-react";
+import { Check, Navigation } from "lucide-react";
 import MapComponent, {
     type NavigationInstruction,
 } from "../../../components/Map";
@@ -8,8 +8,10 @@ import { useEffect, useRef, useState } from "react";
 import MechanicCyclistInfoDialog from "../../service_request/components/MechanicCyclistInfoDialog";
 import {
     useAcceptServiceRequest,
+    useCompleteServiceRequest,
     useDeclineServiceRequest,
     useEnRouteServiceRequest,
+    useInProgressServiceRequest,
 } from "../../service_request/hooks/useMechanicCurrentServiceRequest";
 import MechanicEnRouteContainer from "../../service_request/components/MechanicEnRouteContainer";
 import { useMechanicCurrentServiceRequest } from "../../service_request/hooks/useCurrentServiceRequest";
@@ -23,6 +25,8 @@ import { calculateDistanceInMeters } from "../helpers/location";
 import MechanicProfileContainer from "./MechanicProfileContainer";
 import MechanicIncomingRequestContainer from "@/features/service_request/components/MechanicIncomingRequestContainer";
 import type { ServiceRequest } from "@/features/service_request/types/serviceRequest";
+import MechanicInProgressContainer from "@/features/service_request/components/MechanicInProgressContainer";
+import { Button } from "@/components/ui/button";
 
 export default function MechanicHomeComponent() {
     const {
@@ -37,8 +41,12 @@ export default function MechanicHomeComponent() {
     const acceptMutation = useAcceptServiceRequest();
     const declineMutation = useDeclineServiceRequest();
     const enRouteMutation = useEnRouteServiceRequest();
+    const inProgressMutation = useInProgressServiceRequest();
+    const completeMutation = useCompleteServiceRequest();
+
     const { location, loading, error } = useCurrentLocation();
-    const { data: currentRequestResponse } = useMechanicCurrentServiceRequest();
+    const { data: currentRequestResponse, isFetching } =
+        useMechanicCurrentServiceRequest();
 
     const currentRequest = currentRequestResponse?.data;
     console.log(currentRequest);
@@ -46,7 +54,15 @@ export default function MechanicHomeComponent() {
     const [selectedRequest, setSelectedRequest] = useState<ServiceRequest>();
 
     const isAccepted = currentRequest?.status === "accepted";
+
+    const [acceptingRequestUuid, setAcceptingRequestUuid] = useState<
+        string | null
+    >(null);
+    const isAcceptingRequest =
+        acceptingRequestUuid !== null || acceptMutation.isPending;
+
     const isEnRoute = currentRequest?.status === "en_route";
+    const isInProgress = currentRequest?.status === "in_progress";
 
     const [currentDirection, setCurrentDirection] =
         useState<NavigationInstruction | null>(null);
@@ -70,6 +86,7 @@ export default function MechanicHomeComponent() {
     const [declinedRequestUuid, setDeclinedRequestUuid] = useState<
         string | null
     >(null);
+    const [serviceCompleted, setServiceCompleted] = useState(false);
 
     useEffect(() => {
         if (!location || !isEnRoute) {
@@ -134,24 +151,38 @@ export default function MechanicHomeComponent() {
     }
 
     const requests = data?.data ?? [];
-    // const incomingRequest = requests[0];
-    // console.log(incomingRequest?.service_request);
 
     const incomingRequest = requests.find(
         (request) => request.service_request?.uuid !== declinedRequestUuid,
     );
 
+    const distanceToCyclist =
+        currentRequest?.location_lat !== undefined &&
+        currentRequest?.location_lng !== undefined
+            ? calculateDistanceInMeters(
+                  location.latitude,
+                  location.longitude,
+                  currentRequest.location_lat,
+                  currentRequest.location_lng,
+              )
+            : undefined;
+
     const handleAccept = async () => {
-        if (!incomingRequest?.uuid) {
+        const uuid = incomingRequest?.service_request?.uuid;
+
+        if (!uuid) {
             return;
         }
 
+        setAcceptingRequestUuid(uuid);
+
         try {
-            await acceptMutation.mutateAsync(
-                incomingRequest?.service_request?.uuid,
-            );
+            await acceptMutation.mutateAsync(uuid);
+
+            setAcceptingRequestUuid(null);
         } catch (error) {
             console.error("Failed to accept service request:", error);
+            setAcceptingRequestUuid(null);
         }
     };
 
@@ -199,6 +230,38 @@ export default function MechanicHomeComponent() {
             await enRouteMutation.mutateAsync(currentRequest.uuid);
         } catch (error) {
             console.error("Failed to set service request to en route:", error);
+        }
+    };
+
+    const handleArrived = async () => {
+        if (!currentRequest?.uuid) {
+            return;
+        }
+
+        if (distanceToCyclist === undefined || distanceToCyclist > 50) {
+            return;
+        }
+
+        try {
+            await inProgressMutation.mutateAsync(currentRequest.uuid);
+        } catch (error) {
+            console.error(
+                "Failed to mark service request as in progress:",
+                error,
+            );
+        }
+    };
+
+    const handleComplete = async () => {
+        if (!currentRequest?.uuid) {
+            return;
+        }
+
+        try {
+            await completeMutation.mutateAsync(currentRequest.uuid);
+            setServiceCompleted(true);
+        } catch (error) {
+            console.error("Failed to complete service:", error);
         }
     };
 
@@ -255,14 +318,68 @@ export default function MechanicHomeComponent() {
             {/* Bottom Container */}
             <div className="absolute inset-x-0 bottom-4 z-20 flex justify-center px-4">
                 <div className="w-full max-w-md">
-                    {isEnRoute && currentRequest ? (
+                    {serviceCompleted ? (
+                        <div
+                            className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+                                serviceCompleted
+                                    ? "grid-rows-[1fr] opacity-100"
+                                    : "grid-rows-[0fr] opacity-0"
+                            }`}
+                        >
+                            <div className="min-h-0">
+                                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-lg">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-50">
+                                            <Check className="h-6 w-6 text-[#fc4c02]" />
+                                        </div>
+
+                                        <h2 className="mt-3 text-base font-semibold text-gray-900">
+                                            Service Completed
+                                        </h2>
+
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            You've completed the service
+                                            successfully.
+                                        </p>
+
+                                        <Button
+                                            type="button"
+                                            onClick={() =>
+                                                setServiceCompleted(false)
+                                            }
+                                            className="mt-4 h-9 w-full rounded-lg bg-[#fc4c02] text-sm font-medium text-white hover:bg-[#e04400]"
+                                        >
+                                            Close
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : isInProgress && currentRequest ? (
                         <>
-                            <MechanicEnRouteContainer
+                            <MechanicInProgressContainer
                                 request={currentRequest}
                                 onViewDetails={() => {
                                     setSelectedRequest(currentRequest);
                                     setCyclistInfoOpen(true);
                                 }}
+                                onComplete={handleComplete}
+                                isCompleting={completeMutation.isPending}
+                            />
+                        </>
+                    ) : isEnRoute && currentRequest ? (
+                        <>
+                            <MechanicEnRouteContainer
+                                request={currentRequest}
+                                distanceToCyclist={distanceToCyclist}
+                                onViewDetails={() => {
+                                    setSelectedRequest(currentRequest);
+                                    setCyclistInfoOpen(true);
+                                }}
+                                onCall={handleCall}
+                                onChat={handleChat}
+                                onArrived={handleArrived}
+                                isArriving={inProgressMutation.isPending}
                             />
                         </>
                     ) : isAccepted && currentRequest ? (
@@ -278,6 +395,20 @@ export default function MechanicHomeComponent() {
                             onEnRoute={handleEnRoute}
                             isEnRoutePending={false}
                         />
+                    ) : isAcceptingRequest && incomingRequest ? (
+                        <MechanicIncomingRequestContainer
+                            request={incomingRequest}
+                            onViewDetails={() => {
+                                setSelectedRequest(
+                                    incomingRequest.service_request,
+                                );
+                                setCyclistInfoOpen(true);
+                            }}
+                            onAccept={handleAccept}
+                            onDecline={handleDecline}
+                            isAccepting={true}
+                            isDeclining={declineMutation.isPending}
+                        />
                     ) : incomingRequest ? (
                         <MechanicIncomingRequestContainer
                             request={incomingRequest}
@@ -292,7 +423,7 @@ export default function MechanicHomeComponent() {
                             isAccepting={acceptMutation.isPending}
                             isDeclining={declineMutation.isPending}
                         />
-                    ) : (
+                    ) : isFetching ? null : (
                         <MechanicProfileContainer
                             profile={mechanicProfile?.data}
                         />

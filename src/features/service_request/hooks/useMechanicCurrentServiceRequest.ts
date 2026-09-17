@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMechanicCurrentServiceRequest } from "../api/mechanicCurrentServiceRequestApi";
 import {
     acceptServiceRequest,
+    completeServiceRequest,
     declineServiceRequest,
     enRouteServiceRequest,
+    inProgressServiceRequest,
 } from "../api/statusServiceRequestApi";
 
 export function useMechanicCurrentServiceRequest(enabled = true) {
@@ -54,6 +56,38 @@ export function useEnRouteServiceRequest() {
 
     return useMutation({
         mutationFn: enRouteServiceRequest,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["incoming-requests"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["mechanic-current-service-request"],
+            });
+        },
+    });
+}
+
+export function useInProgressServiceRequest() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: inProgressServiceRequest,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["incoming-requests"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["mechanic-current-service-request"],
+            });
+        },
+    });
+}
+
+export function useCompleteServiceRequest() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: completeServiceRequest,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["incoming-requests"],
