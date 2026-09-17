@@ -1,5 +1,6 @@
 import type { CyclistProfile } from "../../cyclist/types/cyclist";
 import type { MechanicProfile } from "../../mechanic/types/mechanicProfile";
+import type { ServiceRequestRating } from "./serviceRequestRating";
 
 export interface ServiceRequestImage {
     id: number;
@@ -63,6 +64,7 @@ export interface ServiceRequest {
     cyclist: CyclistProfile;
     mechanic: MechanicProfile;
     acceptances: ServiceRequestAcceptance;
+    rating: ServiceRequestRating;
 }
 
 export interface ServiceRequestResponse {

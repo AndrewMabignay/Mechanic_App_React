@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import CyclistHome from "../pages/cylist/CyclistHome";
-import AdminDashboard from "../pages/admin/AdminDashboard";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import Login from "../pages/auth/Login";
@@ -19,6 +18,7 @@ import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
 import RequireMechanicProfile from "./RequireMechanicProfile";
 import CreateCyclistProfileRoute from "./CreateCyclistProfileRoute";
+import CyclistServiceRequestHistory from "@/pages/cylist/CyclistServiceRequestHistory";
 
 const AppRoutes = () => {
     return (
@@ -55,6 +55,11 @@ const AppRoutes = () => {
                     {/* <Route element={<RequireCyclistProfile />}> */}
                     <Route element={<CyclistLayout />}>
                         <Route path="/cyclist/" element={<CyclistHome />} />
+
+                        <Route
+                            path="/cyclist/service-request/history"
+                            element={<CyclistServiceRequestHistory />}
+                        />
 
                         <Route
                             path="/cyclist/request-mechanic"
@@ -98,7 +103,7 @@ const AppRoutes = () => {
 
                 {/* Administrator */}
                 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                    <Route path="/admin/*" element={<AdminDashboard />} />
+                    {/* <Route path="/admin/*" element={<AdminDashboard />} /> */}
                 </Route>
 
                 <Route path="/" element={<HomeRedirect />} />
