@@ -83,7 +83,11 @@ export default function Register() {
         }
 
         try {
-            await registerMutation.mutateAsync(data);
+            console.log("1. Submitting registration...");
+
+            const response = await registerMutation.mutateAsync(data);
+
+            console.log("2. Registration successful:", response);
 
             sessionStorage.setItem(
                 "otp_verification",
@@ -101,7 +105,18 @@ export default function Register() {
                 },
             });
         } catch (error) {
-            console.error(error);
+            console.log(error);
+            // if (axios.isAxiosError(error)) {
+            //     const errors = error.response?.data?.errors;
+            //     if (errors) {
+            //         Object.entries(errors).forEach(([field, messages]) => {
+            //             form.setError(field as keyof RegisterFormData, {
+            //                 type: "server",
+            //                 message: messages[0],
+            //             });
+            //         });
+            //     }
+            // }
         }
     }
 
