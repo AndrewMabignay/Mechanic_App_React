@@ -25,12 +25,14 @@ import { useState } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { Bike, Camera, Check, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axios from "axios";
 
 export default function Register() {
     const navigate = useNavigate();
 
     const [step, setStep] = useState(1);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [captchaKey, setCaptchaKey] = useState(0);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const form = useForm<RegisterFormData>({
@@ -96,19 +98,50 @@ export default function Register() {
             navigate("/verify-otp", {
                 replace: true,
             });
-        } catch (error) {
+        } catch (error: unknown) {
+            if (!axios.isAxiosError(error)) {
+                return;
+            }
+
+            const errors = error.response?.data?.errors;
+
+            if (errors) {
+                let hasStepOneError = false;
+
+                Object.entries(errors).forEach(([field, messages]) => {
+                    const message = Array.isArray(messages)
+                        ? String(messages[0])
+                        : String(messages);
+
+                    form.setError(field as keyof RegisterFormData, {
+                        type: "server",
+                        message,
+                    });
+
+                    if (
+                        [
+                            "first_name",
+                            "last_name",
+                            "middle_name",
+                            "email",
+                            "phone",
+                            "profile_picture",
+                        ].includes(field)
+                    ) {
+                        hasStepOneError = true;
+                    }
+                });
+
+                if (hasStepOneError) {
+                    setStep(1);
+                }
+            }
+
+            // Reset Cloudflare Turnstile
+            setCaptchaToken(null);
+            setCaptchaKey((key) => key + 1);
+
             console.log(error);
-            // if (axios.isAxiosError(error)) {
-            //     const errors = error.response?.data?.errors;
-            //     if (errors) {
-            //         Object.entries(errors).forEach(([field, messages]) => {
-            //             form.setError(field as keyof RegisterFormData, {
-            //                 type: "server",
-            //                 message: messages[0],
-            //             });
-            //         });
-            //     }
-            // }
         }
     }
 
@@ -746,6 +779,7 @@ export default function Register() {
                                 <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
                                     <div className="flex justify-center">
                                         <Turnstile
+                                            key={captchaKey}
                                             siteKey={
                                                 import.meta.env
                                                     .VITE_TURNSTILE_SITE_KEY

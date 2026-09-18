@@ -34,11 +34,19 @@ export default function OtpVerificationPage() {
     const email = location.state?.email ?? storedData?.email;
     const purpose = location.state?.purpose ?? storedData?.purpose;
 
+    const [isVerified, setIsVerified] = useState(false);
+    const [isCheckingProfile, setIsCheckingProfile] = useState(false);
+    const [verifiedEmail, setVerifiedEmail] = useState(email);
+
     useEffect(() => {
+        if (isVerified) {
+            return;
+        }
+
         if (!hasNavigationState && !hasStoredOtp) {
             navigate("/login", { replace: true });
         }
-    }, [hasNavigationState, hasStoredOtp, navigate]);
+    }, [hasNavigationState, hasStoredOtp, isVerified, navigate]);
 
     const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
@@ -188,17 +196,20 @@ export default function OtpVerificationPage() {
                 });
             }
 
+            console.log(response);
+
+            setIsVerified(true);
+            setVerifiedEmail(email);
+
+            sessionStorage.removeItem("otp_verification");
+
             // Save authentication data
             localStorage.setItem("bike_mechanic_token", response.token);
-
             localStorage.setItem(
                 "bike_mechanic_user",
                 JSON.stringify(response.user),
             );
-
             localStorage.setItem("bike_mechanic_role", response.user.role);
-
-            sessionStorage.removeItem("otp_verification");
 
             // Redirect based on role
             switch (response.user.role) {
@@ -211,19 +222,27 @@ export default function OtpVerificationPage() {
                         navigate("/cyclist/create-profile");
                     }
 
-                    break;
+                    return;
                 }
 
                 case "mechanic": {
-                    const hasProfile = await hasMechanicProfile();
+                    setIsCheckingProfile(true);
 
-                    if (hasProfile) {
-                        navigate("/mechanic");
-                    } else {
-                        navigate("/mechanic/create-profile");
+                    try {
+                        const hasProfile = await hasMechanicProfile();
+
+                        if (hasProfile) {
+                            navigate("/mechanic", { replace: true });
+                        } else {
+                            navigate("/mechanic/create-profile", {
+                                replace: true,
+                            });
+                        }
+                    } finally {
+                        setIsCheckingProfile(false);
                     }
 
-                    break;
+                    return;
                 }
 
                 case "cyclist_mechanic":
@@ -263,7 +282,9 @@ export default function OtpVerificationPage() {
     }
 
     const isVerifying =
-        verifyLoginMutation.isPending || verifyRegisterMutation.isPending;
+        verifyLoginMutation.isPending ||
+        verifyRegisterMutation.isPending ||
+        isCheckingProfile;
 
     const isComplete = otp.every((digit) => digit !== "");
 
@@ -329,7 +350,7 @@ export default function OtpVerificationPage() {
                             text-gray-900
                         "
                         >
-                            {email}
+                            {verifiedEmail}
                         </p>
                     </div>
 
