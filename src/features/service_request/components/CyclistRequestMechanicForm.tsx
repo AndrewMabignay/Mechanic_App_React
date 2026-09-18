@@ -35,8 +35,8 @@ export default function CyclistRequestMechanicForm() {
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const { data: cyclistProfile } = useCyclistProfile();
 
-    const latitude = Number(cyclistProfile?.default_location_lat);
-    const longitude = Number(cyclistProfile?.default_location_lng);
+    const latitude = Number(cyclistProfile?.data?.default_location_lat);
+    const longitude = Number(cyclistProfile?.data?.default_location_lng);
 
     const { data, isLoading, error } = useBikeProblemOptions();
 

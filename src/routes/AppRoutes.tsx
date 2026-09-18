@@ -13,12 +13,12 @@ import MechanicLayout from "../layouts/MechanicLayout";
 import MechanicProfileForm from "../features/mechanic/components/MechanicProfileForm";
 import CreateMechanicProfileRoute from "./CreateMechanicProfileRoute";
 import MechanicHome from "../pages/mechanic/MechanicHome";
-import CyclistMap from "../pages/cylist/CyclistMap";
 import Profile from "../pages/Profile";
 import HomeRedirect from "./HomeRedirect";
 import RequireMechanicProfile from "./RequireMechanicProfile";
 import CreateCyclistProfileRoute from "./CreateCyclistProfileRoute";
 import CyclistServiceRequestHistory from "@/pages/cylist/CyclistServiceRequestHistory";
+import RequireCyclistProfile from "./RequireCyclistProfile";
 
 const AppRoutes = () => {
     return (
@@ -52,23 +52,21 @@ const AppRoutes = () => {
                         }
                     />
 
-                    {/* <Route element={<RequireCyclistProfile />}> */}
-                    <Route element={<CyclistLayout />}>
-                        <Route path="/cyclist/" element={<CyclistHome />} />
+                    <Route element={<RequireCyclistProfile />}>
+                        <Route element={<CyclistLayout />}>
+                            <Route path="/cyclist/" element={<CyclistHome />} />
 
-                        <Route
-                            path="/cyclist/service-request/history"
-                            element={<CyclistServiceRequestHistory />}
-                        />
-
-                        <Route
-                            path="/cyclist/request-mechanic"
-                            element={<CyclistMap />}
-                        />
-                        <Route path="/cyclist/profile" element={<Profile />} />
+                            <Route
+                                path="/cyclist/service-request/history"
+                                element={<CyclistServiceRequestHistory />}
+                            />
+                            <Route
+                                path="/cyclist/profile"
+                                element={<Profile />}
+                            />
+                        </Route>
                     </Route>
                 </Route>
-                {/* </Route> */}
 
                 {/* Mechanic */}
                 <Route

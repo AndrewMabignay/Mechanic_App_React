@@ -72,7 +72,7 @@ export default function CyclistProfile() {
         );
     }
 
-    const user = data?.user;
+    const user = data?.data?.user;
 
     if (!user) {
         return (

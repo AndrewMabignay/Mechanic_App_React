@@ -214,12 +214,20 @@ export default function OtpVerificationPage() {
             // Redirect based on role
             switch (response.user.role) {
                 case "cyclist": {
-                    const hasProfile = await hasCyclistProfile();
+                    setIsCheckingProfile(true);
 
-                    if (hasProfile) {
-                        navigate("/cyclist");
-                    } else {
-                        navigate("/cyclist/create-profile");
+                    try {
+                        const hasProfile = await hasCyclistProfile();
+
+                        if (hasProfile) {
+                            navigate("/cyclist", { replace: true });
+                        } else {
+                            navigate("/cyclist/create-profile", {
+                                replace: true,
+                            });
+                        }
+                    } finally {
+                        setIsCheckingProfile(false);
                     }
 
                     return;

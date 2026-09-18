@@ -76,7 +76,7 @@ export default function MechanicProfile() {
         );
     }
 
-    const user = data.data?.user;
+    const user = data?.data?.user;
 
     if (!user) {
         return (

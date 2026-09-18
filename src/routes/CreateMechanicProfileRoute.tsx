@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function CreateMechanicProfileRoute({ children }: Props) {
-    const { data, isLoading } = useMechanicProfile();
+    const { data, isLoading, isError } = useMechanicProfile();
 
     const [showLoading, setShowLoading] = useState(true);
 
@@ -26,7 +26,7 @@ export default function CreateMechanicProfileRoute({ children }: Props) {
         return <LoadingComponent />;
     }
 
-    if (data?.data) {
+    if (!isError && data?.data) {
         return <Navigate to="/mechanic/profile" replace />;
     }
 

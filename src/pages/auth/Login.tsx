@@ -9,18 +9,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../../features/auth/hooks/useAuth";
 import {
     loginSchema,
-    type LoginFormSchema,
+    type LoginFormData,
 } from "../../features/auth/schemas/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Bike, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
     const navigate = useNavigate();
 
-    const form = useForm<LoginFormSchema>({
+    const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "",
@@ -32,7 +33,7 @@ export default function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    async function onSubmit(data: LoginFormSchema) {
+    async function onSubmit(data: LoginFormData) {
         try {
             await loginMutation.mutateAsync(data);
 
@@ -42,8 +43,25 @@ export default function Login() {
                     purpose: "login",
                 },
             });
-        } catch (error) {
-            console.error(error);
+        } catch (error: unknown) {
+            if (!axios.isAxiosError(error)) {
+                return;
+            }
+
+            const errors = error.response?.data?.errors;
+
+            if (errors) {
+                Object.entries(errors).forEach(([field, messages]) => {
+                    const message = Array.isArray(messages)
+                        ? String(messages[0])
+                        : String(messages);
+
+                    form.setError(field as keyof LoginFormData, {
+                        type: "server",
+                        message,
+                    });
+                });
+            }
         }
     }
 

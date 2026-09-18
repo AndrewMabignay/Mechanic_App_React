@@ -16,9 +16,9 @@ import { useDismissReviewPrompt } from "../../service_request/hooks/useDismissRe
 import { useFindMechanic } from "@/features/service_request/hooks/useFindMechanic";
 
 export default function CyclistHomeComponent() {
-    const { data, isLoading, error } = useCyclistProfile();
+    const { data: cyclistProfile, isLoading, error } = useCyclistProfile();
 
-    const user = data?.user;
+    const user = cyclistProfile?.data?.user;
 
     const { data: currentRequestResponse } = useCyclistCurrentServiceRequest();
 
@@ -37,8 +37,8 @@ export default function CyclistHomeComponent() {
 
     const [findingDialogOpen, setFindingDialogOpen] = useState(false);
 
-    const latitude = Number(data?.default_location_lat);
-    const longitude = Number(data?.default_location_lng);
+    const latitude = Number(cyclistProfile?.data?.default_location_lat);
+    const longitude = Number(cyclistProfile?.data?.default_location_lng);
 
     const isPending = currentRequest?.status === "pending";
     const isAccepted = currentRequest?.status === "accepted";
