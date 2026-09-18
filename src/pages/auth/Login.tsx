@@ -14,7 +14,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-import { Bike } from "lucide-react";
+import { Bike, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -28,6 +29,8 @@ export default function Login() {
     });
 
     const loginMutation = useLogin();
+
+    const [showPassword, setShowPassword] = useState(false);
 
     async function onSubmit(data: LoginFormSchema) {
         try {
@@ -48,7 +51,19 @@ export default function Login() {
         <div className="min-h-screen bg-[#f8f9fa] px-4 py-8 sm:py-12">
             <div className="mx-auto flex w-full max-w-lg flex-col items-center">
                 {/* Logo / Brand */}
-                <div className="mb-6 flex items-center gap-2">
+                <div
+                    className="
+                        mb-6
+                        flex
+                        animate-in
+                        fade-in-0
+                        slide-in-from-bottom-1
+                        items-center
+                        gap-2
+                        duration-300
+                        ease-out
+                    "
+                >
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#fc4c02]">
                         <Bike className="h-5 w-5 text-white" />
                     </div>
@@ -59,7 +74,24 @@ export default function Login() {
                 </div>
 
                 {/* Card */}
-                <div className="w-full rounded-xl border border-gray-200 bg-white px-6 py-8 shadow-sm sm:px-9">
+                <div
+                    className="
+                        w-full
+                        animate-in
+                        fade-in-0
+                        slide-in-from-bottom-2
+                        duration-500
+                        ease-out
+                        rounded-xl
+                        border
+                        border-gray-200
+                        bg-white
+                        px-6
+                        py-8
+                        shadow-sm
+                        sm:px-9
+                    "
+                >
                     {/* Header */}
                     <div className="mb-7">
                         <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -132,27 +164,71 @@ export default function Login() {
                                             */}
                                         </div>
 
-                                        <Input
-                                            {...field}
-                                            type="password"
-                                            id="form-rhf-password"
-                                            aria-invalid={fieldState.invalid}
-                                            placeholder="Enter your password"
-                                            autoComplete="current-password"
-                                            className="
-                                                h-11
-                                                rounded-md
-                                                border-gray-300
-                                                focus-visible:border-[#fc4c02]
-                                                focus-visible:ring-[#fc4c02]
-                                            "
-                                        />
-
-                                        {fieldState.invalid && (
-                                            <FieldError
-                                                errors={[fieldState.error]}
+                                        <div className="relative">
+                                            <Input
+                                                {...field}
+                                                type={
+                                                    showPassword
+                                                        ? "text"
+                                                        : "password"
+                                                }
+                                                id="form-rhf-password"
+                                                aria-invalid={
+                                                    fieldState.invalid
+                                                }
+                                                placeholder="Enter your password"
+                                                autoComplete="current-password"
+                                                className="
+                                                    h-11
+                                                    rounded-md
+                                                    border-gray-300
+                                                    pr-10
+                                                    focus-visible:border-[#fc4c02]
+                                                    focus-visible:ring-[#fc4c02]
+                                                "
                                             />
-                                        )}
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowPassword(
+                                                        (prev) => !prev,
+                                                    )
+                                                }
+                                                className="
+                                                        absolute
+                                                        right-3
+                                                        top-1/2
+                                                        -translate-y-1/2
+                                                        text-gray-400
+                                                        transition-colors
+                                                        hover:text-gray-600
+                                                    "
+                                                aria-label={
+                                                    showPassword
+                                                        ? "Hide password"
+                                                        : "Show password"
+                                                }
+                                            >
+                                                <span className="relative flex h-4 w-4 items-center justify-center">
+                                                    <Eye
+                                                        className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                            showPassword
+                                                                ? "scale-75 opacity-0"
+                                                                : "scale-100 opacity-100"
+                                                        }`}
+                                                    />
+
+                                                    <EyeOff
+                                                        className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                            showPassword
+                                                                ? "scale-100 opacity-100"
+                                                                : "scale-75 opacity-0"
+                                                        }`}
+                                                    />
+                                                </span>
+                                            </button>
+                                        </div>
                                     </Field>
                                 )}
                             />
@@ -201,7 +277,19 @@ export default function Login() {
                 </div>
 
                 {/* Footer */}
-                <p className="mt-6 text-center text-xs text-gray-400">
+                <p
+                    className="
+                        mt-6
+                        animate-in
+                        fade-in-0
+                        text-center
+                        text-xs
+                        text-gray-400
+                        duration-500
+                        delay-150
+                        ease-out
+                    "
+                >
                     Secure access to your Bike Mechanic account.
                 </p>
             </div>
