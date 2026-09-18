@@ -6,7 +6,22 @@ export const registerSchema = z
         last_name: z.string().min(2, "Last name is required").max(255),
         middle_name: z.string().optional().or(z.literal("")),
         email: z.email("Email is required").max(255),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        password: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .regex(
+                /[A-Z]/,
+                "Password must contain at least one uppercase letter",
+            )
+            .regex(
+                /[a-z]/,
+                "Password must contain at least one lowercase letter",
+            )
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(
+                /[^A-Za-z0-9]/,
+                "Password must contain at least one special character",
+            ),
         password_confirmation: z.string(),
         phone: z.string().max(20),
         role: z.enum(["cyclist", "mechanic"]),

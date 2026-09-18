@@ -27,6 +27,7 @@ import MechanicIncomingRequestContainer from "@/features/service_request/compone
 import type { ServiceRequest } from "@/features/service_request/types/serviceRequest";
 import MechanicInProgressContainer from "@/features/service_request/components/MechanicInProgressContainer";
 import { Button } from "@/components/ui/button";
+import LoadingComponent from "@/components/LoadingComponent";
 
 export default function MechanicHomeComponent() {
     const {
@@ -131,11 +132,7 @@ export default function MechanicHomeComponent() {
     }, [location, isEnRoute]);
 
     if (loading) {
-        return (
-            <div className="flex h-full w-full items-center justify-center">
-                Getting your location...
-            </div>
-        );
+        return <LoadingComponent />;
     }
 
     if (error) {

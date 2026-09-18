@@ -1,4 +1,4 @@
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
     registerSchema,
     type RegisterFormData,
@@ -23,7 +23,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { Bike, Camera, Check, User } from "lucide-react";
+import { Bike, Camera, Check, Eye, EyeOff, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
 
@@ -49,6 +49,35 @@ export default function Register() {
             profile_picture: undefined,
         },
     });
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const password = useWatch({
+        control: form.control,
+        name: "password",
+        defaultValue: "",
+    });
+
+    const passwordRequirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password),
+    };
+
+    const passwordScore =
+        Object.values(passwordRequirements).filter(Boolean).length;
+
+    const passwordStrength =
+        password.length === 0
+            ? null
+            : passwordScore <= 2
+              ? "Weak"
+              : passwordScore <= 4
+                ? "Medium"
+                : "Strong";
 
     const registerMutation = useRegister();
 
@@ -160,7 +189,25 @@ export default function Register() {
                 </div>
 
                 {/* Card */}
-                <div className="w-full rounded-xl border border-gray-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8">
+                <div
+                    className="
+                        w-full
+                        animate-in
+                        fade-in-0
+                        slide-in-from-bottom-2
+                        duration-500
+                        ease-out
+                        rounded-xl
+                        border
+                        border-gray-200
+                        bg-white
+                        px-6
+                        py-7
+                        shadow-sm
+                        sm:px-8
+                        sm:py-8
+                    "
+                >
                     {/* Header */}
                     <div className="mb-7">
                         <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -213,7 +260,7 @@ export default function Register() {
                             {/* Progress Line */}
                             <div
                                 className={`
-                                    mx-3 h-[2px] flex-1 transition-colors
+                                    mx-3 h-[2px] flex-1 transition-all duration-300 ease-in-out
                                     ${
                                         step === 2
                                             ? "bg-[#fc4c02]"
@@ -263,82 +310,88 @@ export default function Register() {
                             STEP 1
                         ================================================== */}
                         {step === 1 && (
-                            <FieldGroup>
-                                <div className="mb-1">
-                                    <h2 className="text-lg font-medium text-gray-900">
-                                        Personal information
-                                    </h2>
+                            <div
+                                key="step-1"
+                                className="animate-in fade-in-0 slide-in-from-left-2 duration-300 ease-out"
+                            >
+                                <FieldGroup>
+                                    <div className="mb-1">
+                                        <h2 className="text-lg font-medium text-gray-900">
+                                            Personal information
+                                        </h2>
 
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        Enter your basic information.
-                                    </p>
-                                </div>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            Enter your basic information.
+                                        </p>
+                                    </div>
 
-                                {/* Profile Picture */}
-                                <Controller
-                                    name="profile_picture"
-                                    control={form.control}
-                                    render={({ fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <div className="flex justify-center">
-                                                <label
-                                                    htmlFor="profile-picture"
-                                                    className="group relative cursor-pointer"
-                                                >
-                                                    <Avatar
-                                                        className="
+                                    {/* Profile Picture */}
+                                    <Controller
+                                        name="profile_picture"
+                                        control={form.control}
+                                        render={({ fieldState }) => (
+                                            <Field
+                                                data-invalid={
+                                                    fieldState.invalid
+                                                }
+                                            >
+                                                <div className="flex justify-center">
+                                                    <label
+                                                        htmlFor="profile-picture"
+                                                        className="group relative cursor-pointer"
+                                                    >
+                                                        <Avatar
+                                                            className="
                                                             h-24 w-24
                                                             border-4 border-white
                                                             shadow-md
                                                         "
-                                                    >
-                                                        <AvatarImage
-                                                            src={
-                                                                previewImage ??
-                                                                undefined
-                                                            }
-                                                            alt="Profile picture"
-                                                        />
-                                                        <AvatarFallback
-                                                            className="
+                                                        >
+                                                            <AvatarImage
+                                                                src={
+                                                                    previewImage ??
+                                                                    undefined
+                                                                }
+                                                                alt="Profile picture"
+                                                            />
+                                                            <AvatarFallback
+                                                                className="
                                                                 bg-[#F8FAFC]
                                                                 text-xl font-semibold
                                                                 text-[#374151]
                                                             "
-                                                        >
-                                                            {form.watch(
-                                                                "first_name",
-                                                            ) ||
-                                                            form.watch(
-                                                                "last_name",
-                                                            ) ? (
-                                                                <>
-                                                                    {form
-                                                                        .watch(
-                                                                            "first_name",
-                                                                        )
-                                                                        ?.charAt(
-                                                                            0,
-                                                                        )}
-                                                                    {form
-                                                                        .watch(
-                                                                            "last_name",
-                                                                        )
-                                                                        ?.charAt(
-                                                                            0,
-                                                                        )}
-                                                                </>
-                                                            ) : (
-                                                                <User className="h-10 w-10 text-gray-400" />
-                                                            )}
-                                                        </AvatarFallback>
-                                                    </Avatar>
+                                                            >
+                                                                {form.watch(
+                                                                    "first_name",
+                                                                ) ||
+                                                                form.watch(
+                                                                    "last_name",
+                                                                ) ? (
+                                                                    <>
+                                                                        {form
+                                                                            .watch(
+                                                                                "first_name",
+                                                                            )
+                                                                            ?.charAt(
+                                                                                0,
+                                                                            )}
+                                                                        {form
+                                                                            .watch(
+                                                                                "last_name",
+                                                                            )
+                                                                            ?.charAt(
+                                                                                0,
+                                                                            )}
+                                                                    </>
+                                                                ) : (
+                                                                    <User className="h-10 w-10 text-gray-400" />
+                                                                )}
+                                                            </AvatarFallback>
+                                                        </Avatar>
 
-                                                    {/* Camera Overlay */}
-                                                    <div
-                                                        className="
+                                                        {/* Camera Overlay */}
+                                                        <div
+                                                            className="
                                                             absolute inset-0
                                                             flex items-center justify-center
                                                             rounded-full
@@ -347,63 +400,151 @@ export default function Register() {
                                                             transition-opacity
                                                             group-hover:opacity-100
                                                         "
-                                                    >
-                                                        <Camera className="h-6 w-6 text-white" />
-                                                    </div>
+                                                        >
+                                                            <Camera className="h-6 w-6 text-white" />
+                                                        </div>
 
-                                                    <input
-                                                        id="profile-picture"
-                                                        type="file"
-                                                        accept="image/jpeg,image/png,image/webp"
-                                                        className="hidden"
-                                                        onChange={(event) => {
-                                                            const file =
-                                                                event.target
-                                                                    .files?.[0];
+                                                        <input
+                                                            id="profile-picture"
+                                                            type="file"
+                                                            accept="image/jpeg,image/png,image/webp"
+                                                            className="hidden"
+                                                            onChange={(
+                                                                event,
+                                                            ) => {
+                                                                const file =
+                                                                    event.target
+                                                                        .files?.[0];
 
-                                                            if (!file) return;
+                                                                if (!file)
+                                                                    return;
 
-                                                            form.setValue(
-                                                                "profile_picture",
-                                                                file,
-                                                                {
-                                                                    shouldValidate: true,
-                                                                },
-                                                            );
-
-                                                            setPreviewImage(
-                                                                URL.createObjectURL(
+                                                                form.setValue(
+                                                                    "profile_picture",
                                                                     file,
-                                                                ),
-                                                            );
-                                                        }}
+                                                                    {
+                                                                        shouldValidate: true,
+                                                                    },
+                                                                );
+
+                                                                setPreviewImage(
+                                                                    URL.createObjectURL(
+                                                                        file,
+                                                                    ),
+                                                                );
+                                                            }}
+                                                        />
+                                                    </label>
+                                                </div>
+
+                                                {fieldState.invalid && (
+                                                    <FieldError
+                                                        errors={[
+                                                            form.getFieldState(
+                                                                "profile_picture",
+                                                            ).error,
+                                                        ]}
                                                     />
-                                                </label>
-                                            </div>
+                                                )}
 
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[
-                                                        form.getFieldState(
-                                                            "profile_picture",
-                                                        ).error,
-                                                    ]}
-                                                />
+                                                <p className="text-center text-xs text-gray-500">
+                                                    Click the avatar to upload a
+                                                    profile picture
+                                                </p>
+                                            </Field>
+                                        )}
+                                    />
+
+                                    {/* First Name + Last Name */}
+                                    <div className="grid gap-5 sm:grid-cols-2">
+                                        {/* First Name */}
+                                        <Controller
+                                            name="first_name"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field
+                                                    data-invalid={
+                                                        fieldState.invalid
+                                                    }
+                                                >
+                                                    <FieldLabel htmlFor="first_name">
+                                                        First name
+                                                    </FieldLabel>
+
+                                                    <Input
+                                                        {...field}
+                                                        id="first_name"
+                                                        aria-invalid={
+                                                            fieldState.invalid
+                                                        }
+                                                        placeholder="First name"
+                                                        autoComplete="given-name"
+                                                        className="
+                                                        h-11
+                                                        rounded-md
+                                                        border-gray-300
+                                                        focus-visible:border-[#fc4c02]
+                                                        focus-visible:ring-[#fc4c02]
+                                                    "
+                                                    />
+
+                                                    {fieldState.invalid && (
+                                                        <FieldError
+                                                            errors={[
+                                                                fieldState.error,
+                                                            ]}
+                                                        />
+                                                    )}
+                                                </Field>
                                             )}
+                                        />
 
-                                            <p className="text-center text-xs text-gray-500">
-                                                Click the avatar to upload a
-                                                profile picture
-                                            </p>
-                                        </Field>
-                                    )}
-                                />
+                                        {/* Last Name */}
+                                        <Controller
+                                            name="last_name"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field
+                                                    data-invalid={
+                                                        fieldState.invalid
+                                                    }
+                                                >
+                                                    <FieldLabel htmlFor="last_name">
+                                                        Last name
+                                                    </FieldLabel>
 
-                                {/* First Name + Last Name */}
-                                <div className="grid gap-5 sm:grid-cols-2">
-                                    {/* First Name */}
+                                                    <Input
+                                                        {...field}
+                                                        id="last_name"
+                                                        aria-invalid={
+                                                            fieldState.invalid
+                                                        }
+                                                        placeholder="Last name"
+                                                        autoComplete="family-name"
+                                                        className="
+                                                        h-11
+                                                        rounded-md
+                                                        border-gray-300
+                                                        focus-visible:border-[#fc4c02]
+                                                        focus-visible:ring-[#fc4c02]
+                                                    "
+                                                    />
+
+                                                    {fieldState.invalid && (
+                                                        <FieldError
+                                                            errors={[
+                                                                fieldState.error,
+                                                            ]}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        />
+                                    </div>
+
+                                    {/* Middle Name */}
                                     <Controller
-                                        name="first_name"
+                                        name="middle_name"
                                         control={form.control}
                                         render={({ field, fieldState }) => (
                                             <Field
@@ -411,25 +552,28 @@ export default function Register() {
                                                     fieldState.invalid
                                                 }
                                             >
-                                                <FieldLabel htmlFor="first_name">
-                                                    First name
+                                                <FieldLabel htmlFor="middle_name">
+                                                    Middle name
+                                                    <span className="ml-1 text-gray-400">
+                                                        (optional)
+                                                    </span>
                                                 </FieldLabel>
 
                                                 <Input
                                                     {...field}
-                                                    id="first_name"
+                                                    id="middle_name"
                                                     aria-invalid={
                                                         fieldState.invalid
                                                     }
-                                                    placeholder="First name"
-                                                    autoComplete="given-name"
+                                                    placeholder="Middle name"
+                                                    autoComplete="additional-name"
                                                     className="
-                                                        h-11
-                                                        rounded-md
-                                                        border-gray-300
-                                                        focus-visible:border-[#fc4c02]
-                                                        focus-visible:ring-[#fc4c02]
-                                                    "
+                                                    h-11
+                                                    rounded-md
+                                                    border-gray-300
+                                                    focus-visible:border-[#fc4c02]
+                                                    focus-visible:ring-[#fc4c02]
+                                                "
                                                 />
 
                                                 {fieldState.invalid && (
@@ -443,9 +587,9 @@ export default function Register() {
                                         )}
                                     />
 
-                                    {/* Last Name */}
+                                    {/* Email */}
                                     <Controller
-                                        name="last_name"
+                                        name="email"
                                         control={form.control}
                                         render={({ field, fieldState }) => (
                                             <Field
@@ -453,25 +597,26 @@ export default function Register() {
                                                     fieldState.invalid
                                                 }
                                             >
-                                                <FieldLabel htmlFor="last_name">
-                                                    Last name
+                                                <FieldLabel htmlFor="email">
+                                                    Email
                                                 </FieldLabel>
 
                                                 <Input
                                                     {...field}
-                                                    id="last_name"
+                                                    id="email"
+                                                    type="email"
                                                     aria-invalid={
                                                         fieldState.invalid
                                                     }
-                                                    placeholder="Last name"
-                                                    autoComplete="family-name"
+                                                    placeholder="Email"
+                                                    autoComplete="email"
                                                     className="
-                                                        h-11
-                                                        rounded-md
-                                                        border-gray-300
-                                                        focus-visible:border-[#fc4c02]
-                                                        focus-visible:ring-[#fc4c02]
-                                                    "
+                                                    h-11
+                                                    rounded-md
+                                                    border-gray-300
+                                                    focus-visible:border-[#fc4c02]
+                                                    focus-visible:ring-[#fc4c02]
+                                                "
                                                 />
 
                                                 {fieldState.invalid && (
@@ -484,132 +629,55 @@ export default function Register() {
                                             </Field>
                                         )}
                                     />
-                                </div>
 
-                                {/* Middle Name */}
-                                <Controller
-                                    name="middle_name"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="middle_name">
-                                                Middle name
-                                                <span className="ml-1 text-gray-400">
-                                                    (optional)
-                                                </span>
-                                            </FieldLabel>
-
-                                            <Input
-                                                {...field}
-                                                id="middle_name"
-                                                aria-invalid={
+                                    {/* Phone */}
+                                    <Controller
+                                        name="phone"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <Field
+                                                data-invalid={
                                                     fieldState.invalid
                                                 }
-                                                placeholder="Middle name"
-                                                autoComplete="additional-name"
-                                                className="
+                                            >
+                                                <FieldLabel htmlFor="phone">
+                                                    Phone
+                                                </FieldLabel>
+
+                                                <Input
+                                                    {...field}
+                                                    id="phone"
+                                                    aria-invalid={
+                                                        fieldState.invalid
+                                                    }
+                                                    placeholder="09XXXXXXXXX"
+                                                    autoComplete="tel"
+                                                    className="
                                                     h-11
                                                     rounded-md
                                                     border-gray-300
                                                     focus-visible:border-[#fc4c02]
                                                     focus-visible:ring-[#fc4c02]
                                                 "
-                                            />
-
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
                                                 />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
 
-                                {/* Email */}
-                                <Controller
-                                    name="email"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="email">
-                                                Email
-                                            </FieldLabel>
+                                                {fieldState.invalid && (
+                                                    <FieldError
+                                                        errors={[
+                                                            fieldState.error,
+                                                        ]}
+                                                    />
+                                                )}
+                                            </Field>
+                                        )}
+                                    />
 
-                                            <Input
-                                                {...field}
-                                                id="email"
-                                                type="email"
-                                                aria-invalid={
-                                                    fieldState.invalid
-                                                }
-                                                placeholder="Email"
-                                                autoComplete="email"
-                                                className="
-                                                    h-11
-                                                    rounded-md
-                                                    border-gray-300
-                                                    focus-visible:border-[#fc4c02]
-                                                    focus-visible:ring-[#fc4c02]
-                                                "
-                                            />
-
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
-                                                />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* Phone */}
-                                <Controller
-                                    name="phone"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="phone">
-                                                Phone
-                                            </FieldLabel>
-
-                                            <Input
-                                                {...field}
-                                                id="phone"
-                                                aria-invalid={
-                                                    fieldState.invalid
-                                                }
-                                                placeholder="09XXXXXXXXX"
-                                                autoComplete="tel"
-                                                className="
-                                                    h-11
-                                                    rounded-md
-                                                    border-gray-300
-                                                    focus-visible:border-[#fc4c02]
-                                                    focus-visible:ring-[#fc4c02]
-                                                "
-                                            />
-
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
-                                                />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* Next */}
-                                <div className="mt-2 flex justify-end">
-                                    <Button
-                                        type="button"
-                                        onClick={handleNext}
-                                        className="
+                                    {/* Next */}
+                                    <div className="mt-2 flex justify-end">
+                                        <Button
+                                            type="button"
+                                            onClick={handleNext}
+                                            className="
                                             h-11
                                             rounded-md
                                             bg-[#fc4c02]
@@ -618,204 +686,436 @@ export default function Register() {
                                             text-white
                                             hover:bg-[#e64500]
                                         "
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </FieldGroup>
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </FieldGroup>
+                            </div>
                         )}
 
                         {/* =================================================
                             STEP 2
                         ================================================== */}
                         {step === 2 && (
-                            <FieldGroup>
-                                <div className="mb-1">
-                                    <h2 className="text-lg font-medium text-gray-900">
-                                        Account setup
-                                    </h2>
+                            <div
+                                key="step-2"
+                                className="animate-in fade-in-0 slide-in-from-right-2 duration-300 ease-out"
+                            >
+                                <FieldGroup>
+                                    <div className="mb-1">
+                                        <h2 className="text-lg font-medium text-gray-900">
+                                            Account setup
+                                        </h2>
 
-                                    <p className="mt-1 text-sm text-gray-500">
-                                        Create your password and choose your
-                                        account type.
-                                    </p>
-                                </div>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            Create your password and choose your
+                                            account type.
+                                        </p>
+                                    </div>
 
-                                {/* Password */}
-                                <Controller
-                                    name="password"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="password">
-                                                Password
-                                            </FieldLabel>
-
-                                            <Input
-                                                {...field}
-                                                id="password"
-                                                type="password"
-                                                aria-invalid={
+                                    {/* Password */}
+                                    <Controller
+                                        name="password"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <Field
+                                                data-invalid={
                                                     fieldState.invalid
                                                 }
-                                                placeholder="Password"
-                                                autoComplete="new-password"
-                                                className="
-                                                    h-11
-                                                    rounded-md
-                                                    border-gray-300
-                                                    focus-visible:border-[#fc4c02]
-                                                    focus-visible:ring-[#fc4c02]
-                                                "
-                                            />
-
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
-                                                />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* Confirm Password */}
-                                <Controller
-                                    name="password_confirmation"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="password_confirmation">
-                                                Confirm password
-                                            </FieldLabel>
-
-                                            <Input
-                                                {...field}
-                                                id="password_confirmation"
-                                                type="password"
-                                                aria-invalid={
-                                                    fieldState.invalid
-                                                }
-                                                placeholder="Confirm password"
-                                                autoComplete="new-password"
-                                                className="
-                                                    h-11
-                                                    rounded-md
-                                                    border-gray-300
-                                                    focus-visible:border-[#fc4c02]
-                                                    focus-visible:ring-[#fc4c02]
-                                                "
-                                            />
-
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
-                                                />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* Role */}
-                                <Controller
-                                    name="role"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field
-                                            data-invalid={fieldState.invalid}
-                                        >
-                                            <FieldLabel htmlFor="role">
-                                                Account type
-                                            </FieldLabel>
-
-                                            <Select
-                                                value={field.value}
-                                                onValueChange={field.onChange}
                                             >
-                                                <SelectTrigger
-                                                    id="role"
-                                                    className="
+                                                <FieldLabel htmlFor="password">
+                                                    Password
+                                                </FieldLabel>
+
+                                                <div className="relative">
+                                                    <Input
+                                                        {...field}
+                                                        id="password"
+                                                        type={
+                                                            showPassword
+                                                                ? "text"
+                                                                : "password"
+                                                        }
+                                                        aria-invalid={
+                                                            fieldState.invalid
+                                                        }
+                                                        placeholder="Password"
+                                                        autoComplete="new-password"
+                                                        className="
+                                                        h-11
+                                                        rounded-md
+                                                        border-gray-300
+                                                        pr-10
+                                                        focus-visible:border-[#fc4c02]
+                                                        focus-visible:ring-[#fc4c02]
+                                                    "
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                (prev) => !prev,
+                                                            )
+                                                        }
+                                                        className="
+                                                        absolute
+                                                        right-3
+                                                        top-1/2
+                                                        -translate-y-1/2
+                                                        text-gray-400
+                                                        transition-colors
+                                                        hover:text-gray-600
+                                                    "
+                                                        aria-label={
+                                                            showPassword
+                                                                ? "Hide password"
+                                                                : "Show password"
+                                                        }
+                                                    >
+                                                        <span className="relative flex h-4 w-4 items-center justify-center">
+                                                            <Eye
+                                                                className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                                    showPassword
+                                                                        ? "scale-75 opacity-0"
+                                                                        : "scale-100 opacity-100"
+                                                                }`}
+                                                            />
+
+                                                            <EyeOff
+                                                                className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                                    showPassword
+                                                                        ? "scale-100 opacity-100"
+                                                                        : "scale-75 opacity-0"
+                                                                }`}
+                                                            />
+                                                        </span>
+                                                    </button>
+                                                </div>
+
+                                                <div className="mt-2 space-y-2 transition-all duration-300 ease-in-out">
+                                                    {/* Strength */}
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs text-gray-500">
+                                                            Password strength
+                                                        </span>
+
+                                                        <span
+                                                            className={`text-xs font-medium transition-colors duration-300 ${
+                                                                passwordStrength ===
+                                                                "Strong"
+                                                                    ? "text-[#fc4c02]"
+                                                                    : passwordStrength ===
+                                                                        "Medium"
+                                                                      ? "text-orange-400"
+                                                                      : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {password.length ===
+                                                            0
+                                                                ? "Not set"
+                                                                : passwordStrength}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Strength Bar */}
+                                                    <div className="flex gap-1">
+                                                        {[1, 2, 3, 4, 5].map(
+                                                            (level) => (
+                                                                <div
+                                                                    key={level}
+                                                                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ease-in-out ${
+                                                                        level <=
+                                                                        passwordScore
+                                                                            ? passwordStrength ===
+                                                                              "Strong"
+                                                                                ? "bg-[#fc4c02]"
+                                                                                : passwordStrength ===
+                                                                                    "Medium"
+                                                                                  ? "bg-orange-300"
+                                                                                  : "bg-gray-400"
+                                                                            : "bg-gray-200"
+                                                                    }`}
+                                                                />
+                                                            ),
+                                                        )}
+                                                    </div>
+
+                                                    {/* Requirements */}
+                                                    <div className="space-y-1 pt-1">
+                                                        <p
+                                                            className={`text-xs transition-colors duration-200 ${
+                                                                passwordRequirements.length
+                                                                    ? "text-[#fc4c02]"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {passwordRequirements.length
+                                                                ? "✓"
+                                                                : "○"}{" "}
+                                                            At least 8
+                                                            characters
+                                                        </p>
+
+                                                        <p
+                                                            className={`text-xs transition-colors duration-200 ${
+                                                                passwordRequirements.uppercase
+                                                                    ? "text-[#fc4c02]"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {passwordRequirements.uppercase
+                                                                ? "✓"
+                                                                : "○"}{" "}
+                                                            One uppercase letter
+                                                        </p>
+
+                                                        <p
+                                                            className={`text-xs transition-colors duration-200 ${
+                                                                passwordRequirements.lowercase
+                                                                    ? "text-[#fc4c02]"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {passwordRequirements.lowercase
+                                                                ? "✓"
+                                                                : "○"}{" "}
+                                                            One lowercase letter
+                                                        </p>
+
+                                                        <p
+                                                            className={`text-xs transition-colors duration-200 ${
+                                                                passwordRequirements.number
+                                                                    ? "text-[#fc4c02]"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {passwordRequirements.number
+                                                                ? "✓"
+                                                                : "○"}{" "}
+                                                            One number
+                                                        </p>
+
+                                                        <p
+                                                            className={`text-xs transition-colors duration-200 ${
+                                                                passwordRequirements.special
+                                                                    ? "text-[#fc4c02]"
+                                                                    : "text-gray-500"
+                                                            }`}
+                                                        >
+                                                            {passwordRequirements.special
+                                                                ? "✓"
+                                                                : "○"}{" "}
+                                                            One special
+                                                            character
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {fieldState.invalid && (
+                                                    <FieldError
+                                                        errors={[
+                                                            fieldState.error,
+                                                        ]}
+                                                    />
+                                                )}
+                                            </Field>
+                                        )}
+                                    />
+
+                                    {/* Confirm Password */}
+                                    <Controller
+                                        name="password_confirmation"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <Field
+                                                data-invalid={
+                                                    fieldState.invalid
+                                                }
+                                            >
+                                                <FieldLabel htmlFor="password_confirmation">
+                                                    Confirm password
+                                                </FieldLabel>
+
+                                                <div className="relative">
+                                                    <Input
+                                                        {...field}
+                                                        id="password_confirmation"
+                                                        type={
+                                                            showConfirmPassword
+                                                                ? "text"
+                                                                : "password"
+                                                        }
+                                                        aria-invalid={
+                                                            fieldState.invalid
+                                                        }
+                                                        placeholder="Confirm Password"
+                                                        autoComplete="new-password"
+                                                        className="
+                                                        h-11
+                                                        rounded-md
+                                                        border-gray-300
+                                                        pr-10
+                                                        focus-visible:border-[#fc4c02]
+                                                        focus-visible:ring-[#fc4c02]
+                                                    "
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowConfirmPassword(
+                                                                (prev) => !prev,
+                                                            )
+                                                        }
+                                                        className="
+                                                        absolute
+                                                        right-3
+                                                        top-1/2
+                                                        -translate-y-1/2
+                                                        text-gray-400
+                                                        transition-colors
+                                                        hover:text-gray-600
+                                                    "
+                                                        aria-label={
+                                                            showConfirmPassword
+                                                                ? "Hide confirm password"
+                                                                : "Show confirm password"
+                                                        }
+                                                    >
+                                                        <span className="relative flex h-4 w-4 items-center justify-center">
+                                                            <Eye
+                                                                className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                                    showConfirmPassword
+                                                                        ? "scale-75 opacity-0"
+                                                                        : "scale-100 opacity-100"
+                                                                }`}
+                                                            />
+
+                                                            <EyeOff
+                                                                className={`absolute h-4 w-4 transition-all duration-200 ${
+                                                                    showConfirmPassword
+                                                                        ? "scale-100 opacity-100"
+                                                                        : "scale-75 opacity-0"
+                                                                }`}
+                                                            />
+                                                        </span>
+                                                    </button>
+                                                </div>
+
+                                                {fieldState.invalid && (
+                                                    <FieldError
+                                                        errors={[
+                                                            fieldState.error,
+                                                        ]}
+                                                    />
+                                                )}
+                                            </Field>
+                                        )}
+                                    />
+
+                                    {/* Role */}
+                                    <Controller
+                                        name="role"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <Field
+                                                data-invalid={
+                                                    fieldState.invalid
+                                                }
+                                            >
+                                                <FieldLabel htmlFor="role">
+                                                    Account type
+                                                </FieldLabel>
+
+                                                <Select
+                                                    value={field.value}
+                                                    onValueChange={
+                                                        field.onChange
+                                                    }
+                                                >
+                                                    <SelectTrigger
+                                                        id="role"
+                                                        className="
                                                         h-11
                                                         rounded-md
                                                         border-gray-300
                                                         focus:ring-[#fc4c02]
                                                     "
-                                                >
-                                                    <SelectValue placeholder="Select account type" />
-                                                </SelectTrigger>
+                                                    >
+                                                        <SelectValue placeholder="Select account type" />
+                                                    </SelectTrigger>
 
-                                                <SelectContent>
-                                                    <SelectItem value="cyclist">
-                                                        Cyclist
-                                                    </SelectItem>
+                                                    <SelectContent>
+                                                        <SelectItem value="cyclist">
+                                                            Cyclist
+                                                        </SelectItem>
 
-                                                    <SelectItem value="mechanic">
-                                                        Mechanic
-                                                    </SelectItem>
+                                                        <SelectItem value="mechanic">
+                                                            Mechanic
+                                                        </SelectItem>
 
-                                                    <SelectItem value="bike_shop_owner">
-                                                        Bike Shop Owner
-                                                    </SelectItem>
+                                                        <SelectItem value="cyclist_mechanic">
+                                                            Cyclist / Mechanic
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
 
-                                                    <SelectItem value="cyclist_mechanic">
-                                                        Cyclist / Mechanic
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                                {fieldState.invalid && (
+                                                    <FieldError
+                                                        errors={[
+                                                            fieldState.error,
+                                                        ]}
+                                                    />
+                                                )}
+                                            </Field>
+                                        )}
+                                    />
 
-                                            {fieldState.invalid && (
-                                                <FieldError
-                                                    errors={[fieldState.error]}
-                                                />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* CAPTCHA */}
-                                <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
-                                    <div className="flex justify-center">
-                                        <Turnstile
-                                            key={captchaKey}
-                                            siteKey={
-                                                import.meta.env
-                                                    .VITE_TURNSTILE_SITE_KEY
-                                            }
-                                            onSuccess={(token) => {
-                                                setCaptchaToken(token);
-                                            }}
-                                            onExpire={() => {
-                                                setCaptchaToken(null);
-                                            }}
-                                            onError={() => {
-                                                setCaptchaToken(null);
-                                            }}
-                                        />
+                                    {/* CAPTCHA */}
+                                    <div>
+                                        <div className="flex justify-center">
+                                            <Turnstile
+                                                key={captchaKey}
+                                                siteKey={
+                                                    import.meta.env
+                                                        .VITE_TURNSTILE_SITE_KEY
+                                                }
+                                                onSuccess={(token) => {
+                                                    setCaptchaToken(token);
+                                                }}
+                                                onExpire={() => {
+                                                    setCaptchaToken(null);
+                                                }}
+                                                onError={() => {
+                                                    setCaptchaToken(null);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Buttons */}
-                                <div className="mt-2 flex items-center justify-between">
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={handleBack}
-                                        disabled={registerMutation.isPending}
-                                        className="font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                                    >
-                                        Back
-                                    </Button>
+                                    {/* Buttons */}
+                                    <div className="mt-2 flex items-center justify-between">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={handleBack}
+                                            disabled={
+                                                registerMutation.isPending
+                                            }
+                                            className="font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                        >
+                                            Back
+                                        </Button>
 
-                                    <Button
-                                        type="submit"
-                                        disabled={
-                                            registerMutation.isPending ||
-                                            !captchaToken
-                                        }
-                                        className="
+                                        <Button
+                                            type="submit"
+                                            disabled={
+                                                registerMutation.isPending ||
+                                                !captchaToken
+                                            }
+                                            className="
                                             h-11
                                             rounded-md
                                             bg-[#fc4c02]
@@ -824,13 +1124,14 @@ export default function Register() {
                                             text-white
                                             hover:bg-[#e64500]
                                         "
-                                    >
-                                        {registerMutation.isPending
-                                            ? "Creating..."
-                                            : "Create account"}
-                                    </Button>
-                                </div>
-                            </FieldGroup>
+                                        >
+                                            {registerMutation.isPending
+                                                ? "Creating..."
+                                                : "Create account"}
+                                        </Button>
+                                    </div>
+                                </FieldGroup>
+                            </div>
                         )}
                     </form>
                 </div>
