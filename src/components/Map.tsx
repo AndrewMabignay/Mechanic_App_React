@@ -139,6 +139,15 @@ export default function MapComponent({
     const mechanicCone = useRef<HTMLDivElement | null>(null);
     const lastHeading = useRef<number | null>(null);
 
+    const previousFollowMechanic = useRef(false);
+
+    const previousMapCamera = useRef<{
+        center: [number, number];
+        zoom: number;
+        pitch: number;
+        bearing: number;
+    } | null>(null);
+
     // const previousMechanicLocation = useRef<{
     //     latitude: number;
     //     longitude: number;
@@ -431,6 +440,46 @@ export default function MapComponent({
             essential: true,
         });
     }, [mechanicLatitude, mechanicLongitude, mechanicHeading, followMechanic]);
+
+    useEffect(() => {
+        if (!map.current) {
+            return;
+        }
+
+        const mapInstance = map.current;
+
+        // Save the map camera before entering navigation mode
+        if (followMechanic && !previousFollowMechanic.current) {
+            const center = mapInstance.getCenter();
+
+            previousMapCamera.current = {
+                center: [center.lng, center.lat],
+                zoom: mapInstance.getZoom(),
+                pitch: mapInstance.getPitch(),
+                bearing: mapInstance.getBearing(),
+            };
+        }
+
+        // Restore the previous map camera after navigation ends
+        if (!followMechanic && previousFollowMechanic.current) {
+            const previousCamera = previousMapCamera.current;
+
+            if (previousCamera) {
+                mapInstance.easeTo({
+                    center: previousCamera.center,
+                    zoom: previousCamera.zoom,
+                    pitch: previousCamera.pitch,
+                    bearing: previousCamera.bearing,
+                    duration: 500,
+                    essential: true,
+                });
+
+                previousMapCamera.current = null;
+            }
+        }
+
+        previousFollowMechanic.current = followMechanic;
+    }, [followMechanic]);
 
     /**
      * ============================================================

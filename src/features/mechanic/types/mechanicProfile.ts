@@ -28,6 +28,11 @@ export interface CreateAndUpdateMechanicProfileFormData {
     is_available: boolean;
 }
 
+export interface UpdateMechanicLocationRequest {
+    latitude: number;
+    longitude: number;
+}
+
 // API response
 export interface MechanicProfileResponse {
     success: boolean;

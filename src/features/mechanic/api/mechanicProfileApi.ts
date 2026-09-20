@@ -1,6 +1,9 @@
 import api from "../../../api/axios";
 import type { MechanicProfileFormData } from "../schemas/mechanicProfileSchema";
-import type { MechanicProfileResponse } from "../types/mechanicProfile";
+import type {
+    MechanicProfileResponse,
+    UpdateMechanicLocationRequest,
+} from "../types/mechanicProfile";
 
 // DISPLAY MECHANIC PROFILE API
 export const getMechanicProfile = async () => {
@@ -26,6 +29,14 @@ export const updateMechanicAvailability = async (
     uuid: string,
 ): Promise<MechanicProfileResponse> => {
     const response = await api.patch(`/mechanic-profile/${uuid}/availability`);
+
+    return response.data;
+};
+
+export const updateMechanicLocation = async (
+    data: UpdateMechanicLocationRequest,
+) => {
+    const response = await api.patch("/mechanic-profile/location", data);
 
     return response.data;
 };

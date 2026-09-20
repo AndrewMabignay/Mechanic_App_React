@@ -107,7 +107,7 @@ export default function CyclistHomeComponent() {
     return (
         <div className="relative h-full w-full overflow-hidden">
             {/* Map */}
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 animate-in fade-in-0 duration-500 ease-out">
                 <MapComponent
                     latitude={latitude}
                     longitude={longitude}
@@ -129,7 +129,22 @@ export default function CyclistHomeComponent() {
             </div>
 
             {/* Bottom Container */}
-            <div className="absolute inset-x-0 bottom-10 z-20 flex justify-center px-4">
+            <div
+                className="
+                    absolute
+                    inset-x-0
+                    bottom-10
+                    z-20
+                    flex
+                    justify-center
+                    px-4
+                    animate-in
+                    fade-in-0
+                    slide-in-from-bottom-3
+                    duration-500
+                    ease-out
+                "
+            >
                 <div className="w-full max-w-md">
                     {!currentRequest || isCompleted ? (
                         <CyclistRequestMechanicForm />

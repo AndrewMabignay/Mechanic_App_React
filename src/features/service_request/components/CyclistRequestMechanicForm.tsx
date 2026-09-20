@@ -99,17 +99,20 @@ export default function CyclistRequestMechanicForm() {
                     <div className="flex justify-center items-center">
                         <Button
                             className="
-                            w-fit
-                            mr-2
-                            h-11
-                            rounded-md
-                            bg-[#fc4c02]
-                            px-6
-                            font-medium
-                            text-white
-                            shadow-sm
-                            hover:bg-[#e64500]
-                        "
+                                h-11
+                                w-fit
+                                rounded-xl
+                                bg-[#fc4c02]
+                                px-6
+                                font-medium
+                                text-white
+                                shadow-sm
+                                transition-all
+                                duration-200
+                                hover:bg-[#e64500]
+                                hover:shadow-md
+                                active:scale-[0.98]
+                            "
                         >
                             <Wrench className="mr-2 h-4 w-4" />
                             Request Mechanic
@@ -129,16 +132,40 @@ export default function CyclistRequestMechanicForm() {
                         p-0
                         shadow-sm
                         sm:max-w-lg
+
+                        data-[state=open]:animate-in
+                        data-[state=closed]:animate-out
+                        data-[state=open]:fade-in-0
+                        data-[state=closed]:fade-out-0
+                        data-[state=open]:zoom-in-95
+                        data-[state=closed]:zoom-out-95
+                        data-[state=open]:slide-in-from-bottom-2
+                        data-[state=closed]:slide-out-to-bottom-2
+                        duration-300
+                        ease-out
                     "
                 >
                     {/* Header */}
-                    <div className="shrink-0 px-6 pt-7 sm:px-8 sm:pt-8">
+                    <div
+                        className="
+                            shrink-0
+                            animate-in
+                            fade-in-0
+                            slide-in-from-bottom-1
+                            duration-300
+                            ease-out
+                            px-6
+                            pt-7
+                            sm:px-8
+                            sm:pt-8
+                        "
+                    >
                         <DialogHeader>
                             <DialogTitle className="text-lg font-semibold tracking-tight text-gray-900">
                                 Request Mechanic
                             </DialogTitle>
 
-                            <DialogDescription>
+                            <DialogDescription className="text-sm text-gray-500">
                                 Select the problem with your bicycle.
                             </DialogDescription>
                         </DialogHeader>
@@ -197,19 +224,21 @@ export default function CyclistRequestMechanicForm() {
                                                         type="button"
                                                         variant="outline"
                                                         className={`
-                                            h-11
-                                            justify-start
-                                            rounded-md
-                                            border-gray-300
-                                            text-sm
-                                            font-medium
-                                            transition-colors
-                                            ${
-                                                isSelected
-                                                    ? "border-[#fc4c02] bg-[#fc4c02]/10 text-[#fc4c02] hover:bg-[#fc4c02]/15 hover:text-[#fc4c02]"
-                                                    : "bg-white text-gray-700 hover:border-[#fc4c02] hover:bg-[#fc4c02]/5 hover:text-[#fc4c02]"
-                                            }
-                                        `}
+                                                            h-11
+                                                            justify-start
+                                                            rounded-lg
+                                                            border
+                                                            text-sm
+                                                            font-medium
+                                                            transition-all
+                                                            duration-200
+                                                            active:scale-[0.98]
+                                                            ${
+                                                                isSelected
+                                                                    ? "border-[#fc4c02] bg-[#fc4c02]/10 text-[#fc4c02] shadow-sm hover:bg-[#fc4c02]/15 hover:text-[#fc4c02]"
+                                                                    : "border-gray-300 bg-white text-gray-700 hover:border-[#fc4c02] hover:bg-[#fc4c02]/5 hover:text-[#fc4c02]"
+                                                            }
+                                                        `}
                                                         onClick={() => {
                                                             form.setValue(
                                                                 "bike_problem",
