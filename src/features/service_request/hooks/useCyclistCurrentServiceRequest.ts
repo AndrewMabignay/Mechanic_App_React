@@ -5,34 +5,16 @@ import {
     getCurrentCyclistServiceRequest,
 } from "../api/serviceRequestApi";
 
+export const cyclistCurrentServiceRequestQueryKey = [
+    "cyclist-current-service-request",
+] as const;
+
 export function useCyclistCurrentServiceRequest() {
     return useQuery({
-        queryKey: ["cyclist-current-service-request"],
-
+        queryKey: cyclistCurrentServiceRequestQueryKey,
         queryFn: getCurrentCyclistServiceRequest,
 
-        refetchInterval: (query) => {
-            const data = query.state.data?.data;
-
-            // No current service request
-            // Stop polling.
-            if (!data) {
-                return false;
-            }
-
-            // Service is already finished.
-            // Stop polling.
-            if (
-                data.status === "completed" ||
-                data.status === "cancelled"
-            ) {
-                return false;
-            }
-
-            // Active service request.
-            return 3000;
-        },
-
+        refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,
