@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronRight, Loader2, MapPin, Wrench } from "lucide-react";
 
 import MapComponent from "../../../components/Map";
