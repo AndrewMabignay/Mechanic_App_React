@@ -9,13 +9,10 @@ declare global {
 
 window.Pusher = Pusher;
 
-const token = localStorage.getItem("bike_mechanic_token");
-
 const echo = new Echo({
     broadcaster: "reverb",
 
     key: import.meta.env.VITE_REVERB_APP_KEY,
-
     wsHost: import.meta.env.VITE_REVERB_HOST,
 
     wsPort: 80,
@@ -26,11 +23,71 @@ const echo = new Echo({
 
     authEndpoint: "https://bike-mechanic-api.onrender.com/broadcasting/auth",
 
-    auth: {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-        },
+    authorizer: (channel) => {
+        return {
+            authorize: async (socketId, callback) => {
+                const token = localStorage.getItem("bike_mechanic_token");
+
+                console.log("[Reverb] Has token:", Boolean(token));
+
+                if (!token) {
+                    callback(new Error("Sanctum token is missing."), null);
+
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        "https://bike-mechanic-api.onrender.com/broadcasting/auth",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                            },
+
+                            body: JSON.stringify({
+                                socket_id: socketId,
+                                channel_name: channel.name,
+                            }),
+                        },
+                    );
+
+                    const responseText = await response.text();
+
+                    console.log("[Reverb] Auth status:", response.status);
+
+                    console.log("[Reverb] Auth response:", responseText);
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Broadcast authorization failed: ${response.status}`,
+                        );
+                    }
+
+                    if (!responseText.trim()) {
+                        throw new Error(
+                            "Broadcast authorization returned an empty response.",
+                        );
+                    }
+
+                    const data = JSON.parse(responseText);
+
+                    callback(null, data);
+                } catch (error) {
+                    console.error("[Reverb] Authorization error:", error);
+
+                    const authError =
+                        error instanceof Error
+                            ? error
+                            : new Error("Broadcast authorization failed.");
+
+                    callback(authError, null);
+                }
+            },
+        };
     },
 });
 
