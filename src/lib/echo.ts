@@ -16,15 +16,15 @@ const echo = new Echo({
 
     wsHost: import.meta.env.VITE_REVERB_HOST,
 
-    wsPort: Number(import.meta.env.VITE_REVERB_PORT ?? 8080),
+    wsPort: Number(import.meta.env.VITE_REVERB_PORT ?? 80),
 
-    wssPort: Number(import.meta.env.VITE_REVERB_PORT ?? 8080),
+    wssPort: Number(import.meta.env.VITE_REVERB_PORT ?? 443),
 
-    forceTLS: false,
+    forceTLS: import.meta.env.VITE_REVERB_SCHEME === "https",
 
     enabledTransports: ["ws", "wss"],
 
-    authEndpoint: "http://127.0.0.1:8000/broadcasting/auth",
+    authEndpoint: "https://bike-mechanic-api.onrender.com/broadcasting/auth",
 
     auth: {
         headers: {
