@@ -5,7 +5,10 @@ import MapComponent from "../../../components/Map";
 import { useCyclistProfile } from "../hooks/useCyclistProfile";
 import CyclistRequestMechanicForm from "../../service_request/components/CyclistRequestMechanicForm";
 import CyclistFindingMechanicDialog from "../../service_request/components/CyclistFindingMechanicDialog";
-import { useCyclistCurrentServiceRequest } from "../../service_request/hooks/useCyclistCurrentServiceRequest";
+import {
+    cyclistCurrentServiceRequestQueryKey,
+    useCyclistCurrentServiceRequest,
+} from "../../service_request/hooks/useCyclistCurrentServiceRequest";
 import CyclistMechanicEnRouteDialog from "../../service_request/components/CyclistMechanicEnRouteDialog";
 import CyclistMechanicChatDialog from "../../service_request/components/CyclistMechanicChatDialog";
 import { useServiceChat } from "../../service_request/hooks/useServiceChat";
@@ -13,7 +16,8 @@ import CyclistServiceInProgressDialog from "../../service_request/components/Cyc
 import CyclistRateReviewDialog from "../../service_request/components/CyclistRateReviewDialog";
 import { useSubmitServiceRequestRating } from "../../service_request/hooks/useSubmitServiceRequestRating";
 import { useDismissReviewPrompt } from "../../service_request/hooks/useDismissReviewPrompt";
-import { useFindMechanic } from "@/features/service_request/hooks/useFindMechanic";
+// import { useFindMechanic } from "@/features/service_request/hooks/useFindMechanic";
+import { useServiceRequestUpdates } from "@/features/service_request/hooks/useServiceRequestUpdates";
 
 export default function CyclistHomeComponent() {
     const { data: cyclistProfile, isLoading, error } = useCyclistProfile();
@@ -24,7 +28,12 @@ export default function CyclistHomeComponent() {
 
     const currentRequest = currentRequestResponse?.data;
 
-    const { mutate: findMechanic } = useFindMechanic();
+    useServiceRequestUpdates({
+        serviceRequestUuid: currentRequest?.uuid,
+        queryKey: cyclistCurrentServiceRequestQueryKey,
+    });
+
+    // const { mutate: findMechanic } = useFindMechanic();
 
     const { messages, sendMessage, isSending } = useServiceChat(
         currentRequest?.uuid,
@@ -44,13 +53,13 @@ export default function CyclistHomeComponent() {
     const isAccepted = currentRequest?.status === "accepted";
     const isEnRoute = currentRequest?.status === "en_route";
 
-    useEffect(() => {
-        if (!isPending || !currentRequest?.uuid) {
-            return;
-        }
+    // useEffect(() => {
+    //     if (!isPending || !currentRequest?.uuid) {
+    //         return;
+    //     }
 
-        findMechanic(currentRequest.uuid);
-    }, [isPending, currentRequest?.uuid, findMechanic]);
+    //     findMechanic(currentRequest.uuid);
+    // }, [isPending, currentRequest?.uuid, findMechanic]);
 
     const cyclistLatitude = Number(currentRequest?.location_lat ?? latitude);
     const cyclistLongitude = Number(currentRequest?.location_lng ?? longitude);
