@@ -13,12 +13,9 @@ export function useCyclistCurrentServiceRequest() {
     return useQuery({
         queryKey: cyclistCurrentServiceRequestQueryKey,
         queryFn: getCurrentCyclistServiceRequest,
-
-        refetchInterval: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,
-
         retry: false,
     });
 }

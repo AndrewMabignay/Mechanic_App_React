@@ -1,17 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-    getCurrentCyclistServiceRequest,
-    getCurrentMechanicServiceRequest,
-} from "../api/serviceRequestApi";
-
-export function useCurrentServiceRequest(enabled = true) {
-    return useQuery({
-        queryKey: ["current-service-request"],
-        queryFn: getCurrentCyclistServiceRequest,
-        enabled,
-        refetchInterval: 3000,
-    });
-}
+import { getCurrentMechanicServiceRequest } from "../api/serviceRequestApi";
 
 export function useMechanicCurrentServiceRequest() {
     return useQuery({
