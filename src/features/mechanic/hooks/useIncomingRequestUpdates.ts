@@ -12,6 +12,12 @@ interface UseIncomingRequestUpdatesOptions {
     mechanicId?: number;
 }
 
+interface CancelledServiceRequestEvent {
+    service_request_id: number;
+    mechanic_id: number;
+    status: string;
+}
+
 export function useIncomingRequestUpdates({
     mechanicId,
 }: UseIncomingRequestUpdatesOptions) {
@@ -39,6 +45,7 @@ export function useIncomingRequestUpdates({
             console.error("[Reverb] Incoming request channel error:", error);
         });
 
+        // New incoming service request
         channel.listen(
             ".incoming-service-request.created",
             async (event: IncomingServiceRequestEvent) => {
@@ -50,6 +57,23 @@ export function useIncomingRequestUpdates({
                 });
 
                 console.log("[React Query] Incoming requests refetched");
+            },
+        );
+
+        // Cancelled service request
+        channel.listen(
+            ".service-request.cancelled",
+            async (event: CancelledServiceRequestEvent) => {
+                console.log("[Reverb] Service request cancelled:", event);
+
+                await queryClient.refetchQueries({
+                    queryKey: ["incoming-requests"],
+                    type: "active",
+                });
+
+                console.log(
+                    "[React Query] Incoming requests refetched after cancellation",
+                );
             },
         );
 
