@@ -1,5 +1,4 @@
 import echo from "@/lib/echo";
-
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -11,6 +10,12 @@ interface ServiceRequestUpdatedEvent {
         cyclist_id: number;
         mechanic_id: number | null;
     };
+}
+
+interface MechanicLocationUpdatedEvent {
+    service_request_id: number;
+    latitude: number;
+    longitude: number;
 }
 
 interface UseServiceRequestUpdatesOptions {
@@ -43,6 +48,7 @@ export function useServiceRequestUpdates({
             console.error("[Reverb] Channel error:", error);
         });
 
+        // Service request status updates
         channel.listen(
             ".service-request.updated",
             async (event: ServiceRequestUpdatedEvent) => {
@@ -59,6 +65,23 @@ export function useServiceRequestUpdates({
                 });
 
                 console.log("[React Query] Refetch completed");
+            },
+        );
+
+        // Mechanic location updates
+        channel.listen(
+            ".mechanic.location.updated",
+            async (event: MechanicLocationUpdatedEvent) => {
+                console.log("[Reverb] Mechanic location updated:", event);
+
+                await queryClient.refetchQueries({
+                    queryKey,
+                    type: "active",
+                });
+
+                console.log(
+                    "[React Query] Current service request refetched after location update",
+                );
             },
         );
 

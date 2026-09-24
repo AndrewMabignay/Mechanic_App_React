@@ -80,7 +80,8 @@ export default function MechanicHomeComponent() {
     const [currentDirection, setCurrentDirection] =
         useState<NavigationInstruction | null>(null);
 
-    const updateLocationMutation = useUpdateMechanicLocation();
+    const { mutate: updateMechanicLocation, isPending: isUpdatingLocation } =
+        useUpdateMechanicLocation();
 
     const lastUpdatedLocation = useRef<{
         latitude: number;
@@ -102,7 +103,12 @@ export default function MechanicHomeComponent() {
     const [serviceCompleted, setServiceCompleted] = useState(false);
 
     useEffect(() => {
-        if (!location || !isEnRoute) {
+        if (!isEnRoute) {
+            lastUpdatedLocation.current = null;
+            return;
+        }
+
+        if (!location) {
             return;
         }
 
@@ -115,7 +121,7 @@ export default function MechanicHomeComponent() {
                 longitude: currentLongitude,
             };
 
-            updateLocationMutation.mutate({
+            updateMechanicLocation({
                 latitude: currentLatitude,
                 longitude: currentLongitude,
             });
@@ -136,12 +142,12 @@ export default function MechanicHomeComponent() {
                 longitude: currentLongitude,
             };
 
-            updateLocationMutation.mutate({
+            updateMechanicLocation({
                 latitude: currentLatitude,
                 longitude: currentLongitude,
             });
         }
-    }, [location, isEnRoute]);
+    }, [location, isEnRoute, updateMechanicLocation]);
 
     if (loading) {
         return <LoadingComponent />;

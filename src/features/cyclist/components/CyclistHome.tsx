@@ -33,16 +33,11 @@ export default function CyclistHomeComponent() {
         queryKey: cyclistCurrentServiceRequestQueryKey,
     });
 
-    // const { mutate: findMechanic } = useFindMechanic();
-
     const { messages, sendMessage, isSending } = useServiceChat(
         currentRequest?.uuid,
         user?.id,
         "cyclist",
     );
-
-    // const [locationAddress, setLocationAddress] =
-    //     useState("Loading address...");
 
     const [findingDialogOpen, setFindingDialogOpen] = useState(false);
 
@@ -52,14 +47,6 @@ export default function CyclistHomeComponent() {
     const isPending = currentRequest?.status === "pending";
     const isAccepted = currentRequest?.status === "accepted";
     const isEnRoute = currentRequest?.status === "en_route";
-
-    // useEffect(() => {
-    //     if (!isPending || !currentRequest?.uuid) {
-    //         return;
-    //     }
-
-    //     findMechanic(currentRequest.uuid);
-    // }, [isPending, currentRequest?.uuid, findMechanic]);
 
     const cyclistLatitude = Number(currentRequest?.location_lat ?? latitude);
     const cyclistLongitude = Number(currentRequest?.location_lng ?? longitude);
