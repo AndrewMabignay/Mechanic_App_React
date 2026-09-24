@@ -16,11 +16,13 @@ import CyclistServiceInProgressDialog from "../../service_request/components/Cyc
 import CyclistRateReviewDialog from "../../service_request/components/CyclistRateReviewDialog";
 import { useSubmitServiceRequestRating } from "../../service_request/hooks/useSubmitServiceRequestRating";
 import { useDismissReviewPrompt } from "../../service_request/hooks/useDismissReviewPrompt";
-// import { useFindMechanic } from "@/features/service_request/hooks/useFindMechanic";
 import { useServiceRequestUpdates } from "@/features/service_request/hooks/useServiceRequestUpdates";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 
 export default function CyclistHomeComponent() {
     const { data: cyclistProfile, isLoading, error } = useCyclistProfile();
+
+    const { location: currentLocation } = useCurrentLocation();
 
     const user = cyclistProfile?.data?.user;
 
@@ -41,8 +43,11 @@ export default function CyclistHomeComponent() {
 
     const [findingDialogOpen, setFindingDialogOpen] = useState(false);
 
-    const latitude = Number(cyclistProfile?.data?.default_location_lat);
-    const longitude = Number(cyclistProfile?.data?.default_location_lng);
+    const profileLatitude = Number(cyclistProfile?.data?.default_location_lat);
+    const profileLongitude = Number(cyclistProfile?.data?.default_location_lng);
+
+    const latitude = currentLocation?.latitude ?? profileLatitude;
+    const longitude = currentLocation?.longitude ?? profileLongitude;
 
     const isPending = currentRequest?.status === "pending";
     const isAccepted = currentRequest?.status === "accepted";
@@ -121,6 +126,7 @@ export default function CyclistHomeComponent() {
                     }
                     showMechanicMarker={isAccepted || isEnRoute || isInProgress}
                     showRoute={isAccepted || isEnRoute}
+                    followCyclist={isEnRoute}
                 />
             </div>
 

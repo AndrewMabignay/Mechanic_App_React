@@ -80,8 +80,7 @@ export default function MechanicHomeComponent() {
     const [currentDirection, setCurrentDirection] =
         useState<NavigationInstruction | null>(null);
 
-    const { mutate: updateMechanicLocation, isPending: isUpdatingLocation } =
-        useUpdateMechanicLocation();
+    const { mutate: updateMechanicLocation } = useUpdateMechanicLocation();
 
     const lastUpdatedLocation = useRef<{
         latitude: number;

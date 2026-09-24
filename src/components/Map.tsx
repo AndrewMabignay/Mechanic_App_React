@@ -36,6 +36,7 @@ interface MapComponentProps {
     showMechanicMarker?: boolean;
 
     followMechanic?: boolean;
+    followCyclist?: boolean;
 
     onLocationSelect?: (latitude: number, longitude: number) => void;
 
@@ -64,6 +65,19 @@ interface MapComponentProps {
 //     return (toDegrees(Math.atan2(y, x)) + 360) % 360;
 // }
 
+function createCyclistMarker() {
+    const marker = document.createElement("div");
+
+    marker.style.width = "18px";
+    marker.style.height = "18px";
+    marker.style.borderRadius = "50%";
+    marker.style.background = "#FC4C02";
+    marker.style.border = "3px solid white";
+    marker.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+
+    return marker;
+}
+
 function createMechanicMarker() {
     const container = document.createElement("div");
 
@@ -86,7 +100,7 @@ function createMechanicMarker() {
 
     // Circular translucent cone pointing upward
     cone.style.background =
-        "conic-gradient(from -25deg, rgba(37,99,235,0.30) 0deg, rgba(37,99,235,0.08) 55deg, transparent 55deg, transparent 305deg, rgba(37,99,235,0.08) 305deg, rgba(37,99,235,0.30) 360deg)";
+        "conic-gradient(from -25deg, rgba(22,163,74,0.30) 0deg, rgba(22,163,74,0.08) 55deg, transparent 55deg, transparent 305deg, rgba(22,163,74,0.08) 305deg, rgba(22,163,74,0.30) 360deg)";
 
     cone.style.pointerEvents = "none";
 
@@ -96,7 +110,7 @@ function createMechanicMarker() {
     marker.style.width = "18px";
     marker.style.height = "18px";
     marker.style.borderRadius = "50%";
-    marker.style.background = "#2563EB";
+    marker.style.background = "#16A34A";
     marker.style.border = "3px solid white";
     marker.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
     marker.style.position = "relative";
@@ -122,6 +136,7 @@ export default function MapComponent({
     showRoute = false,
     showMechanicMarker = false,
     followMechanic = false,
+    followCyclist = false,
     onLocationSelect,
     onDirectionChange,
 }: MapComponentProps) {
@@ -140,6 +155,7 @@ export default function MapComponent({
     const lastHeading = useRef<number | null>(null);
 
     const previousFollowMechanic = useRef(false);
+    const previousFollowCyclist = useRef(false);
 
     const previousMapCamera = useRef<{
         center: [number, number];
@@ -200,8 +216,11 @@ export default function MapComponent({
                 ? cyclistLongitude
                 : longitude;
 
+        const cyclistMarkerElement = createCyclistMarker();
+
         const cyclistMarkerInstance = new Marker({
-            color: "#FC4C02",
+            element: cyclistMarkerElement,
+            anchor: "center",
         })
             .setLngLat([cyclistLng, cyclistLat])
             .addTo(mapInstance);
@@ -248,7 +267,12 @@ export default function MapComponent({
     }, []);
 
     useEffect(() => {
-        if (!map.current || !cyclistMarker.current) {
+        if (!map.current) {
+            return;
+        }
+
+        // Huwag i-reset ang camera kapag nasa POV mode.
+        if (followCyclist || followMechanic) {
             return;
         }
 
@@ -256,16 +280,12 @@ export default function MapComponent({
             return;
         }
 
-        const mapInstance = map.current;
-
-        cyclistMarker.current.setLngLat([longitude, latitude]);
-
-        mapInstance.easeTo({
+        map.current.easeTo({
             center: [longitude, latitude],
             duration: 800,
             essential: true,
         });
-    }, [latitude, longitude]);
+    }, [latitude, longitude, followCyclist, followMechanic]);
 
     /*
      * ============================================================
@@ -278,17 +298,27 @@ export default function MapComponent({
             return;
         }
 
+        const markerLatitude =
+            typeof cyclistLatitude === "number" &&
+            Number.isFinite(cyclistLatitude)
+                ? cyclistLatitude
+                : latitude;
+
+        const markerLongitude =
+            typeof cyclistLongitude === "number" &&
+            Number.isFinite(cyclistLongitude)
+                ? cyclistLongitude
+                : longitude;
+
         if (
-            typeof cyclistLatitude !== "number" ||
-            typeof cyclistLongitude !== "number" ||
-            !Number.isFinite(cyclistLatitude) ||
-            !Number.isFinite(cyclistLongitude)
+            !Number.isFinite(markerLatitude) ||
+            !Number.isFinite(markerLongitude)
         ) {
             return;
         }
 
-        cyclistMarker.current.setLngLat([cyclistLongitude, cyclistLatitude]);
-    }, [cyclistLatitude, cyclistLongitude]);
+        cyclistMarker.current.setLngLat([markerLongitude, markerLatitude]);
+    }, [cyclistLatitude, cyclistLongitude, latitude, longitude]);
 
     /*
      * ============================================================
@@ -357,8 +387,8 @@ export default function MapComponent({
             return;
         }
 
-        // Don't use fitBounds during active navigation.
-        if (followMechanic) {
+        // Don't use fitBounds during active navigation or cyclist POV.
+        if (followMechanic || followCyclist) {
             return;
         }
 
@@ -378,6 +408,7 @@ export default function MapComponent({
         cyclistLatitude,
         cyclistLongitude,
         followMechanic,
+        followCyclist,
     ]);
 
     /**
@@ -441,6 +472,35 @@ export default function MapComponent({
         });
     }, [mechanicLatitude, mechanicLongitude, mechanicHeading, followMechanic]);
 
+    /**
+     * ============================================================
+     * FOLLOW CYCLIST / CYCLIST POV CAMERA
+     * ============================================================
+     */
+    /**
+     * ============================================================
+     * FOLLOW CYCLIST / CYCLIST POV CAMERA
+     * ============================================================
+     */
+    useEffect(() => {
+        if (!map.current || !followCyclist || followMechanic) {
+            return;
+        }
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+            return;
+        }
+
+        map.current.easeTo({
+            center: [longitude, latitude],
+            zoom: 17,
+            pitch: 45,
+            bearing: 0,
+            duration: 700,
+            essential: true,
+        });
+    }, [latitude, longitude, followCyclist, followMechanic]);
+
     useEffect(() => {
         if (!map.current) {
             return;
@@ -448,8 +508,15 @@ export default function MapComponent({
 
         const mapInstance = map.current;
 
-        // Save the map camera before entering navigation mode
-        if (followMechanic && !previousFollowMechanic.current) {
+        const isEnteringPov =
+            (followMechanic && !previousFollowMechanic.current) ||
+            (followCyclist && !previousFollowCyclist.current);
+
+        const isLeavingPov =
+            (!followMechanic && previousFollowMechanic.current) ||
+            (!followCyclist && previousFollowCyclist.current);
+
+        if (isEnteringPov) {
             const center = mapInstance.getCenter();
 
             previousMapCamera.current = {
@@ -460,8 +527,7 @@ export default function MapComponent({
             };
         }
 
-        // Restore the previous map camera after navigation ends
-        if (!followMechanic && previousFollowMechanic.current) {
+        if (isLeavingPov) {
             const previousCamera = previousMapCamera.current;
 
             if (previousCamera) {
@@ -479,7 +545,8 @@ export default function MapComponent({
         }
 
         previousFollowMechanic.current = followMechanic;
-    }, [followMechanic]);
+        previousFollowCyclist.current = followCyclist;
+    }, [followMechanic, followCyclist]);
 
     /**
      * ============================================================
