@@ -13,9 +13,10 @@ export function useMechanicCurrentServiceRequest(enabled = true) {
         queryKey: ["mechanic-current-service-request"],
         queryFn: getMechanicCurrentServiceRequest,
         enabled,
-
-        // Optional: para sa live tracking
-        refetchInterval: 3000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
+        retry: false,
     });
 }
 

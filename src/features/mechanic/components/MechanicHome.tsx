@@ -28,6 +28,8 @@ import type { ServiceRequest } from "@/features/service_request/types/serviceReq
 import MechanicInProgressContainer from "@/features/service_request/components/MechanicInProgressContainer";
 import { Button } from "@/components/ui/button";
 import LoadingComponent from "@/components/LoadingComponent";
+import { useServiceRequestUpdates } from "@/features/service_request/hooks/useServiceRequestUpdates";
+import { useIncomingRequestUpdates } from "../hooks/useIncomingRequestUpdates";
 
 export default function MechanicHomeComponent() {
     const {
@@ -39,6 +41,10 @@ export default function MechanicHomeComponent() {
     const user = mechanicProfile?.data?.user;
 
     const { data /*isLoading*/ } = useIncomingRequests();
+
+    const mechanicId = mechanicProfile?.data?.id;
+
+    useIncomingRequestUpdates({ mechanicId });
     const acceptMutation = useAcceptServiceRequest();
     const declineMutation = useDeclineServiceRequest();
     const enRouteMutation = useEnRouteServiceRequest();
@@ -46,15 +52,21 @@ export default function MechanicHomeComponent() {
     const completeMutation = useCompleteServiceRequest();
 
     const { location, loading, error } = useCurrentLocation();
-    const { data: currentRequestResponse, isFetching } =
+    const { data: currentServiceRequestResponse, isFetching } =
         useMechanicCurrentServiceRequest();
 
-    const currentRequest = currentRequestResponse?.data;
-    console.log(currentRequest);
+    const currentServiceRequest = currentServiceRequestResponse?.data ?? null;
+
+    useServiceRequestUpdates({
+        serviceRequestUuid: currentServiceRequest?.uuid,
+        queryKey: ["mechanic-current-service-request"],
+    });
+
+    console.log(currentServiceRequest);
 
     const [selectedRequest, setSelectedRequest] = useState<ServiceRequest>();
 
-    const isAccepted = currentRequest?.status === "accepted";
+    const isAccepted = currentServiceRequest?.status === "accepted";
 
     const [acceptingRequestUuid, setAcceptingRequestUuid] = useState<
         string | null
@@ -62,8 +74,8 @@ export default function MechanicHomeComponent() {
     const isAcceptingRequest =
         acceptingRequestUuid !== null || acceptMutation.isPending;
 
-    const isEnRoute = currentRequest?.status === "en_route";
-    const isInProgress = currentRequest?.status === "in_progress";
+    const isEnRoute = currentServiceRequest?.status === "en_route";
+    const isInProgress = currentServiceRequest?.status === "in_progress";
 
     const [currentDirection, setCurrentDirection] =
         useState<NavigationInstruction | null>(null);
@@ -78,7 +90,7 @@ export default function MechanicHomeComponent() {
     // Chat state and functionality
     const [chatDialogOpen, setChatDialogOpen] = useState(false);
     const { messages, sendMessage, isSending } = useServiceChat(
-        currentRequest?.uuid,
+        currentServiceRequest?.uuid,
         user?.id,
         "mechanic",
     );
@@ -154,13 +166,13 @@ export default function MechanicHomeComponent() {
     );
 
     const distanceToCyclist =
-        currentRequest?.location_lat !== undefined &&
-        currentRequest?.location_lng !== undefined
+        currentServiceRequest?.location_lat !== undefined &&
+        currentServiceRequest?.location_lng !== undefined
             ? calculateDistanceInMeters(
                   location.latitude,
                   location.longitude,
-                  currentRequest.location_lat,
-                  currentRequest.location_lng,
+                  currentServiceRequest.location_lat,
+                  currentServiceRequest.location_lng,
               )
             : undefined;
 
@@ -168,13 +180,19 @@ export default function MechanicHomeComponent() {
         const uuid = incomingRequest?.service_request?.uuid;
 
         if (!uuid) {
+            console.warn("No service request UUID found.");
             return;
         }
 
         setAcceptingRequestUuid(uuid);
 
         try {
-            await acceptMutation.mutateAsync(uuid);
+            const response = await acceptMutation.mutateAsync(uuid);
+
+            console.log("[Mechanic] Accept successful:", {
+                uuid,
+                response,
+            });
 
             setAcceptingRequestUuid(null);
         } catch (error) {
@@ -219,19 +237,19 @@ export default function MechanicHomeComponent() {
     };
 
     const handleEnRoute = async () => {
-        if (!currentRequest?.uuid) {
+        if (!currentServiceRequest?.uuid) {
             return;
         }
 
         try {
-            await enRouteMutation.mutateAsync(currentRequest.uuid);
+            await enRouteMutation.mutateAsync(currentServiceRequest.uuid);
         } catch (error) {
             console.error("Failed to set service request to en route:", error);
         }
     };
 
     const handleArrived = async () => {
-        if (!currentRequest?.uuid) {
+        if (!currentServiceRequest?.uuid) {
             return;
         }
 
@@ -240,7 +258,7 @@ export default function MechanicHomeComponent() {
         }
 
         try {
-            await inProgressMutation.mutateAsync(currentRequest.uuid);
+            await inProgressMutation.mutateAsync(currentServiceRequest.uuid);
         } catch (error) {
             console.error(
                 "Failed to mark service request as in progress:",
@@ -250,12 +268,12 @@ export default function MechanicHomeComponent() {
     };
 
     const handleComplete = async () => {
-        if (!currentRequest?.uuid) {
+        if (!currentServiceRequest?.uuid) {
             return;
         }
 
         try {
-            await completeMutation.mutateAsync(currentRequest.uuid);
+            await completeMutation.mutateAsync(currentServiceRequest.uuid);
             setServiceCompleted(true);
         } catch (error) {
             console.error("Failed to complete service:", error);
@@ -271,8 +289,8 @@ export default function MechanicHomeComponent() {
                     mechanicLatitude={location.latitude}
                     mechanicLongitude={location.longitude}
                     mechanicHeading={location.heading}
-                    cyclistLatitude={currentRequest?.location_lat}
-                    cyclistLongitude={currentRequest?.location_lng}
+                    cyclistLatitude={currentServiceRequest?.location_lat}
+                    cyclistLongitude={currentServiceRequest?.location_lng}
                     showRoute={isAccepted || isEnRoute}
                     showMechanicMarker={isAccepted || isEnRoute}
                     followMechanic={isEnRoute}
@@ -353,25 +371,25 @@ export default function MechanicHomeComponent() {
                                 </div>
                             </div>
                         </div>
-                    ) : isInProgress && currentRequest ? (
+                    ) : isInProgress && currentServiceRequest ? (
                         <>
                             <MechanicInProgressContainer
-                                request={currentRequest}
+                                request={currentServiceRequest}
                                 onViewDetails={() => {
-                                    setSelectedRequest(currentRequest);
+                                    setSelectedRequest(currentServiceRequest);
                                     setCyclistInfoOpen(true);
                                 }}
                                 onComplete={handleComplete}
                                 isCompleting={completeMutation.isPending}
                             />
                         </>
-                    ) : isEnRoute && currentRequest ? (
+                    ) : isEnRoute && currentServiceRequest ? (
                         <>
                             <MechanicEnRouteContainer
-                                request={currentRequest}
+                                request={currentServiceRequest}
                                 distanceToCyclist={distanceToCyclist}
                                 onViewDetails={() => {
-                                    setSelectedRequest(currentRequest);
+                                    setSelectedRequest(currentServiceRequest);
                                     setCyclistInfoOpen(true);
                                 }}
                                 onCall={handleCall}
@@ -380,15 +398,15 @@ export default function MechanicHomeComponent() {
                                 isArriving={inProgressMutation.isPending}
                             />
                         </>
-                    ) : isAccepted && currentRequest ? (
+                    ) : isAccepted && currentServiceRequest ? (
                         <MechanicAcceptContainer
-                            request={currentRequest}
+                            request={currentServiceRequest}
                             onCall={handleCall}
                             onChat={handleChat}
                             onViewDetails={() => {
-                                setSelectedRequest(currentRequest);
+                                setSelectedRequest(currentServiceRequest);
                                 setCyclistInfoOpen(true);
-                                console.log(currentRequest.images);
+                                console.log(currentServiceRequest.images);
                             }}
                             onEnRoute={handleEnRoute}
                             isEnRoutePending={false}
@@ -441,8 +459,8 @@ export default function MechanicHomeComponent() {
                 open={chatDialogOpen}
                 onOpenChange={setChatDialogOpen}
                 currentUserRole="mechanic"
-                otherUserName={`${currentRequest?.cyclist?.user?.first_name ?? ""} ${
-                    currentRequest?.cyclist?.user?.last_name ?? ""
+                otherUserName={`${currentServiceRequest?.cyclist?.user?.first_name ?? ""} ${
+                    currentServiceRequest?.cyclist?.user?.last_name ?? ""
                 }`.trim()}
                 messages={messages}
                 onSendMessage={sendMessage}

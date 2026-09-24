@@ -29,16 +29,6 @@ export const createServiceRequest = async (
     return response.data;
 };
 
-export const findMechanic = async (
-    serviceRequestUuid: string,
-): Promise<ServiceRequestResponse> => {
-    const response = await api.post(
-        `/service-requests/${serviceRequestUuid}/find-mechanic`,
-    );
-
-    return response.data.data;
-};
-
 export const getCurrentCyclistServiceRequest =
     async (): Promise<ServiceRequestResponse> => {
         const response = await api.get(

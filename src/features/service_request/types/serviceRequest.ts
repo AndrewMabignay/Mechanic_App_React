@@ -29,6 +29,12 @@ export type ServiceRequestAcceptance = {
     remarks: string | null;
 };
 
+export interface ServiceRequestAcceptanceResponse {
+    success: boolean;
+    message: string;
+    data: ServiceRequestAcceptance;
+}
+
 export interface ServiceRequest {
     id: number;
     uuid: string;
@@ -63,7 +69,7 @@ export interface ServiceRequest {
     bike_problem: BikeProblem;
     cyclist: CyclistProfile;
     mechanic: MechanicProfile;
-    acceptances: ServiceRequestAcceptance;
+    acceptances: ServiceRequestAcceptance[];
     rating: ServiceRequestRating;
 }
 
